@@ -156,7 +156,15 @@ async function callLocalPhoneWithRetry(requestFn, preferredUrl = null) {
     return await requestFn(targetLocalUrl);
   } catch (err) {
     await adbService.ensurePhoneSignReady(targetLocalUrl);
-    return await requestFn(preferredUrl || getLocalPhoneUrl());
+    try {
+      return await requestFn(targetLocalUrl);
+    } catch (err2) {
+      const altUrls = adbService.getActiveLocalSignUrls().filter(u => u !== targetLocalUrl);
+      if (altUrls.length > 0) {
+        return await requestFn(altUrls[0]);
+      }
+      throw err2;
+    }
   }
 }
 
@@ -273,8 +281,11 @@ async function handleCreatePost(req, res) {
               ),
               assignedBaseUrl
             );
-            if (preRes.data?.http_status === 418) {
-              await new Promise(r => setTimeout(r, 400));
+            if (
+              preRes.data?.http_status === 418 ||
+              (!preRes.data?.data?.data?.extra_context && !preRes.data?.data?.extra_context && !preRes.data?.data?.code)
+            ) {
+              await new Promise(r => setTimeout(r, 500));
               preRes = await callLocalPhoneWithRetry(() =>
                 axios.post(
                   `${assignedBaseUrl}/api/precheck`,
@@ -302,6 +313,10 @@ async function handleCreatePost(req, res) {
         return null;
       };
 
+      if (dataObj && dataObj.extra_context === 'PENDING_GATEWAY_PRECHECK') {
+        dataObj.extra_context = '';
+        dataStr = JSON.stringify(dataObj);
+      }
       const hasRealExtra = dataObj?.extra_context && dataObj.extra_context !== 'PENDING_GATEWAY_PRECHECK';
       const needFreshPrecheck = !hasRealExtra || !adbService.isSessionFreshForUser(userId, 8000);
       if (needFreshPrecheck && cookie) {
@@ -330,7 +345,8 @@ async function handleCreatePost(req, res) {
         postRes.data &&
         (postRes.data.http_status === 418 ||
           postRes.data.data?.error === 90309999 ||
-          postRes.data.data?.code === 98001004) &&
+          postRes.data.data?.code === 98001004 ||
+          postRes.data.data?.code === 300014) &&
         cookie
       ) {
         if (postRes.data.data?.code === 98001004) {

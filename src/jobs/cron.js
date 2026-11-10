@@ -322,6 +322,30 @@ const initJobs = () => {
                 ]);
                 return;
               }
+              const isPermOrBannedErr =
+                String(errMsg).includes('8300050') ||
+                String(errMsg).includes('ERROR_PERMS') ||
+                String(errMsg).includes('98000074') ||
+                String(errMsg).includes('ErrorIllegalUserState');
+              if (isPermOrBannedErr) {
+                errMsg = String(errMsg).includes('98000074')
+                  ? 'Lỗi 98000074 (ErrorIllegalUserState): Tài khoản Shopee đang bị hạn chế/khóa trạng thái — Đã tạm dừng & giữ nguyên video chờ'
+                  : 'Lỗi 8300050 (ERROR_PERMS): Tài khoản mất quyền đăng Video hoặc Cookie hết hạn — Đã tạm dừng & giữ nguyên video chờ';
+                consecutiveFailures.delete(t.id);
+                await Promise.all([
+                  VideoTask.updateStatus(task.id, 'pending', { error: null }),
+                  Log.create({
+                    username: t.username,
+                    status: 'error',
+                    error: errMsg,
+                    failed_function: uploadErr?.failedFunction || 'createPost'
+                  }),
+                  new Promise((res, rej) =>
+                    db.run("UPDATE threads SET error = ?, status = 'paused' WHERE id = ?", [errMsg, t.id], err => err ? rej(err) : res())
+                  )
+                ]);
+                return;
+              }
               const isHardProxyDead =
                 errMsg.includes('407') ||
                 errMsg.includes('ECONNREFUSED') ||
@@ -340,11 +364,22 @@ const initJobs = () => {
                 autoChanged = true;
               }
 
-              const delayAfterError = autoChanged ? 8 : 30;
+              const isTransientRetryableTask =
+                isHardProxyDead ||
+                errMsg.includes('socket hang up') ||
+                errMsg.includes('HTTP 502') ||
+                errMsg.includes('Empty token response') ||
+                errMsg.includes('300014') ||
+                errMsg.includes('98001004') ||
+                errMsg.includes('Timeout');
+
+              const delayAfterError = autoChanged ? 8 : 20;
               const nextRetryTime = Math.floor(Date.now() / 1000) + delayAfterError;
 
               await Promise.all([
-                VideoTask.updateStatus(task.id, 'failed', { error: errMsg }),
+                isTransientRetryableTask
+                  ? VideoTask.updateStatus(task.id, 'pending', { error: null })
+                  : VideoTask.updateStatus(task.id, 'failed', { error: errMsg }),
                 Log.create({
                   username: t.username,
                   status: 'error',

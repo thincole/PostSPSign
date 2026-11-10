@@ -157,7 +157,9 @@ class AdbService {
       }
       if (toRecover.size > 0) {
         try {
-          await this.runCommandWithServerPort('5038', ['reconnect', 'offline']).catch(() => {});
+          for (const srvP of this.adbServerPorts) {
+            await this.runCommandWithServerPort(srvP, ['reconnect', 'offline']).catch(() => {});
+          }
           for (const s of toRecover) {
             if (s.startsWith('TIGER10')) {
               this._lastPnpRestartMap.set(s, now);
@@ -390,9 +392,12 @@ class AdbService {
       this.getForwardList()
     ]);
 
+    const onlineDevices = devices.filter(d => d.status === 'device');
+    const onlineSerialSet = new Set(onlineDevices.map(d => d.serial));
     const forwardBySerial = new Map();
+    this._devicePortMap.clear();
     for (const f of forwards) {
-      if (/^tcp:808\d$/.test(f.local)) {
+      if (/^tcp:808\d$/.test(f.local) && onlineSerialSet.has(f.serial)) {
         forwardBySerial.set(f.serial, f.local);
         const portNum = parseInt(f.local.replace('tcp:', ''), 10);
         if (!isNaN(portNum)) {
@@ -402,7 +407,6 @@ class AdbService {
     }
 
     // Nếu chưa lưu selectedSerials lần nào, hoặc không có máy nào đang cắm khớp với danh sách cũ -> tự chọn máy đang cắm
-    const onlineDevices = devices.filter(d => d.status === 'device');
     const hasOnlineSelected = Array.isArray(this.selectedSerials) && onlineDevices.some(d => this.selectedSerials.includes(d.serial));
     if (this.selectedSerials === null || (!hasOnlineSelected && onlineDevices.length > 0)) {
       const initiallyForwarded = onlineDevices
