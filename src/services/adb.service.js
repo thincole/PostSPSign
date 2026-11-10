@@ -216,15 +216,17 @@ class AdbService {
     );
 
     if (!alreadyForwarded) {
-      // Gỡ bỏ các forward tcp:<localPort> cũ trên cả 2 ADB Server (5038 & 5037) để tránh lỗi 10048
+      // Gỡ bỏ các forward tcp:<localPort> cũ (kèm -s <serial> để không bị lỗi khi cắm nhiều máy) và các cổng 808x dư của chính thiết bị này
+      for (const f of currentForwards) {
+        if (
+          f.local === `tcp:${localPort}` ||
+          (f.serial === serial && f.local !== `tcp:${localPort}` && /^tcp:808\d$/.test(f.local))
+        ) {
+          await this.runCommandWithServerPort(f.adbServerPort || ownerSrvPort, ['-s', f.serial, 'forward', '--remove', f.local]).catch(() => {});
+        }
+      }
       for (const srvPort of this.adbServerPorts) {
         await this.runCommandWithServerPort(srvPort, ['forward', '--remove', `tcp:${localPort}`]).catch(() => {});
-      }
-      // Gỡ các forward cổng 808x cũ khác của chính thiết bị này (nếu có)
-      for (const f of currentForwards) {
-        if (f.serial === serial && f.local !== `tcp:${localPort}` && /^tcp:808\d$/.test(f.local)) {
-          await this.runCommandWithServerPort(f.adbServerPort || ownerSrvPort, ['-s', serial, 'forward', '--remove', f.local]).catch(() => {});
-        }
       }
 
       const args = ['-s', serial, 'forward', `tcp:${localPort}`, `tcp:${remotePort}`];
@@ -353,6 +355,11 @@ class AdbService {
     }
 
     if (needsRebind) {
+      for (const f of forwards) {
+        if (/^tcp:808\d$/.test(f.local)) {
+          await this.runCommandWithServerPort(f.adbServerPort || '5038', ['-s', f.serial, 'forward', '--remove', f.local]).catch(() => {});
+        }
+      }
       for (const srvPort of this.adbServerPorts) {
         for (let p = 8080; p < 8080 + Math.max(activeSerials.length, 4); p++) {
           await this.runCommandWithServerPort(srvPort, ['forward', '--remove', `tcp:${p}`]).catch(() => {});
