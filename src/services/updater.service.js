@@ -85,6 +85,25 @@ class UpdaterService {
     }
 
     if (!latestCommitData) {
+      // Fallback: use local git fetch if repo is private or GitHub API is rate-limited
+      try {
+        if (!fs.existsSync(path.join(process.cwd(), '.git'))) {
+          execSync(`git init && git branch -M main && git remote add origin ${this.repoUrl}.git`, { stdio: 'ignore', timeout: 10000 });
+        }
+        execSync('git fetch origin main', { stdio: 'ignore', timeout: 15000 });
+        const logLine = execSync('git log -1 --format="%H|%s|%cI" origin/main', { encoding: 'utf8', timeout: 5000 }).trim();
+        const [sha, msg, dt] = logLine.split('|');
+        if (sha) {
+          latestCommitData = {
+            sha,
+            commit: { message: msg || 'Update từ GitHub', author: { date: dt || new Date().toISOString() } }
+          };
+          branchUsed = 'main';
+        }
+      } catch (_) {}
+    }
+
+    if (!latestCommitData) {
       // Try latest releases as fallback
       try {
         const url = `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/releases/latest`;
@@ -146,6 +165,18 @@ class UpdaterService {
     const checkResult = await this.checkUpdate();
     const zipUrl = checkResult.zipUrl || `${this.repoUrl}/archive/refs/heads/${checkResult.branch || 'main'}.zip`;
     const targetSha = checkResult.fullSha || checkResult.latestCommit || 'updated';
+
+    const updateBatPath = path.join(process.cwd(), 'update.bat');
+    if (fs.existsSync(updateBatPath)) {
+      try {
+        execSync('cmd.exe /c "update.bat --no-pause"', { cwd: process.cwd(), stdio: 'inherit', timeout: 60000 });
+        return {
+          success: true,
+          message: 'Cập nhật hoàn tất thành công! Vui lòng khởi động lại phần mềm để áp dụng các thay đổi mới.',
+          commit: targetSha
+        };
+      } catch (_) {}
+    }
 
     const tempDir = path.join(process.cwd(), 'temp_update');
     const zipPath = path.join(tempDir, 'update.zip');
