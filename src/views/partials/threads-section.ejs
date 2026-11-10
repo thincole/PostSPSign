@@ -1,0 +1,409 @@
+<h2 class="mb-4"><i class="bi bi-diagram-3-fill me-2"></i>Quản Lý Luồng</h2>
+
+<div class="row mb-3 g-2 align-items-center">
+    <div class="col-auto d-flex gap-2 flex-wrap" id="taskStatsBar">
+        <div class="alert alert-info mb-0 py-2 px-3 d-flex align-items-center">
+            <i class="bi bi-list-task me-1"></i>Tổng: <strong class="ms-1" id="taskTotalCount">0</strong>
+        </div>
+        <div class="alert mb-0 py-2 px-3 d-flex align-items-center" style="background:#fff3e0;color:#e65100;">
+            <i class="bi bi-hourglass-split me-1"></i>Chờ: <strong class="ms-1" id="taskPendingCount">0</strong>
+        </div>
+        <div class="alert mb-0 py-2 px-3 d-flex align-items-center" style="background:#e3f2fd;color:#1565c0;">
+            <i class="bi bi-cloud-upload me-1"></i>Đang upload: <strong class="ms-1" id="taskUploadingCount">0</strong>
+        </div>
+        <div class="alert mb-0 py-2 px-3 d-flex align-items-center" style="background:#e8f5e9;color:#2e7d32;">
+            <i class="bi bi-check-circle me-1"></i>Thành công: <strong class="ms-1" id="taskCompletedCount">0</strong>
+        </div>
+        <div class="alert mb-0 py-2 px-3 d-flex align-items-center" style="background:#fce4ec;color:#c0392b;"
+            id="taskFailedBar">
+            <i class="bi bi-x-circle me-1"></i>Lỗi: <strong class="ms-1" id="taskFailedCount">0</strong>
+        </div>
+    </div>
+    <div class="col-auto ms-auto">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text"><i class="bi bi-clock me-1"></i>Chạy lại lúc</span>
+            <input type="time" class="form-control" id="runningTimeAgainInput" onchange="updateRunningTimeAgain()"
+                style="max-width:110px">
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3 border-0 shadow-sm" style="background: #ffffff; border-radius: 12px; overflow: hidden;">
+    <div class="card-header border-0 bg-transparent p-3 pb-2 d-flex justify-content-between align-items-center" 
+         data-bs-toggle="collapse" data-bs-target="#quickImportCollapse" role="button" aria-expanded="true" aria-controls="quickImportCollapse"
+         onclick="toggleQuickImportCollapseIcon(this)">
+        <h5 class="card-title fs-6 fw-bold mb-0 text-secondary d-flex align-items-center">
+            <i class="bi bi-cloud-arrow-up-fill me-2 text-primary"></i>Nhập Excel & Tạo Luồng Nhanh Theo Quốc Gia
+        </h5>
+        <div class="d-flex align-items-center gap-1 text-primary small fw-semibold" style="cursor: pointer;">
+            <span id="quickImportCollapseText">Thu gọn</span>
+            <i class="bi bi-chevron-up" id="quickImportCollapseIcon"></i>
+        </div>
+    </div>
+    <div class="collapse show" id="quickImportCollapse">
+        <div class="card-body p-3 pt-1">
+        
+        <!-- Headers -->
+        <div class="row g-2 mb-2 align-items-center fw-bold text-muted small d-none d-md-flex">
+            <div class="col-md-1">Quốc gia</div>
+            <div class="col-md-3">Folder chứa Video</div>
+            <div class="col-md-2">Link Google Sheet</div>
+            <div class="col-md-1">Tên Sheet</div>
+            <div class="col-md-1">Video/Acc</div>
+            <div class="col-md-1 text-center">AIGC</div>
+            <div class="col-md-3">Thao tác</div>
+        </div>
+        
+        <!-- Vietnam Row -->
+        <div class="row g-2 mb-2 align-items-center country-import-row" data-country="vn">
+            <div class="col-md-1 d-flex align-items-center gap-2 fw-semibold">
+                <span class="fs-5">🇻🇳</span> VN
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control video-folder-input" placeholder="Ví dụ: F:\Video\VN">
+                    <button class="btn btn-outline-primary" type="button" onclick="scanCountryFolder(this)">
+                        <i class="bi bi-folder-check"></i> Kiểm tra
+                    </button>
+                </div>
+                <div class="video-folder-info mt-1 small text-muted" style="min-height:15px;"></div>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control form-control-sm sheet-link-input" placeholder="Nhập Link Google Sheet...">
+            </div>
+            <div class="col-md-1">
+                <input type="text" class="form-control form-control-sm sheet-name-input" value="VN" placeholder="Sheet">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control form-control-sm max-videos-input" min="1" value="80" placeholder="KGH">
+            </div>
+            <div class="col-md-1 text-center">
+                <div class="form-check form-switch d-flex justify-content-center mb-0">
+                    <input class="form-check-input aigc-switch" type="checkbox" checked title="Video AI (AIGC)">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-success btn-sm w-100 fw-bold btn-single-import" type="button" onclick="startSingleCountryImport('vn', this)">
+                    <i class="bi bi-play-fill"></i> Thêm VN
+                </button>
+            </div>
+        </div>
+
+        <!-- Philippines Row -->
+        <div class="row g-2 mb-2 align-items-center country-import-row" data-country="ph">
+            <div class="col-md-1 d-flex align-items-center gap-2 fw-semibold">
+                <span class="fs-5">🇵🇭</span> PH
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control video-folder-input" placeholder="Ví dụ: F:\Video\PH">
+                    <button class="btn btn-outline-primary" type="button" onclick="scanCountryFolder(this)">
+                        <i class="bi bi-folder-check"></i> Kiểm tra
+                    </button>
+                </div>
+                <div class="video-folder-info mt-1 small text-muted" style="min-height:15px;"></div>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control form-control-sm sheet-link-input" placeholder="Nhập Link Google Sheet...">
+            </div>
+            <div class="col-md-1">
+                <input type="text" class="form-control form-control-sm sheet-name-input" value="PH" placeholder="Sheet">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control form-control-sm max-videos-input" min="1" value="50" placeholder="KGH">
+            </div>
+            <div class="col-md-1 text-center">
+                <div class="form-check form-switch d-flex justify-content-center mb-0">
+                    <input class="form-check-input aigc-switch" type="checkbox" checked title="Video AI (AIGC)">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-success btn-sm w-100 fw-bold btn-single-import" type="button" onclick="startSingleCountryImport('ph', this)">
+                    <i class="bi bi-play-fill"></i> Thêm PH
+                </button>
+            </div>
+        </div>
+
+        <!-- Indonesia Row -->
+        <div class="row g-2 mb-3 align-items-center country-import-row" data-country="id">
+            <div class="col-md-1 d-flex align-items-center gap-2 fw-semibold">
+                <span class="fs-5">🇮🇩</span> ID
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control video-folder-input" placeholder="Ví dụ: F:\Video\ID">
+                    <button class="btn btn-outline-primary" type="button" onclick="scanCountryFolder(this)">
+                        <i class="bi bi-folder-check"></i> Kiểm tra
+                    </button>
+                </div>
+                <div class="video-folder-info mt-1 small text-muted" style="min-height:15px;"></div>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control form-control-sm sheet-link-input" placeholder="Nhập Link Google Sheet...">
+            </div>
+            <div class="col-md-1">
+                <input type="text" class="form-control form-control-sm sheet-name-input" value="ID" placeholder="Sheet">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control form-control-sm max-videos-input" min="1" value="50" placeholder="KGH">
+            </div>
+            <div class="col-md-1 text-center">
+                <div class="form-check form-switch d-flex justify-content-center mb-0">
+                    <input class="form-check-input aigc-switch" type="checkbox" checked title="Video AI (AIGC)">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-success btn-sm w-100 fw-bold btn-single-import" type="button" onclick="startSingleCountryImport('id', this)">
+                    <i class="bi bi-play-fill"></i> Thêm ID
+                </button>
+            </div>
+        </div>
+
+        <!-- Custom Country Row -->
+        <div class="row g-2 mb-3 align-items-center country-import-row" data-country="custom">
+            <div class="col-md-1 d-flex align-items-center gap-1 fw-semibold">
+                <input type="text" class="form-control form-control-sm text-center fw-bold custom-country-code-input" placeholder="QG" style="width:55px; background:#fff3cd;" maxlength="4">
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control video-folder-input" placeholder="Ví dụ: F:\Video\TH">
+                    <button class="btn btn-outline-primary" type="button" onclick="scanCountryFolder(this)">
+                        <i class="bi bi-folder-check"></i> Kiểm tra
+                    </button>
+                </div>
+                <div class="video-folder-info mt-1 small text-muted" style="min-height:15px;"></div>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control form-control-sm sheet-link-input" placeholder="Link Google Sheet QG khác...">
+            </div>
+            <div class="col-md-1">
+                <input type="text" class="form-control form-control-sm sheet-name-input" placeholder="Sheet">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control form-control-sm max-videos-input" min="1" value="50" placeholder="KGH">
+            </div>
+            <div class="col-md-1 text-center">
+                <div class="form-check form-switch d-flex justify-content-center mb-0">
+                    <input class="form-check-input aigc-switch" type="checkbox" checked title="Video AI (AIGC)">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-warning btn-sm w-100 fw-bold btn-single-import" type="button" onclick="startSingleCountryImportCustom(this)">
+                    <i class="bi bi-play-fill"></i> Thêm Khác
+                </button>
+            </div>
+        </div>
+        
+        <hr class="my-3 text-black-50">
+        
+        <!-- General Settings & Add Button -->
+        <div class="row g-3 align-items-center">
+            <!-- Wait time settings -->
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted mb-1 d-block"><i class="bi bi-clock me-1"></i>Thời gian chờ (giây)</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Từ</span>
+                    <input type="number" class="form-control" id="countryImportDelayMin" value="186">
+                    <span class="input-group-text">đến</span>
+                    <input type="number" class="form-control" id="countryImportDelayMax" value="245">
+                    <span class="input-group-text">s</span>
+                    <button class="btn btn-outline-primary fw-bold" type="button" onclick="applyDelayToAllThreadsFromInput()" title="Áp dụng ngay khoảng Delay này cho TẤT CẢ các luồng đang chạy">
+                        <i class="bi bi-lightning-fill text-warning me-1"></i>Cập Nhật All Luồng
+                    </button>
+                </div>
+            </div>
+            <!-- Switches -->
+            <div class="col-md-5 d-flex flex-column gap-1">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="countryImportAutoStart" checked>
+                    <label class="form-check-label small fw-semibold text-muted" for="countryImportAutoStart">
+                        <i class="bi bi-play-circle me-1"></i>Tự động bắt đầu chạy sau khi import
+                    </label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="countryImportDeleteOnSuccess" checked>
+                    <label class="form-check-label small fw-semibold text-muted" for="countryImportDeleteOnSuccess" title="Chỉ xóa các file video gốc của tasks đã post thành công">
+                        <i class="bi-trash3 me-1"></i>Xóa video gốc sau khi post thành công (chỉ xóa video đã post OK, lỗi giữ nguyên)
+                    </label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="useProxyQueueLockSwitch" checked onchange="toggleProxyQueueLock(this.checked)">
+                    <label class="form-check-label small fw-bold text-primary" for="useProxyQueueLockSwitch" title="Tích chọn: Xếp hàng IP Proxy chống 429/503. Bỏ tích: Tất cả các luồng cùng post tự do (chế độ ngày xưa)">
+                        <i class="bi bi-shield-lock-fill me-1"></i>Proxy Queue Lock (Tích chọn: Xếp hàng IP | Bỏ tích: Chạy tự do như ngày xưa)
+                    </label>
+                </div>
+
+            </div>
+            <!-- Action Button -->
+            <div class="col-md-3">
+                <button class="btn btn-success w-100 fw-bold btn-sm py-2" id="btnCountryImport" onclick="startCountryImport()">
+                    <i class="bi bi-plus-circle-fill me-1"></i>Thêm luồng chạy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="row mb-3 g-2">
+    <div class="col-auto d-flex gap-2 flex-wrap">
+        <button class="btn btn-info btn-sm text-white" onclick="showImportExcelModal()"><i
+                class="bi bi-file-earmark-excel me-1"></i>Nhập Excel & Tạo Luồng</button>
+        <button class="btn btn-outline-secondary btn-sm" onclick="showBatchDelayModal()" title="Cập nhật thời gian delay cho các luồng đang chạy"><i
+                class="bi bi-clock me-1"></i>Sửa Delay</button>
+        <button class="btn btn-outline-warning btn-sm" onclick="retryFailedTasks()"><i
+                class="bi bi-arrow-clockwise me-1"></i>Retry Lỗi</button>
+        <button class="btn btn-outline-primary btn-sm" onclick="rotateErrorProxies()"><i
+                class="bi bi-arrow-repeat me-1"></i>Đổi Proxy Lỗi</button>
+        <button class="btn btn-outline-dark btn-sm fw-semibold" onclick="recoverDeadCookies(this)" title="Tự động làm mới hoặc mở GemLogin lấy lại Cookie cho các luồng lỗi Cookie (hoặc các luồng đang tích chọn)"><i
+                class="bi bi-key-fill text-warning me-1"></i>Lấy Cookie Lỗi (GemLogin)</button>
+        <button class="btn btn-outline-danger btn-sm" onclick="deleteCompletedThreads()"><i
+                class="bi bi-trash3 me-1"></i>Xóa Xong</button>
+        <button class="btn btn-outline-danger btn-sm" onclick="removeAllTasks()"><i class="bi bi-trash3 me-1"></i>Xóa
+            Tasks</button>
+        <button class="btn btn-outline-success btn-sm" onclick="cleanupCompletedVideos()"
+            title="Xóa file video gốc của tasks đã post thành công"><i class="bi bi-file-earmark-x me-1"></i>Xóa Video
+            OK</button>
+    </div>
+    <div class="col-auto ms-auto d-flex gap-2 flex-wrap">
+        <button class="btn btn-outline-info btn-sm" onclick="checkAll24h()"><i
+                class="bi bi-clock-history me-1"></i>Check 24h</button>
+        <button class="btn btn-success btn-sm" onclick="startSelectedThreads()"><i class="bi bi-play-fill me-1"></i>Bắt
+            Đầu</button>
+        <button class="btn btn-warning btn-sm" onclick="pauseSelectedThreads()"><i class="bi bi-pause-fill me-1"></i>Tạm
+            Dừng</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSelectedThreads()"><i class="bi bi-trash3 me-1"></i>Xóa
+            Chọn</button>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="input-group input-group-sm" style="max-width: 230px;">
+            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control" id="threadSearchInput" placeholder="Tìm username, proxy..." oninput="onThreadFilterChange()">
+        </div>
+        <select class="form-select form-select-sm" id="threadCountryFilter" onchange="onThreadFilterChange()" style="width: auto;">
+            <option value="all">🌐 Tất cả quốc gia</option>
+            <option value="vn">🇻🇳 VN</option>
+            <option value="ph">🇵🇭 PH</option>
+            <option value="my">🇲🇾 MY</option>
+            <option value="id">🇮🇩 ID</option>
+            <option value="th">🇹🇭 TH</option>
+            <option value="sg">🇸🇬 SG</option>
+            <option value="br">🇧🇷 BR</option>
+        </select>
+        <select class="form-select form-select-sm" id="threadStatusFilter" onchange="onThreadFilterChange()" style="width: auto;">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="inprogress">⚡ Đang chạy</option>
+            <option value="stop">⏸️ Dừng</option>
+            <option value="error">❌ Có Lỗi</option>
+            <option value="done">✅ Xong</option>
+        </select>
+        <select class="form-select form-select-sm" id="threadPageSizeSelect" onchange="onThreadPageSizeChange(this.value)" style="width: auto;">
+            <option value="50" selected>50 luồng / trang</option>
+            <option value="100">100 luồng / trang</option>
+            <option value="9999">Tất cả luồng</option>
+        </select>
+        <span class="badge bg-light text-dark border px-2 py-1" id="threadCountSummary">Tổng: 0 luồng</span>
+    </div>
+    <div class="d-flex align-items-center gap-1" id="threadPaginationControls">
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th style="width:40px">
+                    <div class="form-check form-switch mb-0">
+                        <input type="checkbox" class="form-check-input thread-checkbox" id="selectAllThreads"
+                            onchange="toggleAllThreads(this)">
+                    </div>
+                </th>
+                <th style="width:40px">#</th>
+                <th style="width:100px">Username</th>
+                <th style="width:180px">Cookie</th>
+                <th style="width:95px">Quốc gia</th>
+                <th>Caption</th>
+                <th style="width:80px">Uploaded</th>
+                <th style="width:70px">Pending</th>
+                <th style="width:70px">Delay</th>
+                <th>Proxy</th>
+                <th>Lỗi</th>
+                <th style="width:90px">Trạng thái</th>
+                <th style="width:80px">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="threadTable">
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Sửa Delay Hàng Loạt -->
+<div class="modal fade" id="batchDelayModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold"><i class="bi bi-clock-history me-2 text-primary"></i>Sửa Thời Gian Delay Luồng</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted mb-3">Cập nhật thời gian Delay ngẫu nhiên giữa các lần đăng video cho các luồng đã chọn hoặc tất cả luồng.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Delay Tối Thằng (Giây)</label>
+                        <input type="number" class="form-control form-control-sm" id="batchDelayMinInput" value="186" min="10">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Delay Tối Đa (Giây)</label>
+                        <input type="number" class="form-control form-control-sm" id="batchDelayMaxInput" value="245" min="10">
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="batchDelayOnlySelectedCheck">
+                    <label class="form-check-label small" for="batchDelayOnlySelectedCheck">
+                        Chỉ áp dụng cho các luồng đang được tích chọn
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary btn-sm fw-bold" onclick="saveBatchDelay()">Lưu Cập Nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  function toggleQuickImportCollapseIcon(headerEl) {
+    setTimeout(() => {
+      const collapseEl = document.getElementById('quickImportCollapse');
+      const icon = document.getElementById('quickImportCollapseIcon');
+      const text = document.getElementById('quickImportCollapseText');
+      if (!collapseEl) return;
+      const isShown = collapseEl.classList.contains('show');
+      if (isShown) {
+        if (icon) icon.className = 'bi bi-chevron-up';
+        if (text) text.textContent = 'Thu gọn';
+        localStorage.setItem('quickImportCollapsed', 'false');
+      } else {
+        if (icon) icon.className = 'bi bi-chevron-down';
+        if (text) text.textContent = 'Mở rộng';
+        localStorage.setItem('quickImportCollapsed', 'true');
+      }
+    }, 200);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const isCollapsed = localStorage.getItem('quickImportCollapsed') === 'true';
+    if (isCollapsed) {
+      const collapseEl = document.getElementById('quickImportCollapse');
+      const icon = document.getElementById('quickImportCollapseIcon');
+      const text = document.getElementById('quickImportCollapseText');
+      if (collapseEl) collapseEl.classList.remove('show');
+      if (icon) icon.className = 'bi bi-chevron-down';
+      if (text) text.textContent = 'Mở rộng';
+    }
+  });
+</script>

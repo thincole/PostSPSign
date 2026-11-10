@@ -1,0 +1,52 @@
+ <!-- Toast Container -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+  <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+          <strong class="me-auto" id="toastTitle">Thông Báo</strong>
+          <small id="toastTime" class="text-muted"></small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toastMessage"></div>
+  </div>
+</div>
+
+<script>
+  // Toast utility function (optional, can be moved to common.js if preferred)
+  function showToast(message, type = 'info', title = 'Thông Báo') {
+      const toastEl = document.getElementById('liveToast');
+      const toastBody = document.getElementById('toastMessage');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastTime = document.getElementById('toastTime');
+      const toast = new bootstrap.Toast(toastEl);
+
+      // Reset previous classes
+      toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'text-white', 'text-dark');
+
+      // Set title
+      toastTitle.textContent = title;
+
+      // Set time
+      toastTime.textContent = new Date().toLocaleTimeString();
+
+      // Add appropriate class based on type
+      switch (type) {
+          case 'success':
+              toastEl.classList.add('bg-success', 'text-white');
+              break;
+          case 'error':
+              toastEl.classList.add('bg-danger', 'text-white');
+              break;
+          case 'warning':
+              toastEl.classList.add('bg-warning', 'text-dark');
+              break;
+          default:
+              toastEl.classList.add('bg-info', 'text-white');
+      }
+
+      // Set message
+      toastBody.textContent = message;
+
+      // Show toast
+      toast.show();
+  }
+</script>

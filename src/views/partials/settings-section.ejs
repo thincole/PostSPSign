@@ -1,0 +1,775 @@
+<h2 class="mb-4"><i class="bi bi-gear-fill me-2"></i>Cài Đặt</h2>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header py-2 d-flex justify-content-between align-items-center" style="background: #2d3748; border-radius: 0;">
+                <h6 class="mb-0 text-white"><i class="bi bi-shield-check me-2"></i>Cấu hình Ký Số (Signing Service)</h6>
+                <span class="badge bg-primary" id="currentSignBadge">Credit API</span>
+            </div>
+            <div class="card-body">
+                <!-- Chọn chế độ ký -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Phương thức Ký</label>
+                    <div class="d-flex gap-3 p-2 bg-light rounded border">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="signModeRadio" id="signModeCredit" value="credit" onchange="onSignModeChange()" checked>
+                            <label class="form-check-label fw-semibold small" for="signModeCredit">
+                                <i class="bi bi-cloud-check text-primary me-1"></i>Server Credit
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="signModeRadio" id="signModePhone" value="phone" onchange="onSignModeChange()">
+                            <label class="form-check-label fw-semibold small" for="signModePhone">
+                                <i class="bi bi-phone-fill text-success me-1"></i>Phone Sign (Nội bộ)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Credit API -->
+                <div id="creditApiFormGroup">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">URL API Credit</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                            <input type="text" class="form-control" id="creditUrlInput"
+                                placeholder="https://creditmls2026video.toolshopee.vn/api/sign">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">API Key Credit</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                            <input type="text" class="form-control" id="creditKeyInput" placeholder="X-API-Key...">
+                            <button class="btn btn-outline-secondary" type="button" onclick="toggleCreditKeyVisibility()"
+                                title="Hiện/Ẩn">
+                                <i class="bi bi-eye" id="creditKeyEyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Phone Sign -->
+                <div id="phoneSignFormGroup" style="display: none;">
+                    <!-- Danh sách Thiết bị ADB tích chọn trực tiếp -->
+                    <div class="p-3 mb-3 bg-light rounded border">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-semibold small mb-0">
+                                <i class="bi bi-usb-symbol text-primary me-1"></i>Danh sách Điện Thoại Kết Nối (Tích vào máy cần sử dụng)
+                            </label>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-sm btn-outline-primary py-0 px-2" type="button" onclick="toggleSelectAllAdbDevices(true)" style="font-size: 0.72rem;" title="Tích chọn tất cả điện thoại">
+                                    <i class="bi bi-check2-all me-1"></i>Chọn hết
+                                </button>
+                                <button class="btn btn-sm btn-link p-0 text-decoration-none" type="button" onclick="loadAdbDevices()" title="Quét lại thiết bị">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>Quét lại
+                                </button>
+                            </div>
+                        </div>
+                        <div id="adbDeviceChecklist" class="d-flex flex-column gap-2 mb-2">
+                            <div class="text-muted small py-2 text-center border rounded bg-white">
+                                <span class="spinner-border spinner-border-sm me-1"></span>Đang quét danh sách điện thoại kết nối USB...
+                            </div>
+                        </div>
+                        <div id="adbForwardStatus" class="small text-muted"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">URL Phone Sign</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                            <input type="text" class="form-control" id="phoneSignUrlInput"
+                                placeholder="http://100.79.170.67:8080" value="http://100.79.170.67:8080">
+                        </div>
+                        <div class="form-text small text-muted">
+                            Mặc định là <code>http://100.79.170.67:8080</code> (Tailscale Gateway) hoặc <code>http://127.0.0.1:8080</code> (ADB Forward trực tiếp).
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Secret Key</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                            <input type="text" class="form-control" id="phoneSignKeyInput" placeholder="ThinAPTM" value="ThinAPTM">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-primary btn-sm" onclick="saveCreditSettings()">
+                        <i class="bi bi-check-lg me-1"></i>Lưu cài đặt
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="loadCreditSettings()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Tải lại
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="checkCreditBalance()" id="creditBalanceBtn">
+                        <i class="bi bi-wallet2 me-1"></i>Kiểm tra số dư
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="checkPhoneSignConnection()" id="phoneSignCheckBtn" style="display: none;">
+                        <i class="bi bi-activity me-1"></i>Kiểm tra kết nối Phone
+                    </button>
+                </div>
+                <div id="creditBalanceResult" class="mt-2" style="display:none;"></div>
+                <div id="phoneSignCheckResult" class="mt-2" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4" style="border-left: 3px solid var(--primary);">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-info-circle me-2"></i>Hướng dẫn Cấu hình Ký Số</h6>
+                <ul class="small mb-0" style="line-height: 1.8;">
+                    <li><strong>Server Credit</strong>: Dùng dịch vụ ký API từ xa của MLS (tiêu tốn credit theo gói).</li>
+                    <li><strong>Phone Sign</strong>: Dùng server ký nội bộ trên máy Note 8 LSPosed (hoàn toàn miễn phí, không giới hạn).</li>
+                    <li><strong>ADB Forward</strong>: Chạy lệnh <code>adb forward tcp:8080 tcp:8080</code> để PC kết nối trực tiếp qua USB siêu nhanh.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header py-2" style="background: #37474f; border-radius: 0;">
+                <h6 class="mb-0 text-white"><i class="bi bi-link-45deg me-2"></i>API URL Key 1</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">URL Domain</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                        <input type="text" class="form-control" id="apiUrlKey1Input" placeholder="https://domain.com">
+                    </div>
+                    <div class="form-text">Nhập domain API. Để trống sẽ dùng giá trị mặc định.</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary btn-sm" onclick="saveApiUrlKey1()">
+                        <i class="bi bi-check-lg me-1"></i>Lưu
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="loadApiUrlKey1()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Tải lại
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header py-2" style="background: #1565c0; border-radius: 0;">
+                <h6 class="mb-0 text-white"><i class="bi bi-hdd-network me-2"></i>Kiểm Tra Proxy</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Danh sách proxy (mỗi dòng 1 proxy)</label>
+                    <textarea class="form-control form-control-sm" id="proxyCheckInput" rows="6"
+                        placeholder="IP:PORT&#10;IP:PORT:USER:PASS&#10;103.1.2.3:8080:admin:pass123"></textarea>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-primary btn-sm" onclick="checkProxies()" id="checkProxyBtn">
+                        <i class="bi bi-lightning-charge me-1"></i>Check Proxy
+                    </button>
+                    <button class="btn btn-success btn-sm" onclick="importProxiesDirectly()" id="importProxyBtn">
+                        <i class="bi bi-download me-1"></i>Import Proxy
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="clearAllProxies()" id="clearProxyBtn">
+                        <i class="bi bi-trash me-1"></i>Xóa Proxy
+                    </button>
+                    <span id="proxyCheckSummary" class="small"></span>
+                </div>
+                <div id="proxyCheckResults" class="mt-3" style="display:none;">
+                    <div class="table-responsive" style="max-height:250px;overflow-y:auto;">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:40px">#</th>
+                                    <th>Proxy</th>
+                                    <th style="width:80px">Ping</th>
+                                    <th style="width:100px">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="proxyCheckTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4" style="border-left: 3px solid #1565c0;">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-info-circle me-2"></i>Hướng dẫn Proxy</h6>
+                <ul class="small mb-0" style="line-height: 1.8;">
+                    <li><strong>Format</strong>: <code>IP:PORT</code> hoặc <code>IP:PORT:USERNAME:PASSWORD</code></li>
+                    <li><strong>Check</strong>: Hệ thống gửi request qua proxy tới httpbin.org để kiểm tra kết nối.</li>
+                    <li><strong>Ping</strong>: Thời gian phản hồi (ms). Dưới 2000ms là tốt.</li>
+                    <li><strong>Kết quả</strong>: Xanh = sống, Đỏ = chết/timeout/sai auth.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function onSignModeChange() {
+        const isPhone = document.getElementById('signModePhone').checked;
+        const creditGroup = document.getElementById('creditApiFormGroup');
+        const phoneGroup = document.getElementById('phoneSignFormGroup');
+        const creditBtn = document.getElementById('creditBalanceBtn');
+        const phoneBtn = document.getElementById('phoneSignCheckBtn');
+        const creditRes = document.getElementById('creditBalanceResult');
+        const phoneRes = document.getElementById('phoneSignCheckResult');
+
+        if (creditGroup) creditGroup.style.display = isPhone ? 'none' : 'block';
+        if (phoneGroup) phoneGroup.style.display = isPhone ? 'block' : 'none';
+        if (creditBtn) creditBtn.style.display = isPhone ? 'none' : 'inline-block';
+        if (phoneBtn) phoneBtn.style.display = isPhone ? 'inline-block' : 'none';
+        if (creditRes) creditRes.style.display = 'none';
+        if (phoneRes) phoneRes.style.display = 'none';
+
+        const badge = document.getElementById('currentSignBadge');
+        if (badge) {
+            badge.className = isPhone ? 'badge bg-success' : 'badge bg-primary';
+            badge.innerText = isPhone ? 'Phone Sign' : 'Credit API';
+        }
+
+        if (isPhone) {
+            loadAdbDevices();
+        }
+    }
+
+    function renderAdbDeviceChecklist(data) {
+        const listEl = document.getElementById('adbDeviceChecklist');
+        const status = document.getElementById('adbForwardStatus');
+        if (!listEl) return;
+
+        if (!data || !data.success || !data.devices || data.devices.length === 0) {
+            listEl.innerHTML = `
+                <div class="p-2 bg-white border rounded small text-muted text-center">
+                    <i class="bi bi-hdd-network me-1 text-info"></i>Máy trạm qua mạng (không cắm USB trực tiếp)
+                </div>`;
+            if (status) {
+                status.innerHTML = '<span class="text-info"><i class="bi bi-info-circle me-1"></i>Máy trạm không cần chọn ADB USB — chỉ cần điền URL Phone Sign (<code>http://100.79.170.67:8080</code>) bên dưới.</span>';
+            }
+            return;
+        }
+
+        const devices = data.devices;
+        const selectedDevices = devices.filter(d => d.selected);
+        const readyDevices = devices.filter(d => d.selected && d.sdkReady);
+
+        listEl.innerHTML = devices.map((dev, idx) => {
+            const isSelected = !!dev.selected;
+            const portBadge = dev.localPort
+                ? `<span class="badge bg-light text-dark border ms-1" style="font-size:0.68rem;">Cổng ${dev.localPort}</span>`
+                : '';
+            const androidIdBadge = dev.androidId
+                ? `<code class="ms-1 text-muted" style="font-size:0.68rem;" title="Android ID">ID:${dev.androidId.substring(0, 8)}</code>`
+                : '';
+
+            let stateBadge = '';
+            if (isSelected && dev.sdkReady) {
+                stateBadge = `<span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Đang dùng • Sẵn sàng</span>`;
+            } else if (isSelected && !dev.sdkReady) {
+                stateBadge = `<span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Đang mở Shopee...</span>`;
+            } else {
+                stateBadge = `<span class="badge bg-secondary">Chưa chọn</span>`;
+            }
+
+            return `
+                <div class="d-flex justify-content-between align-items-center p-2 rounded border ${isSelected ? 'bg-white border-success shadow-sm' : 'bg-white'}" style="transition: all 0.15s;">
+                    <div class="form-check d-flex align-items-center mb-0 flex-grow-1" style="cursor: pointer;">
+                        <input class="form-check-input adb-device-checkbox me-2" type="checkbox"
+                               value="${dev.serial}" id="adbChk_${idx}"
+                               ${isSelected ? 'checked' : ''}
+                               onchange="onAdbDeviceCheckboxChange()"
+                               style="width: 1.1rem; height: 1.1rem; cursor: pointer; margin-top: 0;">
+                        <label class="form-check-label d-flex align-items-center flex-wrap gap-1 w-100" for="adbChk_${idx}" style="cursor: pointer;">
+                            <i class="bi bi-phone-fill ${isSelected ? 'text-success' : 'text-muted'}"></i>
+                            <strong class="small">${dev.model}</strong>
+                            <code class="small text-primary">(${dev.serial})</code>
+                            ${portBadge}
+                            ${androidIdBadge}
+                        </label>
+                    </div>
+                    <div class="d-flex align-items-center gap-1 ms-2">
+                        ${stateBadge}
+                        <button class="btn btn-sm btn-outline-primary py-0 px-1" type="button"
+                                onclick="reconnectSingleAdbDevice('${dev.serial}', ${dev.localPort || 8080}, this)"
+                                title="Mở lại App Shopee & kết nối cổng cho máy ${dev.serial}"
+                                style="font-size: 0.7rem; height: 22px;">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        if (status) {
+            const isGateway = devices.some(d => String(d.serial).startsWith('GATEWAY-'));
+            if (isGateway) {
+                status.innerHTML = `<span class="text-success"><i class="bi bi-check-circle me-1"></i>Đã kết nối qua mạng (Tailscale/LAN) tới điện thoại ký số trung tâm.</span>`;
+            } else if (selectedDevices.length === 0) {
+                status.innerHTML = `<span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>Tìm thấy ${devices.length} điện thoại — Vui lòng <strong>tích vào ít nhất 1 máy</strong> ở trên để sử dụng ký số!</span>`;
+            } else {
+                status.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Đang tích chọn <strong>${selectedDevices.length}/${devices.length}</strong> điện thoại (${readyDevices.length} máy SDK sẵn sàng${selectedDevices.length > 1 ? ' — Tự động chia tải luân phiên' : ''}).</span>`;
+            }
+        }
+
+        if (window._adbReadyPollTimer) {
+            clearTimeout(window._adbReadyPollTimer);
+            window._adbReadyPollTimer = null;
+        }
+        if (selectedDevices.length > 0 && readyDevices.length < selectedDevices.length) {
+            window._adbReadyPollTimer = setTimeout(() => {
+                loadAdbDevices();
+            }, 2500);
+        }
+    }
+
+    function loadAdbDevices() {
+        const listEl = document.getElementById('adbDeviceChecklist');
+        const status = document.getElementById('adbForwardStatus');
+        if (!listEl) return;
+
+        fetch('/api/config/adb/devices')
+            .then(res => res.json())
+            .then(data => {
+                renderAdbDeviceChecklist(data);
+            })
+            .catch(err => {
+                listEl.innerHTML = `<div class="p-2 bg-white border rounded small text-danger text-center">Lỗi khi quét ADB: ${err.message}</div>`;
+                if (status) {
+                    status.innerHTML = `<span class="text-danger">Lỗi: ${err.message}</span>`;
+                }
+            });
+    }
+
+    function onAdbDeviceCheckboxChange() {
+        const checkedSerials = Array.from(document.querySelectorAll('.adb-device-checkbox:checked'))
+            .map(cb => cb.value)
+            .filter(Boolean);
+        saveSelectedAdbDevices(checkedSerials);
+    }
+
+    function toggleSelectAllAdbDevices(selectAll = true) {
+        const checkboxes = Array.from(document.querySelectorAll('.adb-device-checkbox'));
+        if (checkboxes.length === 0) return;
+        checkboxes.forEach(cb => { cb.checked = selectAll; });
+        const checkedSerials = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
+        saveSelectedAdbDevices(checkedSerials);
+    }
+
+    function saveSelectedAdbDevices(serials) {
+        const status = document.getElementById('adbForwardStatus');
+        if (status) {
+            status.innerHTML = `<span class="text-primary"><span class="spinner-border spinner-border-sm me-1" style="width:12px;height:12px;"></span>Đang cấu hình cổng & mở Shopee cho ${serials.length} điện thoại đã tích...</span>`;
+        }
+
+        fetch('/api/config/adb/select-devices', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ serials })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message || 'Đã cập nhật điện thoại ký số', 'success');
+                    renderAdbDeviceChecklist(data);
+                } else {
+                    showToast(data.message || 'Lỗi cập nhật thiết bị', 'error');
+                    loadAdbDevices();
+                }
+            })
+            .catch(err => {
+                showToast('Lỗi kết nối ADB: ' + err.message, 'error');
+                loadAdbDevices();
+            });
+    }
+
+    function reconnectSingleAdbDevice(serial, port, btn) {
+        const status = document.getElementById('adbForwardStatus');
+        // Nếu máy này chưa được tích thì tự động tích luôn khi bấm nút tia sét
+        const cb = Array.from(document.querySelectorAll('.adb-device-checkbox')).find(c => c.value === serial);
+        if (cb && !cb.checked) {
+            cb.checked = true;
+            onAdbDeviceCheckboxChange();
+            return;
+        }
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:10px;height:10px;"></span>';
+        }
+
+        fetch('/api/config/adb/forward', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ serial, port: port || 8080 })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                } else {
+                    showToast(data.message || 'Lỗi kết nối thiết bị', 'error');
+                }
+                loadAdbDevices();
+            })
+            .catch(err => {
+                showToast('Lỗi kết nối ADB', 'error');
+                if (status) {
+                    status.innerHTML = `<span class="text-danger">Lỗi: ${err.message}</span>`;
+                }
+            })
+            .finally(() => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-lightning-charge-fill"></i>';
+                }
+            });
+    }
+
+    function loadCreditSettings() {
+        fetch('/api/config/credit')
+            .then(res => res.json())
+            .then(data => {
+                const mode = data.sign_mode || 'credit';
+                if (mode === 'phone') {
+                    const r = document.getElementById('signModePhone');
+                    if (r) r.checked = true;
+                } else {
+                    const r = document.getElementById('signModeCredit');
+                    if (r) r.checked = true;
+                }
+                const urlEl = document.getElementById('creditUrlInput');
+                const keyEl = document.getElementById('creditKeyInput');
+                const phoneUrlEl = document.getElementById('phoneSignUrlInput');
+                const phoneKeyEl = document.getElementById('phoneSignKeyInput');
+
+                if (urlEl) urlEl.value = data.credit_url || '';
+                if (keyEl) keyEl.value = data.credit_key || '';
+                if (phoneUrlEl) phoneUrlEl.value = data.phone_sign_url || 'http://100.79.170.67:8080';
+                if (phoneKeyEl) phoneKeyEl.value = data.phone_sign_key || 'ThinAPTM';
+
+                onSignModeChange();
+            })
+            .catch(() => { });
+    }
+
+    function saveCreditSettings() {
+        const isPhone = document.getElementById('signModePhone')?.checked;
+        const sign_mode = isPhone ? 'phone' : 'credit';
+        const credit_url = document.getElementById('creditUrlInput')?.value.trim() || '';
+        const credit_key = document.getElementById('creditKeyInput')?.value.trim() || '';
+        const phone_sign_url = document.getElementById('phoneSignUrlInput')?.value.trim() || 'http://100.79.170.67:8080';
+        const phone_sign_key = document.getElementById('phoneSignKeyInput')?.value.trim() || 'ThinAPTM';
+
+        if (sign_mode === 'credit' && (!credit_url || !credit_key)) {
+            showToast('URL và Key Credit không được để trống', 'error');
+            return;
+        }
+        if (sign_mode === 'phone' && !phone_sign_url) {
+            showToast('URL Phone Sign không được để trống', 'error');
+            return;
+        }
+
+        fetch('/api/config/credit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sign_mode, credit_url, credit_key, phone_sign_url, phone_sign_key })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Lưu cài đặt ký số thành công', 'success');
+                    onSignModeChange();
+                } else {
+                    showToast(data.message || 'Lỗi lưu cài đặt', 'error');
+                }
+            })
+            .catch(() => showToast('Lỗi kết nối', 'error'));
+    }
+
+    function checkPhoneSignConnection() {
+        const btn = document.getElementById('phoneSignCheckBtn');
+        const result = document.getElementById('phoneSignCheckResult');
+        const phone_sign_url = document.getElementById('phoneSignUrlInput')?.value.trim() || 'http://100.79.170.67:8080';
+        const phone_sign_key = document.getElementById('phoneSignKeyInput')?.value.trim() || 'ThinAPTM';
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang kiểm tra...';
+        }
+        if (result) result.style.display = 'none';
+
+        fetch('/api/config/phone-sign-check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone_sign_url, phone_sign_key })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (result) {
+                    result.style.display = 'block';
+                    if (data.success) {
+                        result.className = 'mt-2 alert alert-success py-2 small mb-0';
+                        result.innerHTML = `<strong><i class="bi bi-check-circle-fill me-1"></i>Phone Sign sẵn sàng!</strong> Phản hồi: <strong>${data.latency}ms</strong> | SAP Token & Chữ ký hợp lệ.`;
+                    } else {
+                        result.className = 'mt-2 alert alert-danger py-2 small mb-0';
+                        result.innerHTML = `<strong><i class="bi bi-exclamation-triangle-fill me-1"></i>Lỗi kết nối:</strong> ${data.error || 'Không thể kết nối'}`;
+                    }
+                }
+            })
+            .catch(err => {
+                if (result) {
+                    result.style.display = 'block';
+                    result.className = 'mt-2 alert alert-danger py-2 small mb-0';
+                    result.innerHTML = `<strong>Lỗi:</strong> ${err.message}`;
+                }
+            })
+            .finally(() => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-activity me-1"></i>Kiểm tra kết nối Phone';
+                }
+            });
+    }
+
+    function toggleCreditKeyVisibility() {
+        const input = document.getElementById('creditKeyInput');
+        const icon = document.getElementById('creditKeyEyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+
+    // === API URL Key 1 ===
+    function loadApiUrlKey1() {
+        fetch('/api/config/api-url-key1')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('apiUrlKey1Input').value = data.api_url_key1 || '';
+            })
+            .catch(() => { });
+    }
+
+    function saveApiUrlKey1() {
+        const api_url_key1 = document.getElementById('apiUrlKey1Input').value.trim();
+        fetch('/api/config/api-url-key1', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ api_url_key1 })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Lưu API URL Key 1 thành công', 'success');
+                } else {
+                    showToast(data.message || 'Lỗi lưu', 'error');
+                }
+            })
+            .catch(() => showToast('Lỗi kết nối', 'error'));
+    }
+
+
+
+    // === Credit Balance Check ===
+    function checkCreditBalance() {
+        const btn = document.getElementById('creditBalanceBtn');
+        const result = document.getElementById('creditBalanceResult');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang kiểm tra...';
+        result.style.display = 'none';
+
+        fetch('/api/config/credit-balance')
+            .then(res => res.json())
+            .then(data => {
+                result.style.display = '';
+                if (data.success) {
+                    const statusBadge = data.is_active
+                        ? '<span class="badge bg-success">Active</span>'
+                        : '<span class="badge bg-danger">Inactive</span>';
+                    const creditClass = data.credits > 50 ? 'text-success' : data.credits > 10 ? 'text-warning' : 'text-danger';
+                    result.innerHTML = `
+                    <div class="alert alert-info py-2 mb-0 small">
+                        <i class="bi bi-person me-1"></i><strong>${data.username}</strong> ${statusBadge}
+                        <span class="ms-3"><i class="bi bi-wallet2 me-1"></i>Số dư: <strong class="${creditClass}">${data.credits} credits</strong></span>
+                    </div>`;
+                } else {
+                    result.innerHTML = `<div class="alert alert-danger py-2 mb-0 small">${data.error}</div>`;
+                }
+            })
+            .catch(() => {
+                result.style.display = '';
+                result.innerHTML = '<div class="alert alert-danger py-2 mb-0 small">Lỗi kết nối</div>';
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-wallet2 me-1"></i>Kiểm tra số dư';
+            });
+    }
+
+    // === Proxy Checker ===
+    function checkProxies() {
+        const input = document.getElementById('proxyCheckInput');
+        const btn = document.getElementById('checkProxyBtn');
+        const summary = document.getElementById('proxyCheckSummary');
+        const resultsDiv = document.getElementById('proxyCheckResults');
+        const tbody = document.getElementById('proxyCheckTable');
+
+        const lines = input.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length === 0) {
+            showToast('Nhập ít nhất 1 proxy', 'warning');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang check...';
+        summary.textContent = `Đang check ${lines.length} proxy...`;
+        resultsDiv.style.display = 'none';
+
+        fetch('/api/config/check-proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proxies: lines })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    showToast(data.error || 'Lỗi check proxy', 'error');
+                    return;
+                }
+
+                const s = data.summary;
+                summary.innerHTML = `<span class="badge bg-success">${s.alive} sống</span> <span class="badge bg-danger">${s.dead} chết</span> / ${s.total} proxy`;
+
+                resultsDiv.style.display = '';
+                tbody.innerHTML = data.results.map((r, i) => {
+                    const statusBadge = r.alive
+                        ? `<span class="badge bg-success">Sống</span>`
+                        : `<span class="badge bg-danger">${r.error}</span>`;
+                    const pingText = r.alive ? `${r.ms}ms` : '-';
+                    const pingClass = r.alive ? (r.ms < 2000 ? 'text-success' : r.ms < 5000 ? 'text-warning' : 'text-danger') : 'text-muted';
+                    return `<tr class="${r.alive ? '' : 'table-danger'}">
+                <td class="small text-muted">${i + 1}</td>
+                <td class="small"><code>${r.proxy}</code></td>
+                <td class="small ${pingClass}">${pingText}</td>
+                <td>${statusBadge}</td>
+            </tr>`;
+                }).join('');
+            })
+            .catch(() => showToast('Lỗi kết nối', 'error'))
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-lightning-charge me-1"></i>Check Proxy';
+            });
+    }
+
+    function importProxiesDirectly() {
+        const input = document.getElementById('proxyCheckInput');
+        const btn = document.getElementById('importProxyBtn');
+        const summary = document.getElementById('proxyCheckSummary');
+        const resultsDiv = document.getElementById('proxyCheckResults');
+
+        const lines = input.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length === 0) {
+            showToast('Nhập ít nhất 1 proxy', 'warning');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang import...';
+
+        fetch('/api/config/import-proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proxies: lines })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    showToast(data.error || 'Lỗi import proxy', 'error');
+                    return;
+                }
+                showToast(data.message, 'success');
+                summary.innerHTML = `<span class="badge bg-success">${lines.length} sống</span> / ${lines.length} proxy`;
+                resultsDiv.style.display = 'none';
+            })
+            .catch(() => showToast('Lỗi kết nối', 'error'))
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-download me-1"></i>Import Proxy';
+            });
+    }
+
+    function clearAllProxies() {
+        if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ proxy trong database?')) {
+            return;
+        }
+        const btn = document.getElementById('clearProxyBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang xóa...';
+
+        fetch('/api/config/clear-proxies', {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    document.getElementById('proxyCheckInput').value = '';
+                    document.getElementById('proxyCheckSummary').innerHTML = '';
+                    const resultsDiv = document.getElementById('proxyCheckResults');
+                    if (resultsDiv) resultsDiv.style.display = 'none';
+                } else {
+                    showToast(data.error || 'Lỗi khi xóa proxy', 'error');
+                }
+            })
+            .catch(() => showToast('Lỗi kết nối', 'error'))
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-trash me-1"></i>Xóa Proxy';
+            });
+    }
+
+    function loadSavedProxies() {
+        fetch('/api/config/saved-proxies')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.proxies) {
+                    document.getElementById('proxyCheckInput').value = data.proxies.join('\n');
+                }
+            })
+            .catch(() => { });
+    }
+
+    // Load on tab shown
+    document.getElementById('settings-tab')?.addEventListener('shown.bs.tab', () => {
+        loadCreditSettings();
+        loadSavedProxies();
+        loadApiUrlKey1();
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            loadCreditSettings();
+            loadSavedProxies();
+            loadApiUrlKey1();
+        }, 500);
+    });
+</script>

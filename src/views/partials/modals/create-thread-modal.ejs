@@ -1,0 +1,91 @@
+<div class="modal fade" id="createThreadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo Luồng Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createThreadForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Chọn Người Dùng</label>
+                        <select class="form-select" id="userSelectForThread" required>
+                            <option value="">Select user</option>
+                            <% users.forEach(user=> { %>
+                                <option value="<%= user.id %>" data-country="<%= user.country || 'vn' %>">
+                                    <%= user.username %>
+                                </option>
+                                <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Thời Gian Chờ (giây)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Từ</span>
+                            <input type="number" class="form-control" id="delayMinInput" placeholder="186" required
+                                min="10" value="186">
+                            <span class="input-group-text">đến</span>
+                            <input type="number" class="form-control" id="delayMaxInput" placeholder="245" required
+                                min="10" value="245">
+                            <span class="input-group-text">giây</span>
+                        </div>
+                        <small class="text-muted">Random trong khoảng min-max giữa mỗi lần upload</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số Lượng Video Tải Lên</label>
+                        <input type="number" class="form-control" id="countVideoUploadInput"
+                            placeholder="Number of videos to upload" required min="1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Caption</label>
+                        <textarea class="form-control" id="captionInputForThread" rows="3"
+                            placeholder="Nhập caption cho video"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Proxy (tùy chọn)</label>
+                        <input type="text" class="form-control" id="proxyInputForThread"
+                            placeholder="Enter proxy (IP:PORT:USERNAME:PASSWORD)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-camera-video me-1"></i>Chế độ đăng</label>
+                        <select class="form-select" id="uploadModeSelect">
+                            <option value="normal">Đăng thường</option>
+                            <option value="duet">Chỉ Duet</option>
+                            <option value="auto">Tự động (Duet nếu được, không thì đăng thường)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-globe2 me-1"></i>Quốc gia</label>
+                        <select class="form-select" id="countrySelectForThread">
+                            <option value="vn" selected>🇻🇳 Việt Nam (.vn)</option>
+                            <option value="ar">🇦🇷 Argentina (.com.ar)</option>
+                            <option value="sg">🇸🇬 Singapore (.sg)</option>
+                            <option value="id">🇮🇩 Indonesia (.co.id)</option>
+                            <option value="th">🇹🇭 Thái Lan (.co.th)</option>
+                            <option value="my">🇲🇾 Malaysia (.com.my)</option>
+                            <option value="ph">🇵🇭 Philippines (.ph)</option>
+                            <option value="br">🇧🇷 Brazil (.com.br)</option>
+                            <option value="mx">🇲🇽 México (.com.mx)</option>
+                            <option value="tw">🇹🇼 Đài Loan (.tw)</option>
+                        </select>
+                        <small class="text-muted">Chọn nước Shopee để đăng video (domain sẽ đổi theo).</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoFillProductsCheckbox">
+                            <label class="form-check-label" for="autoFillProductsCheckbox">
+                                <i class="bi bi-bag-plus me-1"></i>Tự động gắn thêm sản phẩm
+                                <small class="text-muted d-block">Tìm sản phẩm hoa hồng cao nhất để gắn thêm (tối đa 6
+                                    sản phẩm/video)</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Tạo Luồng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

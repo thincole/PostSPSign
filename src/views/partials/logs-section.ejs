@@ -1,0 +1,95 @@
+<h2 class="mb-4"><i class="bi bi-journal-text me-2"></i>Quản Lý Nhật Ký</h2>
+
+<!-- Stats row -->
+<div class="row mb-3 g-3" id="logStats">
+    <div class="col-auto">
+        <div class="stats-card">
+            <div class="icon bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle-fill"></i></div>
+            <div class="info">
+                <h6>Thành công</h6>
+                <span class="value" id="logSuccessCount">0</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-auto">
+        <div class="stats-card">
+            <div class="icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-x-circle-fill"></i></div>
+            <div class="info">
+                <h6>Thất bại</h6>
+                <span class="value" id="logErrorCount">0</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-auto">
+        <div class="stats-card">
+            <div class="icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-list-ul"></i></div>
+            <div class="info">
+                <h6>Tổng cộng</h6>
+                <span class="value" id="logTotalCount">0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Controls -->
+<div class="row mb-3 align-items-center">
+    <div class="col-auto">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Hiển thị</span>
+            <select id="logPageSize" class="form-select" style="max-width: 80px;">
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100" selected>100</option>
+                <option value="200">200</option>
+            </select>
+            <span class="input-group-text">dòng</span>
+        </div>
+    </div>
+    <div class="col-auto">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="logSearchInput" placeholder="Tìm username, lỗi..." oninput="filterLogs()">
+        </div>
+    </div>
+    <div class="col-auto">
+        <select id="logStatusFilter" class="form-select form-select-sm" style="max-width: 140px;" onchange="loadLogs()">
+            <option value="">Tất cả trạng thái</option>
+            <option value="success">Thành công</option>
+            <option value="error">Thất bại</option>
+        </select>
+    </div>
+    <div class="col-auto ms-auto">
+        <button class="btn btn-sm btn-outline-success me-1" onclick="exportLogs()"><i class="bi bi-download me-1"></i>Xuất TXT</button>
+        <button class="btn btn-sm btn-outline-danger me-1" onclick="clearAllLogs()"><i class="bi bi-trash3 me-1"></i>Xóa Logs</button>
+        <button class="btn btn-sm btn-primary" onclick="loadLogs()"><i class="bi bi-arrow-clockwise me-1"></i>Làm mới</button>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th style="width:50px">#</th>
+                <th>Thời gian</th>
+                <th>Username</th>
+                <th style="width:100px">Trạng thái</th>
+                <th>Chi tiết</th>
+                <th>Post ID</th>
+            </tr>
+        </thead>
+        <tbody id="logsTable">
+            <!-- Logs will be dynamically populated here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="text-muted small" id="logPaginationInfo">Đang tải...</div>
+    <nav>
+        <ul class="pagination pagination-sm mb-0" id="logPagination">
+            <!-- Pagination will be dynamically populated here -->
+        </ul>
+    </nav>
+</div>

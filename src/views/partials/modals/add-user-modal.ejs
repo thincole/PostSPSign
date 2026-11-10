@@ -1,0 +1,46 @@
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm Người Dùng Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/users">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên Người Dùng</label>
+                        <input type="text" class="form-control" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cookie</label>
+                        <input type="text" class="form-control" name="cookie" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Proxy (tùy chọn)</label>
+                        <input type="text" class="form-control" name="proxy" placeholder="IP:PORT:USERNAME:PASSWORD">
+                        <div class="form-text">Để trống nếu không dùng proxy</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quốc Gia</label>
+                        <select class="form-select" name="country">
+                            <option value="vn" selected>🇻🇳 Việt Nam</option>
+                            <option value="ar">🇦🇷 Argentina</option>
+                            <option value="sg">🇸🇬 Singapore</option>
+                            <option value="id">🇮🇩 Indonesia</option>
+                            <option value="th">🇹🇭 Thái Lan</option>
+                            <option value="my">🇲🇾 Malaysia</option>
+                            <option value="ph">🇵🇭 Philippines</option>
+                            <option value="br">🇧🇷 Brazil</option>
+                            <option value="mx">🇲🇽 México</option>
+                            <option value="tw">🇹🇼 Đài Loan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

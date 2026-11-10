@@ -1,0 +1,47 @@
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh Sửa Người Dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên Người Dùng</label>
+                        <input type="text" class="form-control" name="username" id="editUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cookie</label>
+                        <input type="text" class="form-control" name="cookie" id="editCookie" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Proxy (tùy chọn)</label>
+                        <input type="text" class="form-control" name="proxy" id="editProxy"
+                            placeholder="IP:PORT:USERNAME:PASSWORD">
+                        <div class="form-text">Để trống nếu không dùng proxy</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quốc Gia</label>
+                        <select class="form-select" name="country" id="editCountry">
+                            <option value="vn">🇻🇳 Việt Nam</option>
+                            <option value="ar">🇦🇷 Argentina</option>
+                            <option value="sg">🇸🇬 Singapore</option>
+                            <option value="id">🇮🇩 Indonesia</option>
+                            <option value="th">🇹🇭 Thái Lan</option>
+                            <option value="my">🇲🇾 Malaysia</option>
+                            <option value="ph">🇵🇭 Philippines</option>
+                            <option value="br">🇧🇷 Brazil</option>
+                            <option value="mx">🇲🇽 México</option>
+                            <option value="tw">🇹🇼 Đài Loan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

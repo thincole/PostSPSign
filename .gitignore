@@ -1,0 +1,36 @@
+# Dependencies & Runtime Binaries
+node_modules/
+node.exe
+bin/
+
+# Host-only Push Script (Chi o may Chu)
+day-code-github.bat
+
+# Environment and Machine ID
+.env
+.machine_id
+
+# Database & Local Device Config
+database.sqlite
+database.sqlite-shm
+database.sqlite-wal
+src/database/app.db
+src/database/adb_selected_devices.json
+src/database/sp_phone_backup/
+
+# Uploads, Cookies, and Temp folders
+uploads/*
+!uploads/.gitkeep
+cookie_shopee/
+temp_update/
+temp_update_bat/
+
+# Archives, Backups & Logs
+*.rar
+*.zip
+*.log
+*.bak*
+deob_error.log
+deob_routes.js
+deobbed_video_routes.js
+not cookie PH 2806.txt

@@ -1,0 +1,27 @@
+<div class="modal fade" id="editThreadUserCookieModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sửa Cookie Cho Người Dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editThreadUserCookieForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editThreadUserIdInput" name="userId">
+                    <div class="mb-3">
+                        <label class="form-label">Tên Người Dùng</label>
+                        <input type="text" class="form-control" id="editThreadUsernameInput" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cookie Mới</label>
+                        <textarea class="form-control" id="editThreadUserCookieInput" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

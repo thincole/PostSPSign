@@ -1,0 +1,179 @@
+<h2 class="mb-4"><i class="bi bi-people-fill me-2"></i>Quản Lý Người Dùng</h2>
+
+<div class="row mb-3 g-2">
+    <div class="col-auto d-flex gap-2 flex-wrap">
+        <button class="btn btn-primary btn-sm" onclick="showAddModal()"><i class="bi bi-plus-lg me-1"></i>Thêm Người
+            Dùng</button>
+        <button class="btn btn-outline-secondary btn-sm" onclick="showImportModal()"><i
+                class="bi bi-file-earmark-arrow-up me-1"></i>Nhập TXT</button>
+        <button class="btn btn-outline-info btn-sm" onclick="showImportJsonModal()"><i
+                class="bi bi-filetype-json me-1"></i>Nhập JSON</button>
+        <button class="btn btn-outline-success btn-sm" onclick="exportUsersJson()"><i
+                class="bi bi-download me-1"></i>Xuất JSON</button>
+        <button class="btn btn-success btn-sm" onclick="showBulkThreadModal()"><i class="bi bi-layers me-1"></i>Tạo
+            Luồng Hàng Loạt</button>
+        <button class="btn btn-warning btn-sm text-white" onclick="assignRandomProxies()"><i
+                class="bi bi-shuffle me-1"></i>Chèn Proxy</button>
+        <button class="btn btn-dark btn-sm fw-semibold" onclick="recoverUsersCookiesFromGemLogin(this)"
+            title="Tự động làm mới hoặc mở GemLogin lấy lại Cookie cho các tài khoản đang chọn (hoặc các tài khoản lỗi Cookie)"><i
+                class="bi bi-key-fill text-warning me-1"></i>Lấy Cookie (GemLogin)</button>
+    </div>
+    <div class="col-auto ms-auto d-flex gap-2 flex-wrap">
+        <button class="btn btn-outline-danger btn-sm" onclick="deleteSelectedUsers()"><i
+                class="bi bi-trash3 me-1"></i>Xóa Chọn</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAllUsers()"><i
+                class="bi bi-trash3-fill me-1"></i>Xóa Tất Cả</button>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="input-group input-group-sm" style="max-width: 250px;">
+            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control" id="userSearchInput" placeholder="Tìm username, proxy, cookie..." oninput="filterUsers()">
+        </div>
+        <select class="form-select form-select-sm" id="userCountryFilter" onchange="filterUsers()" style="width: auto; min-width: 175px;">
+            <option value="all">🌍 Tất cả quốc gia</option>
+            <option value="vn">🇻🇳 Việt Nam (vn)</option>
+            <option value="id">🇮🇩 Indonesia (id)</option>
+            <option value="ph">🇵🇭 Philippines (ph)</option>
+            <option value="my">🇲🇾 Malaysia (my)</option>
+            <option value="th">🇹🇭 Thái Lan (th)</option>
+            <option value="sg">🇸🇬 Singapore (sg)</option>
+            <option value="br">🇧🇷 Brazil (br)</option>
+            <option value="ar">🇦🇷 Argentina (ar)</option>
+            <option value="mx">🇲🇽 México (mx)</option>
+            <option value="tw">🇹🇼 Đài Loan (tw)</option>
+        </select>
+        <span class="badge bg-light text-dark border px-2 py-1" id="userCountSummary">Tổng: <%= users.length %> tài khoản</span>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th style="width:40px">
+                    <div class="form-check form-switch mb-0">
+                        <input type="checkbox" class="form-check-input" id="selectAllUsers"
+                            onchange="toggleAllUsers(this)">
+                    </div>
+                </th>
+                <th style="width:40px">#</th>
+                <th style="width:140px">Username</th>
+                <th>Cookie</th>
+                <th>Proxy</th>
+                <th style="width:130px">Quốc gia</th>
+                <th style="width:200px">Lỗi</th>
+                <th style="width:100px" class="text-center">Kích hoạt</th>
+                <th style="width:120px">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            <% users.forEach((user, index)=> { %>
+                <tr class="user-row" data-user-id="<%= user.id %>" data-country="<%= user.country || 'vn' %>" data-username="<%= (user.username || '').toLowerCase() %>" data-proxy="<%= (user.proxy || '').toLowerCase() %>">
+                    <td>
+                        <div class="form-check form-switch mb-0">
+                            <input type="checkbox" class="form-check-input user-checkbox" data-user-id="<%= user.id %>"
+                                data-has-thread="<%= user.has_thread ? '1' : '0' %>"
+                                id="userCheckbox<%= user.id %>">
+                        </div>
+                    </td>
+                    <td class="text-muted user-index">
+                        <%= index + 1 %>
+                    </td>
+                    <td><strong>
+                            <%= user.username %>
+                        </strong></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-1">
+                            <input type="text" class="form-control form-control-sm" id="userCookieInput_<%= user.id %>" value="<%= user.cookie %>" readonly
+                                style="font-size:0.72rem; background:#f8f9fa;">
+                            <button class="btn btn-sm btn-outline-warning text-dark flex-shrink-0"
+                                onclick="recoverSingleUserCookie('<%= user.id %>', this)"
+                                title="Tự động làm mới / Lấy lại Cookie từ GemLogin cho <%= user.username %>">
+                                <i class="bi bi-key-fill"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <span id="proxyUserDisplay_<%= user.id %>" class="d-flex align-items-center gap-1">
+                            <code class="small"><%= user.proxy || '-' %></code>
+                            <button class="btn btn-sm p-0 text-primary"
+                                onclick="toggleEditUserProxy(<%= user.id %>, this.getAttribute('data-proxy'))"
+                                data-proxy="<%= user.proxy || '' %>" title="Sửa proxy">
+                                <i class="bi bi-pencil-square" style="font-size:0.7rem"></i>
+                            </button>
+                        </span>
+                        <div id="proxyUserEdit_<%= user.id %>" class="d-none">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control form-control-sm"
+                                    id="proxyUserInput_<%= user.id %>" placeholder="IP:PORT:USER:PASS">
+                                <button class="btn btn-success btn-sm" onclick="saveUserProxy(<%= user.id %>)"><i
+                                        class="bi bi-check"></i></button>
+                                <button class="btn btn-secondary btn-sm"
+                                    onclick="cancelEditUserProxy(<%= user.id %>)"><i class="bi bi-x"></i></button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <select class="form-select form-select-sm"
+                            style="font-size:0.72rem; padding: 0.15rem 0.4rem; height: auto;"
+                            onchange="saveUserCountry('<%= user.id %>', this.value, this)">
+                            <option value="vn" <%=!user.country || user.country==='vn' ? 'selected' : '' %>>🇻🇳 Việt
+                                Nam</option>
+                            <option value="ar" <%=user.country==='ar' ? 'selected' : '' %>>🇦🇷 Argentina</option>
+                            <option value="sg" <%=user.country==='sg' ? 'selected' : '' %>>🇸🇬 Singapore</option>
+                            <option value="id" <%=user.country==='id' ? 'selected' : '' %>>🇮🇩 Indonesia</option>
+                            <option value="th" <%=user.country==='th' ? 'selected' : '' %>>🇹🇭 Thái Lan</option>
+                            <option value="my" <%=user.country==='my' ? 'selected' : '' %>>🇲🇾 Malaysia</option>
+                            <option value="ph" <%=user.country==='ph' ? 'selected' : '' %>>🇵🇭 Philippines</option>
+                            <option value="br" <%=user.country==='br' ? 'selected' : '' %>>🇧🇷 Brazil</option>
+                            <option value="mx" <%=user.country==='mx' ? 'selected' : '' %>>🇲🇽 México</option>
+                            <option value="tw" <%=user.country==='tw' ? 'selected' : '' %>>🇹🇼 Đài Loan</option>
+                        </select>
+                    </td>
+                    <td>
+                        <% if (user.thread_error) { %>
+                            <small class="text-danger">
+                                <%= user.thread_error %>
+                            </small>
+                            <% } else { %>
+                                <span class="text-muted">-</span>
+                                <% } %>
+                    </td>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-flex justify-content-center mb-0">
+                            <input type="checkbox" class="form-check-input user-active-switch"
+                                id="userActiveSwitch_<%= user.id %>"
+                                onchange="toggleUserActive('<%= user.id %>', this.checked, '<%= user.username %>')"
+                                <%= user.is_active !== 0 ? 'checked' : '' %>>
+                        </div>
+                    </td>
+                    <td class="text-nowrap">
+                        <button class="btn btn-sm btn-warning text-dark" onclick="recoverSingleUserCookie('<%= user.id %>', this)"
+                            title="Lấy lại Cookie từ GemLogin cho <%= user.username %>">
+                            <i class="bi bi-key-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="loginShopee('<%= user.id %>')"
+                            title="Login tự động lấy cookie (Chrome thường)">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary"
+                            onclick="editUser(this.getAttribute('data-id'), this.getAttribute('data-username'), this.getAttribute('data-cookie'), this.getAttribute('data-proxy'), this.getAttribute('data-country'))"
+                            data-id="<%= user.id %>" data-username="<%= user.username %>"
+                            data-cookie="<%= user.cookie %>" data-proxy="<%= user.proxy || '' %>"
+                            data-country="<%= user.country || 'vn' %>" title="Sửa">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form style="display:inline;" onsubmit="return confirmDeleteUser('<%= user.id %>')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
+</div>

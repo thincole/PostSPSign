@@ -1,0 +1,113 @@
+<div class="modal fade" id="importVideoModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-file-earmark-excel me-2"></i>Nhập Excel & Tạo Luồng</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="importExcelForm" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Folder chứa video</label>
+            <div class="input-group input-group-sm">
+              <input type="text" class="form-control" id="videoFolderInput"
+                  placeholder="VD: D:\Videos\shopee hoặc /home/user/videos" required />
+              <button class="btn btn-outline-primary" type="button" onclick="scanVideoFolder()">
+                <i class="bi bi-folder-check me-1"></i>Kiểm tra
+              </button>
+            </div>
+            <div class="form-text">Nhập đường dẫn folder video trên máy. Bấm "Kiểm tra" để xem số file.</div>
+            <div id="videoFolderInfo" class="mt-1"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">File Excel mapping</label>
+            <div class="input-group input-group-sm mb-1">
+              <input type="file" class="form-control" name="excelFile" id="excelFileInput" accept=".xlsx,.xls,.csv" />
+            </div>
+            <div class="text-center small text-muted my-1">— hoặc —</div>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text"><i class="bi bi-google"></i></span>
+              <input type="text" class="form-control" id="excelDriveLink" placeholder="Link Google Drive / Google Sheets" />
+            </div>
+            <div class="form-text">
+              Upload file hoặc dán link Drive. Cấu trúc: <code>Tên Account</code> | <code>File Video</code> | <code>Link Sản Phẩm</code> | <code>Caption</code>
+            </div>
+          </div>
+
+          <hr class="my-3">
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><i class="bi bi-clock me-1"></i>Thời gian chờ (giây)</label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text">Từ</span>
+                <input type="number" class="form-control" id="excelDelayMin" value="186" min="10" required>
+                <span class="input-group-text">đến</span>
+                <input type="number" class="form-control" id="excelDelayMax" value="245" min="10" required>
+                <span class="input-group-text">giây</span>
+              </div>
+              <div class="form-text">Random delay giữa mỗi video upload</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><i class="bi bi-globe2 me-1"></i>Quốc gia</label>
+              <select class="form-select form-select-sm" id="excelCountry">
+                <option value="vn">VN - Việt Nam</option>
+                <option value="sg">SG - Singapore</option>
+                <option value="ph">PH - Philippines</option>
+                <option value="id">ID - Indonesia</option>
+                <option value="th">TH - Thailand</option>
+                <option value="my">MY - Malaysia</option>
+                <option value="br">BR - Brazil</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="excelAutoStart" checked>
+              <label class="form-check-label small" for="excelAutoStart">
+                <i class="bi bi-play-circle me-1"></i>Tự động bắt đầu chạy sau khi import
+              </label>
+            </div>
+            <div class="form-check form-switch mt-2">
+              <input class="form-check-input" type="checkbox" id="deleteVideoOnSuccess">
+              <label class="form-check-label small" for="deleteVideoOnSuccess">
+                <i class="bi bi-trash3 me-1 text-danger"></i>Xóa video gốc sau khi post thành công
+                <span class="text-muted ms-1">(chỉ xóa video đã post OK, lỗi giữ nguyên)</span>
+              </label>
+            </div>
+          </div>
+
+          <hr class="my-3">
+
+          <details class="small">
+            <summary class="fw-semibold text-primary" style="cursor:pointer"><i class="bi bi-info-circle me-1"></i>Hướng dẫn Excel</summary>
+            <table class="table table-sm table-bordered mb-0 mt-2">
+              <thead class="table-light">
+                <tr><th>Cột</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>Tên Account</code></td><td>Có</td><td>Khớp với username trong Quản lý người dùng</td></tr>
+                <tr><td><code>File Video</code></td><td>Có</td><td>Tên file video (VD: video1.mp4)</td></tr>
+                <tr><td><code>Link Sản Phẩm</code></td><td>Có</td><td>Link SP Shopee, nhiều link cách bằng <code>|</code> (tối đa 6)</td></tr>
+                <tr><td><code>Caption</code></td><td>Không</td><td>Nội dung + hashtags</td></tr>
+              </tbody>
+            </table>
+          </details>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="submit" class="btn btn-primary" id="importExcelSubmitBtn">
+            <i class="bi bi-upload me-1"></i>Nhập & Tạo Luồng
+          </button>
+        </div>
+      </form>
+
+      <!-- Kết quả validate -->
+      <div id="importResultSection" class="modal-body border-top" style="display:none;">
+        <div id="importResultContent"></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<%- include('partials/head') %>
+
+    <body class="bg-secondary bg-opacity-10">
+        <div class="container-fluid px-4 py-4">
+            <div class="card shadow-sm">
+                <div class="card-header py-3">
+                    <div class="d-flex align-items-center justify-content-center gap-3">
+                        <div class="header-logo">
+                            <i class="bi bi-play-circle-fill" style="font-size:2.2rem; opacity:0.9;"></i>
+                        </div>
+                        <div class="text-center">
+                            <h2 class="mb-0" style="font-size:1.25rem; font-weight:700; letter-spacing:1px;">
+                                SHOPEE VIDEO UPLOAD MANAGER
+                                <span class="badge bg-white text-danger ms-2" style="font-size:0.65rem; vertical-align:middle; padding:3px 8px; border-radius:20px;">V13.3</span>
+                            </h2>
+                            <div class="d-flex align-items-center justify-content-center gap-2 mt-1" style="font-size:0.72rem; opacity:0.85; font-weight:400;">
+                                <span><i class="bi bi-geo-alt-fill me-1"></i>All Country</span>
+                                <span style="opacity:0.5;">|</span>
+                                <span><i class="bi bi-calendar3 me-1"></i>16.04.2026</span>
+                                <span style="opacity:0.5;">|</span>
+                                <span><i class="bi bi-code-slash me-1"></i>MLS</span>
+                                <span style="opacity:0.5;">|</span>
+                                <button type="button" class="btn btn-sm btn-outline-light py-0 px-2 border-0" id="btnOpenUpdateModal" style="font-size:0.72rem;">
+                                    <i class="bi bi-github me-1"></i>Cập Nhật GitHub
+                                    <span id="githubUpdateBadge" class="badge bg-warning text-dark ms-1 d-none" style="font-size:0.65rem;"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="tab-content" id="managementTabsContent">
+                        <div class="tab-pane fade show active" id="video-management-content" role="tabpanel">
+                            <ul class="nav nav-pills nav-fill mb-4 bg-white rounded shadow-sm" id="videoManagementTabs"
+                                role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active d-flex align-items-center justify-content-center"
+                                        id="users-tab" data-bs-toggle="tab" data-bs-target="#users-content"
+                                        type="button" role="tab">
+                                        <i class="bi bi-people-fill me-2"></i>Quản Lý Người Dùng
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link d-flex align-items-center justify-content-center"
+                                        id="threads-tab" data-bs-toggle="tab" data-bs-target="#threads-content"
+                                        type="button" role="tab">
+                                        <i class="bi bi-diagram-3-fill me-2"></i>Quản Lý Luồng
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link d-flex align-items-center justify-content-center"
+                                        id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs-content" type="button"
+                                        role="tab">
+                                        <i class="bi bi-journal-text me-2"></i>Quản Lý Nhật Ký
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link d-flex align-items-center justify-content-center"
+                                        id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings-content" type="button"
+                                        role="tab">
+                                        <i class="bi bi-gear-fill me-2"></i>Cài Đặt
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="videoManagementTabsContent">
+                                <div class="tab-pane fade show active" id="users-content" role="tabpanel">
+                                    <%- include('partials/users-section') %>
+                                </div>
+
+                                <div class="tab-pane fade" id="threads-content" role="tabpanel">
+                                    <%- include('partials/threads-section') %>
+                                </div>
+
+                                <div class="tab-pane fade" id="logs-content" role="tabpanel">
+                                    <%- include('partials/logs-section') %>
+                                </div>
+
+                                <div class="tab-pane fade" id="settings-content" role="tabpanel">
+                                    <%- include('partials/settings-section') %>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <%- include('partials/modals/add-user-modal') %>
+        <%- include('partials/modals/import-users-json-modal') %>
+            <%- include('partials/modals/edit-user-modal') %>
+                <%- include('partials/modals/import-users-modal') %>
+                    <%- include('partials/modals/create-thread-modal') %>
+                        <%- include('partials/modals/bulk-thread-modal') %>
+                            <%- include('partials/modals/import-video-modal') %>
+                                    <%- include('partials/modals/edit-thread-user-cookie-modal') %>
+                                        <%- include('partials/modals/update-modal') %>
+
+                                        <!-- Toast -->
+                                        <%- include('partials/toast') %>
+
+                                            <!-- Scripts -->
+                                            <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+                                            <script src="/scripts/common.js"></script>
+                                            <script src="/scripts/users.js"></script>
+                                            <script src="/scripts/threads.js"></script>
+                                            <script src="/scripts/logs.js"></script>
+                                            <script src="/scripts/update.js"></script>
+    </body>
+</html>
