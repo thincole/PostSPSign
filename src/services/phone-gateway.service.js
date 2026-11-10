@@ -328,9 +328,14 @@ async function handleCreatePost(req, res) {
 
       if (
         postRes.data &&
-        (postRes.data.http_status === 418 || postRes.data.data?.error === 90309999) &&
+        (postRes.data.http_status === 418 ||
+          postRes.data.data?.error === 90309999 ||
+          postRes.data.data?.code === 98001004) &&
         cookie
       ) {
+        if (postRes.data.data?.code === 98001004) {
+          await new Promise(r => setTimeout(r, 1500));
+        }
         const earlyRetry = await refreshSessionAndPrecheck();
         if (earlyRetry && earlyRetry.earlyReturn) {
           return earlyRetry.earlyReturn;
