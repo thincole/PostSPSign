@@ -155,6 +155,10 @@ async function callLocalPhoneWithRetry(requestFn, preferredUrl = null) {
   try {
     return await requestFn(targetLocalUrl);
   } catch (err) {
+    if (preferredUrl) {
+      await adbService.restartShopeeAppForSign(targetLocalUrl);
+      return await requestFn(targetLocalUrl);
+    }
     await adbService.ensurePhoneSignReady(targetLocalUrl);
     try {
       return await requestFn(targetLocalUrl);

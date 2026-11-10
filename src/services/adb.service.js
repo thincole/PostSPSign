@@ -52,10 +52,23 @@ class AdbService {
     this._lastLaunchAt = new Map(); // serial -> timestamp
     this._rrIndex = 0;
     this._postSessionQueue = Promise.resolve();
-    this._inFreshSession = false;
+    this._activeFreshCount = 0;
+    this._freshSessionSerials = new Set();
     this._lastFreshSession = { startedAt: 0, userId: null, clean: false };
     this._provisionedSerials = new Set();
     this.selectedSerials = this._loadSelectedSerials();
+  }
+
+  get _inFreshSession() {
+    return this._activeFreshCount > 0;
+  }
+
+  set _inFreshSession(val) {
+    if (val) {
+      this._activeFreshCount++;
+    } else {
+      this._activeFreshCount = Math.max(0, this._activeFreshCount - 1);
+    }
   }
 
   _loadSelectedSerials() {
@@ -423,12 +436,14 @@ class AdbService {
 
     const selectedSet = new Set(this.selectedSerials || []);
 
-    // Tự động khôi phục ADB Forward (tcp:8080, 8081...) cho các máy đang được tích chọn nếu vừa rút/cắm lại cáp USB hoặc khởi động lại PC
-    const activeOnlineSerials = (this.selectedSerials || []).filter(s => onlineDevices.some(d => d.serial === s));
-    for (let i = 0; i < activeOnlineSerials.length; i++) {
-      const s = activeOnlineSerials[i];
-      if (!forwardBySerial.has(s)) {
-        const desiredPort = 8080 + i;
+    // Tự động khôi phục ADB Forward (tcp:8080, 8081, 8082...) cố định theo vị trí máy trong danh sách tích chọn
+    const selectedList = this.selectedSerials || [];
+    for (let i = 0; i < selectedList.length; i++) {
+      const s = selectedList[i];
+      if (!onlineSerialSet.has(s)) continue;
+      const desiredPort = 8080 + i;
+      this._devicePortMap.set(s, desiredPort);
+      if (forwardBySerial.get(s) !== `tcp:${desiredPort}`) {
         try {
           await this.forwardPort(s, desiredPort, 8080);
           forwardBySerial.set(s, `tcp:${desiredPort}`);
@@ -589,15 +604,32 @@ class AdbService {
       if (found) return found.serial;
     }
 
+    // Ưu tiên tuyệt đối thiết bị được gán cho cổng `port` (8080 -> máy 1, 8081 -> máy 2, 8082 -> máy 3)
+    for (const [s, p] of this._devicePortMap.entries()) {
+      if (p === port) {
+        const found = onlineDevices.find(d => d.serial === s);
+        if (found) return found.serial;
+      }
+    }
+
     if (Array.isArray(this.selectedSerials) && this.selectedSerials.length > 0) {
-      const foundSelected = onlineDevices.find(d => this.selectedSerials.includes(d.serial));
-      if (foundSelected) return foundSelected.serial;
+      const portIdx = Math.max(0, port - 8080);
+      const expectedSerial = this.selectedSerials[portIdx];
+      if (expectedSerial) {
+        const found = onlineDevices.find(d => d.serial === expectedSerial);
+        if (found) return found.serial;
+      }
     }
 
     const activeForward = forwards.find(f => f.local === `tcp:${port}`);
     if (activeForward) {
       const found = onlineDevices.find(d => d.serial === activeForward.serial);
       if (found) return found.serial;
+    }
+
+    if (Array.isArray(this.selectedSerials) && this.selectedSerials.length > 0) {
+      const foundSelected = onlineDevices.find(d => this.selectedSerials.includes(d.serial));
+      if (foundSelected) return foundSelected.serial;
     }
 
     const tigerExact = onlineDevices.find(d => d.serial === 'TIGER10VN0000859');
@@ -656,14 +688,6 @@ class AdbService {
         return { ready: true, profile, debugInfo: dbg };
       }
     } catch (_) {}
-
-    // Nếu người dùng đã tích chọn danh sách thiết bị và không truyền preferredSerial cụ thể,
-    // đảm bảo toàn bộ thiết bị được tích chọn đều được forward & mở Shopee
-    if (!preferredSerial && Array.isArray(this.selectedSerials) && this.selectedSerials.length > 0) {
-      try {
-        await this.setSelectedDevices(this.selectedSerials);
-      } catch (_) {}
-    }
 
     // 2. Find target USB device & ensure ADB port forward
     const targetSerial = await this.selectSigningDevice(preferredSerial, port);
