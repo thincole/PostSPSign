@@ -770,8 +770,11 @@ class AdbService {
           };
         }
         this._lastTopologyCheckAt = now;
+        const portIdx = Math.max(0, port - 8080);
+        const expectedSerialByPort = Array.isArray(this.selectedSerials) ? this.selectedSerials[portIdx] : null;
         targetSerial = preferredSerial
           || (targetSerial && onlineDevs.some(d => d.serial === targetSerial) && targetSerial)
+          || (expectedSerialByPort && onlineDevs.some(d => d.serial === expectedSerialByPort) && expectedSerialByPort)
           || (Array.isArray(this.selectedSerials) && onlineDevs.some(d => d.serial === this.selectedSerials[0]) && this.selectedSerials[0])
           || (onlineDevs.find(d => d.serial === DEFAULT_TIGER10_PROFILE.serial)?.serial)
           || onlineDevs[0].serial;

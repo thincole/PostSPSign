@@ -94,7 +94,16 @@ function isCookieDeadError(errMsg = '') {
   // không phải lỗi hết hạn Cookie thông thường mà Lớp 1 (GET user/detail) có thể tự làm mới.
   if (lower.includes('418')) return false;
   if (lower.includes('400002') || lower.includes('daily upload limit')) return false;
-  if (lower.includes('econnrefused') || lower.includes('socket hang up') || lower.includes('timeout') || lower.includes('http 502')) return false;
+  if (
+    lower.includes('econnrefused') ||
+    lower.includes('econnreset') ||
+    lower.includes('connection reset') ||
+    lower.includes('socket hang up') ||
+    lower.includes('timeout') ||
+    lower.includes('http 502')
+  ) {
+    return false;
+  }
   return (
     lower.includes('cookie expired') ||
     lower.includes('cookie hết hạn') ||

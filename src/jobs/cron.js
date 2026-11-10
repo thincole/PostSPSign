@@ -322,7 +322,12 @@ const initJobs = () => {
                 ]);
                 return;
               }
-              const isHardProxyDead = errMsg.includes('407') || errMsg.includes('ECONNREFUSED') || errMsg.includes('ETIMEDOUT');
+              const isHardProxyDead =
+                errMsg.includes('407') ||
+                errMsg.includes('ECONNREFUSED') ||
+                errMsg.includes('ECONNRESET') ||
+                errMsg.toLowerCase().includes('connection reset') ||
+                errMsg.includes('ETIMEDOUT');
               let autoChanged = false;
 
               if (!isCookieErr && !isCaptchaErr && isHardProxyDead && fails >= 2) {
