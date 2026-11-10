@@ -74,16 +74,16 @@ const initJobs = () => {
   // Bộ theo dõi các luồng đang thực thi song song
   const activeThreadIds = new Set();
   const consecutiveFailures = new Map(); // Theo dõi số lần lỗi liên tiếp của từng luồng
-  let maxConcurrent = 50; // Giới hạn số luồng đang truyền file đồng thời để tránh nghẽn RAM/Disk & hàng đợi ký
+  let maxConcurrent = 250; // Giới hạn số luồng đang truyền file đồng thời trên mỗi máy PC
 
   // Cập nhật giới hạn số luồng upload động theo số điện thoại ký & số luồng đang chạy
   const updateDynamicConcurrency = () => {
     db.get("SELECT COUNT(*) as count FROM threads WHERE status = 'inprogress'", [], (err, row) => {
       const phoneCount = Math.max(1, adbService.getSelectedCount());
       const inProgressCount = (!err && row && row.count) ? row.count : 0;
-      // Mỗi điện thoại gánh mượt ~30-35 luồng đang truyền file song song (tối đa 120 luồng đồng thời/máy)
-      const byPhone = phoneCount * 35;
-      maxConcurrent = Math.min(120, Math.max(35, byPhone, Math.min(inProgressCount, 60)));
+      // Cho phép toàn bộ các luồng đang chạy (tối đa 400 luồng đồng thời/máy PC) vào Pha 1 đẩy file lên CDN song song
+      const byPhone = phoneCount * 120;
+      maxConcurrent = Math.min(400, Math.max(150, byPhone, inProgressCount));
     });
   };
 
@@ -131,19 +131,18 @@ const initJobs = () => {
       );
       if (runnableThreads.length === 0) return;
 
-      // Lấy số lượng luồng vừa phải mỗi giây (tối đa 8 luồng/giây) để rải đều tải (Conveyor-Belt Pacing)
-      // Tránh việc 250-500 luồng cùng dồn cục vào bước ký createpost ở cùng 1 giây
-      const maxLaunchPerTick = Math.min(availableSlots, Math.max(6, adbService.getSelectedCount() * 6));
+      // Kích hoạt tối đa 25-30 luồng/giây để các luồng vào Pha 1 tải/đẩy video lên CDN nhanh chóng
+      const maxLaunchPerTick = Math.min(availableSlots, Math.max(25, adbService.getSelectedCount() * 10));
       const toRun = runnableThreads.slice(0, maxLaunchPerTick);
 
       toRun.forEach((t, idx) => {
         activeThreadIds.add(t.id);
 
-        // Chạy bất đồng bộ từng luồng độc lập, cách nhau 150ms mỗi luồng
+        // Chạy bất đồng bộ từng luồng độc lập, cách nhau 50ms mỗi luồng
         (async () => {
           try {
             if (idx > 0) {
-              await new Promise(r => setTimeout(r, idx * 150));
+              await new Promise(r => setTimeout(r, idx * 50));
             }
             // Kiểm tra giới hạn số lượng video của luồng
             if (t.count_video_upload > 0 && t.videos_uploaded >= t.count_video_upload) {
