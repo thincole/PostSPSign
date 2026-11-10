@@ -45,8 +45,8 @@ class AdbService {
       'com.shopee.ph': { code: '38528', name: '3.85.28' }
     };
     this._ensurePromise = null;
-    // Dùng duy nhất 1 cổng ADB Server 5038 để không bao giờ sinh ra 2 tiến trình adb.exe tranh chấp cáp USB
-    this.adbServerPorts = ['5038'];
+    // Quét cả cổng ADB 5038 và 5037 để nhận đủ toàn bộ máy TIGER 10 kể cả khi tool khác mở cổng 5037
+    this.adbServerPorts = ['5038', '5037'];
     this._serialPortMap = new Map();
     this._devicePortMap = new Map(); // serial -> localPort (8080, 8081, 8082...)
     this._lastLaunchAt = new Map(); // serial -> timestamp
@@ -125,23 +125,17 @@ class AdbService {
             const deviceMatch = line.match(/device:(\S+)/);
             const model = modelMatch ? modelMatch[1] : (deviceMatch ? deviceMatch[1] : (serial.startsWith('TIGER10') ? 'TIGER 10' : 'Unknown'));
 
-            if (!this._serialPortMap.has(serial) || srvPort === '5038') {
-              this._serialPortMap.set(serial, srvPort);
-            }
             if (!seen.has(serial) || status === 'device') {
+              this._serialPortMap.set(serial, srvPort);
               seen.set(serial, {
                 serial,
                 status,
                 model: model.replace(/_/g, ' '),
-                adbServerPort: this._serialPortMap.get(serial) || srvPort,
+                adbServerPort: srvPort,
                 raw: line
               });
             }
           }
-        }
-        // Nếu cổng 5038 đã quản lý các thiết bị USB thì không cần gọi sang 5037 nữa
-        if (seen.size > 0 && srvPort === '5038') {
-          break;
         }
       } catch (_) {}
     }
@@ -203,9 +197,6 @@ class AdbService {
               });
             }
           }
-        }
-        if (forwards.length > 0 && srvPort === '5038') {
-          break;
         }
       } catch (_) {}
     }
