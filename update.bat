@@ -83,12 +83,20 @@ if errorlevel 1 (
 )
 
 :after_download
-echo [3/3] Dang khoi phuc cau hinh rieng cua may...
+echo [3/3] Dang khoi phuc cau hinh va kiem tra thu vien ^(node_modules^)...
 if exist "%BACKUP_DIR%\.env" copy /y "%BACKUP_DIR%\.env" ".env" >nul
 if exist "%BACKUP_DIR%\.machine_id" copy /y "%BACKUP_DIR%\.machine_id" ".machine_id" >nul
 if exist "%BACKUP_DIR%\adb_selected_devices.json" copy /y "%BACKUP_DIR%\adb_selected_devices.json" "src\database\adb_selected_devices.json" >nul
 if exist "%BACKUP_DIR%\day-code-github.bat" copy /y "%BACKUP_DIR%\day-code-github.bat" "day-code-github.bat" >nul
 rmdir /s /q "%BACKUP_DIR%" >nul 2>&1
+
+if not exist "node_modules\dotenv" (
+    echo [INFO] May moi chua co thu vien node_modules. Dang tu dong cai dat npm install...
+    call npm install --no-audit --no-fund
+    if errorlevel 1 (
+        call npm install --legacy-peer-deps --no-audit --no-fund
+    )
+)
 
 set "NEW_VER=Chua xac dinh"
 if exist "VERSION" (
