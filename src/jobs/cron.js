@@ -74,16 +74,18 @@ const initJobs = () => {
   // Bộ theo dõi các luồng đang thực thi song song
   const activeThreadIds = new Set();
   const consecutiveFailures = new Map(); // Theo dõi số lần lỗi liên tiếp của từng luồng
-  let maxConcurrent = 105; // Giới hạn số luồng đang truyền file đồng thời trên mỗi máy PC để không làm nghẽn hàng đợi ký
+  let maxConcurrent = 300; // Mở trần lên tới 500 luồng/máy PC cho Pha 1 (đẩy video lên CDN), Pha 2 đã có Cổng Điều Tiết Ký Số riêng
+  let lastBatchLaunchAt = 0;
+  const BATCH_SIZE = 25;          // Mỗi lô gồm 25 luồng
+  const BATCH_INTERVAL_MS = 3000; // Mỗi lô cách nhau 3 giây để rải đều tải mạng & hàng đợi ký
 
   // Cập nhật giới hạn số luồng upload động theo số điện thoại ký & số luồng đang chạy
   const updateDynamicConcurrency = () => {
     db.get("SELECT COUNT(*) as count FROM threads WHERE status = 'inprogress'", [], (err, row) => {
       const phoneCount = Math.max(1, adbService.getSelectedCount());
       const inProgressCount = (!err && row && row.count) ? row.count : 0;
-      // Mỗi máy PC chạy đồng thời tối đa 90-105 luồng upload để xoay vòng mượt qua 3 điện thoại mà không bị timeout hàng đợi
-      const byPhone = phoneCount * 35;
-      maxConcurrent = Math.min(105, Math.max(60, byPhone, Math.min(inProgressCount, 90)));
+      const byPhone = phoneCount * 150;
+      maxConcurrent = Math.min(500, Math.max(200, byPhone, inProgressCount));
     });
   };
 
@@ -131,14 +133,20 @@ const initJobs = () => {
       );
       if (runnableThreads.length === 0) return;
 
-      // Kích hoạt đều đặn 10-15 luồng/giây để tránh dồn cục hàng đợi ký
-      const maxLaunchPerTick = Math.min(availableSlots, Math.max(10, adbService.getSelectedCount() * 5));
+      // Chia theo từng lô (Batch): mỗi lô tối đa 25 luồng, các lô lớn cách nhau 3 giây để rải đều tải
+      const nowMs = Date.now();
+      if (runnableThreads.length >= 10 && (nowMs - lastBatchLaunchAt) < BATCH_INTERVAL_MS) {
+        return;
+      }
+      lastBatchLaunchAt = nowMs;
+
+      const maxLaunchPerTick = Math.min(availableSlots, BATCH_SIZE);
       const toRun = runnableThreads.slice(0, maxLaunchPerTick);
 
       toRun.forEach((t, idx) => {
         activeThreadIds.add(t.id);
 
-        // Chạy bất đồng bộ từng luồng độc lập, cách nhau 100ms mỗi luồng
+        // Chạy bất đồng bộ từng luồng trong lô, cách nhau 100ms mỗi luồng
         (async () => {
           try {
             if (idx > 0) {

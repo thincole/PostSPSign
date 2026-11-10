@@ -865,8 +865,24 @@ class AdbService {
     }
   }
 
-  withFreshPhoneSession(phoneSignUrl, fn) {
-    return fn();
+  async withFreshPhoneSession(phoneSignUrl, fn) {
+    if (!this._signActiveCount) this._signActiveCount = 0;
+    if (!this._signWaitQueue) this._signWaitQueue = [];
+    const maxSignConcurrent = Math.max(15, this.getSelectedCount() * 8);
+
+    if (this._signActiveCount >= maxSignConcurrent) {
+      await new Promise(resolve => this._signWaitQueue.push(resolve));
+    }
+    this._signActiveCount++;
+    try {
+      return await fn();
+    } finally {
+      this._signActiveCount--;
+      if (this._signWaitQueue.length > 0) {
+        const next = this._signWaitQueue.shift();
+        next();
+      }
+    }
   }
 
   async getPhoneDeviceProfile() {
