@@ -71,8 +71,8 @@ function normalizeCookie(cookieStr = '') {
   return cookieStr;
 }
 
-function normalizePayloadData(rawData) {
-  const prof = adbService.getDefaultProfile();
+function normalizePayloadData(rawData, assignedUrl = null) {
+  const prof = adbService.getProfileForUrl(assignedUrl);
   let obj = rawData;
   if (typeof rawData === 'string') {
     try {
@@ -103,8 +103,8 @@ function buildPrecheckUrlFromCreateUrl(createUrl = '') {
   }
 }
 
-function buildPrecheckPayload(cookieStr = '') {
-  const prof = adbService.getDefaultProfile();
+function buildPrecheckPayload(cookieStr = '', assignedUrl = null) {
+  const prof = adbService.getProfileForUrl(assignedUrl);
   const userId = (cookieStr.match(/SPC_U=(\d+)/) || [])[1] || '0';
   return {
     content: {
@@ -267,12 +267,26 @@ async function handleCreatePost(req, res) {
     let dataStr = normalized.str;
 
     const result = await enqueuePhoneTask(async (assignedBaseUrl) => {
+      const syncAppInfoWithAssignedPhone = () => {
+        if (dataObj && typeof dataObj === 'object') {
+          const prof = adbService.getProfileForUrl(assignedBaseUrl);
+          dataObj.app_info = {
+            system_os: 'Android',
+            system_version: prof.sdkInt,
+            app_version: prof.appVersion,
+            device_model: prof.deviceModelInfo
+          };
+          dataStr = JSON.stringify(dataObj);
+        }
+      };
+
       const refreshSessionAndPrecheck = async () => {
         await adbService.restartShopeeAppForSign(assignedBaseUrl, null, userId);
+        syncAppInfoWithAssignedPhone();
         if (dataObj && cookie) {
           try {
             const preUrl = buildPrecheckUrlFromCreateUrl(targetUrl);
-            const prePayload = JSON.stringify(buildPrecheckPayload(cookie));
+            const prePayload = JSON.stringify(buildPrecheckPayload(cookie, assignedBaseUrl));
             let preRes = await callLocalPhoneWithRetry(() =>
               axios.post(
                 `${assignedBaseUrl}/api/precheck`,
@@ -321,17 +335,18 @@ async function handleCreatePost(req, res) {
         dataObj.extra_context = '';
         dataStr = JSON.stringify(dataObj);
       }
+      syncAppInfoWithAssignedPhone();
       const hasRealExtra = dataObj?.extra_context && dataObj.extra_context !== 'PENDING_GATEWAY_PRECHECK';
-      const needFreshPrecheck = !hasRealExtra || !adbService.isSessionFreshForUser(userId, 8000);
+      const needFreshPrecheck = !hasRealExtra || !adbService.isSessionFreshForUser(userId, 8000, assignedBaseUrl);
       if (needFreshPrecheck && cookie) {
         const early = await refreshSessionAndPrecheck();
         if (early && early.earlyReturn) {
-          adbService.markSessionUsed(userId, false);
+          adbService.markSessionUsed(userId, false, assignedBaseUrl);
           return early.earlyReturn;
         }
       }
 
-      adbService.markSessionUsed(userId, false);
+      adbService.markSessionUsed(userId, false, assignedBaseUrl);
       let postRes = await callLocalPhoneWithRetry(() =>
         axios.post(
           `${assignedBaseUrl}/api/createpost`,

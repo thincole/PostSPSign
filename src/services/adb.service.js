@@ -38,6 +38,7 @@ class AdbService {
     } else {
       this.adbPath = 'adb';
     }
+    this.adb5037Path = fs.existsSync(xiaoweiAdb) ? xiaoweiAdb : this.adbPath;
     this._cachedProfile = null;
     this._cachedAt = 0;
     this._pkgVersionCache = {
@@ -55,12 +56,22 @@ class AdbService {
     this._activeFreshCount = 0;
     this._freshSessionSerials = new Set();
     this._lastFreshSession = { startedAt: 0, userId: null, clean: false };
+    this._lastFreshSessionByUrl = new Map();
+    this._profileByUrl = new Map();
     this._provisionedSerials = new Set();
     this.selectedSerials = this._loadSelectedSerials();
   }
 
   get _inFreshSession() {
     return this._activeFreshCount > 0;
+  }
+
+  set _inFreshSession(val) {
+    if (val) {
+      this._activeFreshCount++;
+    } else {
+      this._activeFreshCount = Math.max(0, this._activeFreshCount - 1);
+    }
   }
 
   set _inFreshSession(val) {
@@ -93,9 +104,10 @@ class AdbService {
     return this.selectedSerials;
   }
 
-  runCommand(args) {
+  runCommand(args, customAdbPath = null) {
+    const bin = customAdbPath || this.adbPath;
     return new Promise((resolve, reject) => {
-      execFile(this.adbPath, args, { encoding: 'utf-8', timeout: 15000 }, (err, stdout, stderr) => {
+      execFile(bin, args, { encoding: 'utf-8', timeout: 15000 }, (err, stdout, stderr) => {
         if (err && !stdout) {
           return reject(new Error((stderr || '').trim() || err.message));
         }
@@ -106,7 +118,8 @@ class AdbService {
 
   runCommandWithServerPort(serverPort, args) {
     const fullArgs = serverPort ? ['-P', String(serverPort), ...args] : args;
-    return this.runCommand(fullArgs);
+    const bin = String(serverPort) === '5037' ? this.adb5037Path : this.adbPath;
+    return this.runCommand(fullArgs, bin);
   }
 
   async _getServerPortForSerial(serial) {
@@ -255,8 +268,10 @@ class AdbService {
     try {
       const dbg = await this._queryDebugInfo(localUrl, 1500);
       if (dbg && dbg.sdk_loaded) {
-        this._cachedProfile = this._buildProfileFromDebugInfo(dbg, serial);
+        const prof = this._buildProfileFromDebugInfo(dbg, serial);
+        this._cachedProfile = prof;
         this._cachedAt = Date.now();
+        this._profileByUrl.set(localUrl, prof);
         return 'OK';
       }
     } catch (_) {}
@@ -276,7 +291,7 @@ class AdbService {
 
       const sizeOut = await this.runCommandWithServerPort(srvPort, [
         '-s', serial, 'shell',
-        "su -c 'stat -c %s /data/data/com.shopee.vn/shared_prefs/login.xml 2>/dev/null || echo 0'"
+        "PATH=$PATH:/debug_ramdisk:/sbin su -c 'stat -c %s /data/data/com.shopee.vn/shared_prefs/login.xml 2>/dev/null || echo 0'"
       ]).catch(() => '0');
       const loginSize = parseInt(String(sizeOut).trim(), 10) || 0;
       if (loginSize >= 200) return;
@@ -292,10 +307,10 @@ class AdbService {
         'am force-stop com.shopee.vn',
         'UID=$(stat -c %u /data/data/com.shopee.vn)',
         'chattr -i /data/data/com.shopee.vn/shared_prefs/login.xml /data/data/com.shopee.vn/shared_prefs/userLoginData.xml 2>/dev/null || true',
+        'mkdir -p /data/data/com.shopee.vn/shared_prefs /data/data/com.shopee.vn/files/77334490142e6a39d1d70d047074898488d73e61',
         'cp -f /data/local/tmp/sp_backup/login.xml /data/data/com.shopee.vn/shared_prefs/login.xml',
         'cp -f /data/local/tmp/sp_backup/userLoginData.xml /data/data/com.shopee.vn/shared_prefs/userLoginData.xml',
         'cp -f /data/local/tmp/sp_backup/SPHelper_sp_main.xml /data/data/com.shopee.vn/shared_prefs/SPHelper_sp_main.xml',
-        'mkdir -p /data/data/com.shopee.vn/files/77334490142e6a39d1d70d047074898488d73e61',
         'cp -f /data/local/tmp/sp_backup/77334490142e6a39d1d70d047074898488d73e61 /data/data/com.shopee.vn/files/77334490142e6a39d1d70d047074898488d73e61/77334490142e6a39d1d70d047074898488d73e61',
         'chown $UID:$UID /data/data/com.shopee.vn/shared_prefs/login.xml /data/data/com.shopee.vn/shared_prefs/userLoginData.xml /data/data/com.shopee.vn/shared_prefs/SPHelper_sp_main.xml',
         'chown -R $UID:$UID /data/data/com.shopee.vn/files/77334490142e6a39d1d70d047074898488d73e61',
@@ -303,7 +318,7 @@ class AdbService {
         'chmod 660 /data/data/com.shopee.vn/shared_prefs/SPHelper_sp_main.xml',
         'chattr +i /data/data/com.shopee.vn/shared_prefs/login.xml /data/data/com.shopee.vn/shared_prefs/userLoginData.xml 2>/dev/null || true'
       ].join(' && ');
-      await this.runCommandWithServerPort(srvPort, ['-s', serial, 'shell', `su -c '${restoreCmd}'`]).catch(() => {});
+      await this.runCommandWithServerPort(srvPort, ['-s', serial, 'shell', `PATH=$PATH:/debug_ramdisk:/sbin su -c '${restoreCmd}'`]).catch(() => {});
       console.log(`🔒 [PhoneSign] Đã tự động nạp và khóa cứng phiên SDK cho thiết bị ${serial}`);
     } catch (_) {}
   }
@@ -317,7 +332,7 @@ class AdbService {
     try {
       await this._ensurePhoneSessionFiles(srvPort, serial);
       // Đảm bảo tắt Magisk Enforce DenyList để Zygisk + LSPosed (SPSign-v2) luôn được nạp vào com.shopee.vn
-      await this.runCommandWithServerPort(srvPort, ['-s', serial, 'shell', "su -c 'magisk --denylist disable'"]).catch(() => {});
+      await this.runCommandWithServerPort(srvPort, ['-s', serial, 'shell', "PATH=$PATH:/debug_ramdisk:/sbin su -c 'PATH=$PATH:/debug_ramdisk:/sbin magisk --denylist disable'"]).catch(() => {});
       await this.runCommandWithServerPort(srvPort, ['-s', serial, 'shell', 'input', 'keyevent', 'KEYCODE_WAKEUP']).catch(() => {});
       await this.runCommandWithServerPort(srvPort, ['-s', serial, 'shell', 'am', 'force-stop', 'com.shopee.vn']).catch(() => {});
       await this.runCommandWithServerPort(srvPort, [
@@ -750,19 +765,31 @@ class AdbService {
     };
   }
 
-  isSessionFreshForUser(userId = null, maxAgeMs = 8000) {
-    const s = this._lastFreshSession;
+  isSessionFreshForUser(userId = null, maxAgeMs = 8000, phoneUrl = null) {
+    const s = (phoneUrl && this._lastFreshSessionByUrl.get(phoneUrl)) || this._lastFreshSession;
     if (!s || !s.clean) return false;
     if (Date.now() - s.startedAt > maxAgeMs) return false;
     if (s.userId && userId && s.userId !== userId) return false;
     return true;
   }
 
-  markSessionUsed(userId = null, stillCleanForCreatePost = false) {
+  markSessionUsed(userId = null, stillCleanForCreatePost = false, phoneUrl = null) {
+    if (phoneUrl && this._lastFreshSessionByUrl.has(phoneUrl)) {
+      const sUrl = this._lastFreshSessionByUrl.get(phoneUrl);
+      if (userId) sUrl.userId = userId;
+      sUrl.clean = !!stillCleanForCreatePost;
+    }
     if (this._lastFreshSession) {
       if (userId) this._lastFreshSession.userId = userId;
       this._lastFreshSession.clean = !!stillCleanForCreatePost;
     }
+  }
+
+  getProfileForUrl(phoneUrl = null) {
+    if (phoneUrl && this._profileByUrl.has(phoneUrl)) {
+      return this._profileByUrl.get(phoneUrl);
+    }
+    return this._cachedProfile || DEFAULT_TIGER10_PROFILE;
   }
 
   async restartShopeeAppForSign(phoneSignUrl = 'http://127.0.0.1:8080', preferredSerial = null, userId = null) {
@@ -844,11 +871,14 @@ class AdbService {
             const profile = this._buildProfileFromDebugInfo(dbg, targetSerial);
             this._cachedProfile = profile;
             this._cachedAt = Date.now();
-            this._lastFreshSession = {
+            this._profileByUrl.set(localUrl, profile);
+            const sessionObj = {
               startedAt: Date.now(),
               userId: userId || null,
               clean: true
             };
+            this._lastFreshSession = sessionObj;
+            this._lastFreshSessionByUrl.set(localUrl, sessionObj);
             return { ready: true, serial: targetSerial, localUrl, profile, debugInfo: dbg };
           }
         } catch (_) {}
@@ -858,7 +888,7 @@ class AdbService {
         ready: false,
         serial: targetSerial,
         localUrl,
-        profile: this._cachedProfile || DEFAULT_TIGER10_PROFILE
+        profile: this.getProfileForUrl(localUrl)
       };
     } finally {
       this._inFreshSession = false;
