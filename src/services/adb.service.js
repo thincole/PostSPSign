@@ -53,7 +53,9 @@ class AdbService {
     } else {
       this.adbPath = 'adb';
     }
-    this.adb5037Path = fs.existsSync(xiaoweiAdb) ? xiaoweiAdb : this.adbPath;
+    this.adb5037Path = (process.env.ADB_USE_XIAOWEI_5037 === '1' && fs.existsSync(xiaoweiAdb))
+      ? xiaoweiAdb
+      : this.adbPath;
     this._cachedProfile = null;
     this._cachedAt = 0;
     this._pkgVersionCache = {
@@ -61,8 +63,11 @@ class AdbService {
       'com.shopee.ph': { code: '38528', name: '3.85.28' }
     };
     this._ensurePromise = null;
-    // Quét cả cổng ADB 5038 và 5037 để nhận đủ toàn bộ máy TIGER 10 kể cả khi tool khác mở cổng 5037
-    this.adbServerPorts = ['5038', '5037'];
+    // Chỉ dùng 1 cổng ADB (mặc định 5038) để tránh tự dựng daemon 5037 khác version gây xung đột USB
+    this.adbServerPorts = (process.env.ADB_SERVER_PORTS || '5038')
+      .split(',')
+      .map(p => p.trim())
+      .filter(Boolean);
     this._serialPortMap = new Map();
     this._devicePortMap = new Map(); // serial -> localPort (8080, 8081, 8082...)
     this._lastLaunchAt = new Map(); // serial -> timestamp
