@@ -152,41 +152,9 @@ async function executeImport({ videoFolder, driveLink, delayMin, delayMax, count
     }
 
     let allUsers = await User.getAll();
-    let activeUsers = allUsers.filter(u => u.is_active !== 0 && u.is_active !== '0');
-    const existingUserMap = new Map(activeUsers.map(u => [u.username.toLowerCase(), u]));
-
-    const missingUsernames = new Set();
-    for (const r of rows) {
-      if (r.account && String(r.account).trim()) {
-        const rawAcc = String(r.account).trim();
-        const lowerAcc = rawAcc.toLowerCase();
-
-        if (!existingUserMap.has(lowerAcc)) {
-          // Only add missing user if it doesn't exist in allUsers at all
-          const existsInAll = allUsers.some(u => u.username.toLowerCase() === lowerAcc);
-          if (!existsInAll) {
-            missingUsernames.add(rawAcc);
-          }
-        }
-      }
-    }
-
-    if (missingUsernames.size > 0) {
-      const dbConn = require("../database/connection").getConnection();
-      await new Promise((resolve) => {
-        dbConn.serialize(() => {
-          dbConn.run("BEGIN TRANSACTION");
-          const stmt = dbConn.prepare("INSERT INTO users (username, cookie, proxy, country, is_active) VALUES (?, '', '', ?, 1)");
-          for (const uname of missingUsernames) {
-            stmt.run(uname, targetCountry);
-          }
-          stmt.finalize();
-          dbConn.run("COMMIT", () => resolve());
-        });
-      });
-      allUsers = await User.getAll();
-      activeUsers = allUsers.filter(u => u.is_active !== 0 && u.is_active !== '0');
-    }
+    let activeUsers = allUsers.filter(
+      u => u.is_active !== 0 && u.is_active !== '0' && u.cookie && String(u.cookie).trim() !== ''
+    );
 
     const validated = validateRows(rows, videoFolder, activeUsers);
 

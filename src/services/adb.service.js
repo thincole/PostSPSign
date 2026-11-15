@@ -3,9 +3,24 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const http = require('http');
+const https = require('https');
 const axios = require('axios');
 
 const noKeepAliveAgent = new http.Agent({ keepAlive: false });
+const gatewayKeepAliveAgent = new http.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 15000,
+  maxSockets: 100,
+  maxFreeSockets: 32,
+  timeout: 300000
+});
+const httpsGatewayKeepAliveAgent = new https.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 15000,
+  maxSockets: 100,
+  maxFreeSockets: 32,
+  timeout: 300000
+});
 const SELECTED_DEVICES_PATH = path.join(__dirname, '../database/adb_selected_devices.json');
 
 const DEFAULT_TIGER10_PROFILE = {
@@ -59,6 +74,8 @@ class AdbService {
     this._lastFreshSessionByUrl = new Map();
     this._profileByUrl = new Map();
     this._provisionedSerials = new Set();
+    this._remotePhoneCountByOrigin = new Map(); // origin -> { count, fetchedAt, inFlight }
+    this._loggedRemoteMaxSign = new Set();
     this.selectedSerials = this._loadSelectedSerials();
   }
 
@@ -303,6 +320,7 @@ class AdbService {
           await this.runCommandWithServerPort(srvPort, ['-s', serial, 'push', localFile, `/data/local/tmp/sp_backup/${fname}`]).catch(() => {});
         }
       }
+      const isTiger = String(serial).toUpperCase().startsWith('TIGER');
       const restoreCmd = [
         'am force-stop com.shopee.vn',
         'UID=$(stat -c %u /data/data/com.shopee.vn)',
@@ -311,11 +329,14 @@ class AdbService {
         'cp -f /data/local/tmp/sp_backup/login.xml /data/data/com.shopee.vn/shared_prefs/login.xml',
         'cp -f /data/local/tmp/sp_backup/userLoginData.xml /data/data/com.shopee.vn/shared_prefs/userLoginData.xml',
         'cp -f /data/local/tmp/sp_backup/SPHelper_sp_main.xml /data/data/com.shopee.vn/shared_prefs/SPHelper_sp_main.xml',
-        'cp -f /data/local/tmp/sp_backup/77334490142e6a39d1d70d047074898488d73e61 /data/data/com.shopee.vn/files/77334490142e6a39d1d70d047074898488d73e61/77334490142e6a39d1d70d047074898488d73e61',
-        'chown $UID:$UID /data/data/com.shopee.vn/shared_prefs/login.xml /data/data/com.shopee.vn/shared_prefs/userLoginData.xml /data/data/com.shopee.vn/shared_prefs/SPHelper_sp_main.xml',
-        'chown -R $UID:$UID /data/data/com.shopee.vn/files/77334490142e6a39d1d70d047074898488d73e61',
+        ...(isTiger
+          ? ['cp -f /data/local/tmp/sp_backup/77334490142e6a39d1d70d047074898488d73e61 /data/data/com.shopee.vn/files/77334490142e6a39d1d70d047074898488d73e61/77334490142e6a39d1d70d047074898488d73e61']
+          : []),
+        'chown -R $UID:$UID /data/data/com.shopee.vn/shared_prefs /data/data/com.shopee.vn/files',
+        'chmod 771 /data/data/com.shopee.vn/shared_prefs /data/data/com.shopee.vn/files',
         'chmod 440 /data/data/com.shopee.vn/shared_prefs/login.xml /data/data/com.shopee.vn/shared_prefs/userLoginData.xml',
         'chmod 660 /data/data/com.shopee.vn/shared_prefs/SPHelper_sp_main.xml',
+        'restorecon -FR /data/data/com.shopee.vn 2>/dev/null || true',
         'chattr +i /data/data/com.shopee.vn/shared_prefs/login.xml /data/data/com.shopee.vn/shared_prefs/userLoginData.xml 2>/dev/null || true'
       ].join(' && ');
       await this.runCommandWithServerPort(srvPort, ['-s', serial, 'shell', `PATH=$PATH:/debug_ramdisk:/sbin su -c '${restoreCmd}'`]).catch(() => {});
@@ -423,29 +444,24 @@ class AdbService {
     const onlineDevices = devices.filter(d => d.status === 'device');
     const onlineSerialSet = new Set(onlineDevices.map(d => d.serial));
     const forwardBySerial = new Map();
-    this._devicePortMap.clear();
+    const nextPortMap = new Map();
     for (const f of forwards) {
       if (/^tcp:808\d$/.test(f.local) && onlineSerialSet.has(f.serial)) {
         forwardBySerial.set(f.serial, f.local);
         const portNum = parseInt(f.local.replace('tcp:', ''), 10);
         if (!isNaN(portNum)) {
-          this._devicePortMap.set(f.serial, portNum);
+          nextPortMap.set(f.serial, portNum);
         }
       }
     }
 
-    // Nếu chưa lưu selectedSerials lần nào, hoặc không có máy nào đang cắm khớp với danh sách cũ -> tự chọn máy đang cắm
-    const hasOnlineSelected = Array.isArray(this.selectedSerials) && onlineDevices.some(d => this.selectedSerials.includes(d.serial));
-    if (this.selectedSerials === null || (!hasOnlineSelected && onlineDevices.length > 0)) {
-      const initiallyForwarded = onlineDevices
-        .filter(d => forwardBySerial.has(d.serial))
-        .map(d => d.serial);
-      if (initiallyForwarded.length > 0) {
-        this._saveSelectedSerials(initiallyForwarded);
+    // Chỉ tự động khởi tạo selectedSerials nếu chưa từng cấu hình (null hoặc mảng rỗng)
+    if (!Array.isArray(this.selectedSerials) || this.selectedSerials.length === 0) {
+      const diskSerials = this._loadSelectedSerials();
+      if (Array.isArray(diskSerials) && diskSerials.length > 0) {
+        this.selectedSerials = diskSerials;
       } else if (onlineDevices.length > 0) {
-        this._saveSelectedSerials([onlineDevices[0].serial]);
-      } else if (this.selectedSerials === null) {
-        this._saveSelectedSerials([]);
+        this._saveSelectedSerials(onlineDevices.map(d => d.serial));
       }
     }
 
@@ -457,12 +473,12 @@ class AdbService {
       const s = selectedList[i];
       if (!onlineSerialSet.has(s)) continue;
       const desiredPort = 8080 + i;
-      this._devicePortMap.set(s, desiredPort);
+      nextPortMap.set(s, desiredPort);
       if (forwardBySerial.get(s) !== `tcp:${desiredPort}`) {
         try {
           await this.forwardPort(s, desiredPort, 8080);
           forwardBySerial.set(s, `tcp:${desiredPort}`);
-          this._devicePortMap.set(s, desiredPort);
+          nextPortMap.set(s, desiredPort);
           forwards.push({
             serial: s,
             local: `tcp:${desiredPort}`,
@@ -474,6 +490,7 @@ class AdbService {
         }
       }
     }
+    this._devicePortMap = nextPortMap;
 
     const detailedDevices = await Promise.all(
       devices.map(async (dev) => {
@@ -487,12 +504,15 @@ class AdbService {
 
         if (localPort) {
           try {
-            const dbg = await this._queryDebugInfo(`http://127.0.0.1:${localPort}`, 1200);
+            const localUrl = `http://127.0.0.1:${localPort}`;
+            const dbg = await this._queryDebugInfo(localUrl, 1200);
             if (dbg && dbg.sdk_loaded) {
               sdkReady = true;
               androidId = dbg.android_id || null;
               packageName = dbg.package || 'com.shopee.vn';
               riskTokenLen = dbg.risk_token_len || 0;
+              const prof = this._buildProfileFromDebugInfo(dbg, dev.serial);
+              this._profileByUrl.set(localUrl, prof);
             }
           } catch (_) {}
 
@@ -606,6 +626,38 @@ class AdbService {
     return noKeepAliveAgent;
   }
 
+  _isLoopbackGatewayUrl(targetUrl) {
+    try {
+      const parsed = new URL(String(targetUrl || '').trim());
+      const host = (parsed.hostname || '').replace(/^\[|\]$/g, '').toLowerCase();
+      return host === '127.0.0.1' || host === 'localhost' || host === '::1';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /**
+   * Chọn HTTP/HTTPS agent: tắt keepAlive cho ADB forward loopback (tránh socket treo khi am force-stop),
+   * bật keepAlive cho Node Gateway qua LAN/Tailscale/DERP để tái sử dụng TCP connection.
+   */
+  getAxiosGatewayAgents(targetUrl) {
+    const raw = String(targetUrl || '').trim().toLowerCase();
+    if (raw.startsWith('https://')) {
+      return { httpsAgent: httpsGatewayKeepAliveAgent };
+    }
+    if (this._isLoopbackGatewayUrl(targetUrl)) {
+      return { httpAgent: noKeepAliveAgent };
+    }
+    return { httpAgent: gatewayKeepAliveAgent };
+  }
+
+  getGatewayHttpAgent(targetUrl) {
+    if (this._isLoopbackGatewayUrl(targetUrl)) {
+      return noKeepAliveAgent;
+    }
+    return gatewayKeepAliveAgent;
+  }
+
   async selectSigningDevice(preferredSerial = null, port = 8080) {
     const [devices, forwards] = await Promise.all([
       this.getDevices(),
@@ -697,9 +749,10 @@ class AdbService {
     try {
       const dbg = await this._queryDebugInfo(baseUrl, 3500);
       if (dbg && dbg.sdk_loaded) {
-        const profile = this._buildProfileFromDebugInfo(dbg);
+        const profile = this._buildProfileFromDebugInfo(dbg, this.getSerialForUrl(baseUrl));
         this._cachedProfile = profile;
         this._cachedAt = Date.now();
+        this._profileByUrl.set(baseUrl, profile);
         return { ready: true, profile, debugInfo: dbg };
       }
     } catch (_) {}
@@ -731,6 +784,7 @@ class AdbService {
         const profile = this._buildProfileFromDebugInfo(dbg, targetSerial);
         this._cachedProfile = profile;
         this._cachedAt = Date.now();
+        this._profileByUrl.set(localUrl, profile);
         return { ready: true, profile, debugInfo: dbg };
       }
     } catch (_) {}
@@ -752,6 +806,7 @@ class AdbService {
           const profile = this._buildProfileFromDebugInfo(dbg, targetSerial);
           this._cachedProfile = profile;
           this._cachedAt = Date.now();
+          this._profileByUrl.set(localUrl, profile);
           console.log(`📱 [PhoneSign] Đã tự động kích hoạt SPSign-v2 trên ${profile.brand} ${profile.model} (${targetSerial}, Android ${profile.sdkInt}, ID: ${profile.androidId})`);
           return { ready: true, profile, debugInfo: dbg };
         }
@@ -785,9 +840,52 @@ class AdbService {
     }
   }
 
+  getSerialForUrl(phoneUrl = null) {
+    if (!phoneUrl) return null;
+    let port = 8080;
+    try {
+      const parsed = new URL(phoneUrl.trim());
+      if (parsed.port) port = parseInt(parsed.port, 10) || 8080;
+    } catch (_) {}
+    for (const [s, p] of this._devicePortMap.entries()) {
+      if (p === port) return s;
+    }
+    const portIdx = Math.max(0, port - 8080);
+    if (Array.isArray(this.selectedSerials) && this.selectedSerials[portIdx]) {
+      return this.selectedSerials[portIdx];
+    }
+    return null;
+  }
+
+  getDeviceGroupForUrl(phoneUrl = null) {
+    const serial = String(this.getSerialForUrl(phoneUrl) || '').toUpperCase();
+    if (serial.startsWith('TIGER')) {
+      return 'TIGER';
+    }
+    if (serial) {
+      return `SAMSUNG_${serial}`;
+    }
+    const prof = this._profileByUrl.get(phoneUrl);
+    if (prof) {
+      const brandUpper = String(prof.brand || '').toUpperCase();
+      const modelUpper = String(prof.model || '').toUpperCase();
+      if (brandUpper.includes('OSCAL') || modelUpper.includes('TIGER')) {
+        return 'TIGER';
+      }
+      return `SAMSUNG_${modelUpper || 'DEFAULT'}`;
+    }
+    return 'TIGER';
+  }
+
   getProfileForUrl(phoneUrl = null) {
     if (phoneUrl && this._profileByUrl.has(phoneUrl)) {
       return this._profileByUrl.get(phoneUrl);
+    }
+    const serial = this.getSerialForUrl(phoneUrl);
+    if (serial) {
+      for (const [, prof] of this._profileByUrl.entries()) {
+        if (prof && prof.serial === serial) return prof;
+      }
     }
     return this._cachedProfile || DEFAULT_TIGER10_PROFILE;
   }
@@ -826,13 +924,14 @@ class AdbService {
         const portIdx = Math.max(0, port - 8080);
         const expectedSerialByPort = Array.isArray(this.selectedSerials) ? this.selectedSerials[portIdx] : null;
         targetSerial = preferredSerial
-          || (targetSerial && onlineDevs.some(d => d.serial === targetSerial) && targetSerial)
           || (expectedSerialByPort && onlineDevs.some(d => d.serial === expectedSerialByPort) && expectedSerialByPort)
+          || (targetSerial && onlineDevs.some(d => d.serial === targetSerial) && targetSerial)
           || (Array.isArray(this.selectedSerials) && onlineDevs.some(d => d.serial === this.selectedSerials[0]) && this.selectedSerials[0])
           || (onlineDevs.find(d => d.serial === DEFAULT_TIGER10_PROFILE.serial)?.serial)
           || onlineDevs[0].serial;
 
-        const localPortCheck = this._devicePortMap.get(targetSerial) || port || 8080;
+        const targetIdx = Array.isArray(this.selectedSerials) ? this.selectedSerials.indexOf(targetSerial) : -1;
+        const localPortCheck = (targetIdx >= 0 ? 8080 + targetIdx : null) || this._devicePortMap.get(targetSerial) || port || 8080;
         const srvPortCheck = this._serialPortMap.get(targetSerial) || '5038';
         try {
           const fwds = await this.getForwardList();
@@ -844,7 +943,8 @@ class AdbService {
         } catch (_) {}
       }
 
-      const localPort = this._devicePortMap.get(targetSerial) || port || 8080;
+      const targetIdxFinal = Array.isArray(this.selectedSerials) ? this.selectedSerials.indexOf(targetSerial) : -1;
+      const localPort = (targetIdxFinal >= 0 ? 8080 + targetIdxFinal : null) || this._devicePortMap.get(targetSerial) || port || 8080;
       const localUrl = `http://127.0.0.1:${localPort}`;
       const srvPort = this._serialPortMap.get(targetSerial) || '5038';
 
@@ -895,12 +995,118 @@ class AdbService {
     }
   }
 
+  _getGatewayOrigin(phoneSignUrl) {
+    if (!phoneSignUrl || typeof phoneSignUrl !== 'string') return null;
+    try {
+      const parsed = new URL(phoneSignUrl.trim());
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        return parsed.origin;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /**
+   * Truy vấn số thiết bị đang hoạt động trên Gateway từ xa (/api/routing_stats) có cache 60s
+   * để máy trạm tự động mở rộng maxSignConcurrent tương ứng số điện thoại thực tế.
+   */
+  async _getRemoteGatewayInfo(phoneSignUrl) {
+    const origin = this._getGatewayOrigin(phoneSignUrl);
+    if (!origin || this._isLoopbackGatewayUrl(origin)) {
+      return { count: 0, isNodeGateway: false };
+    }
+
+    const now = Date.now();
+    const cached = this._remotePhoneCountByOrigin.get(origin);
+    if (cached && now - cached.fetchedAt < 60000) {
+      return { count: cached.count, isNodeGateway: !!cached.isNodeGateway };
+    }
+    if (cached && cached.inFlight) {
+      return cached.count > 0 || cached.fetchedAt > 0
+        ? { count: cached.count, isNodeGateway: !!cached.isNodeGateway }
+        : cached.inFlight;
+    }
+
+    const fetchPromise = (async () => {
+      try {
+        const reqOpts = {
+          timeout: 1500,
+          validateStatus: s => s >= 200 && s < 500,
+          ...this.getAxiosGatewayAgents(origin)
+        };
+        const res = await axios.get(`${origin}/api/routing_stats`, reqOpts);
+        const isNodeGateway = res?.data?.code === 0 && Array.isArray(res?.data?.activeUrls);
+        const count = isNodeGateway ? res.data.activeUrls.length : 0;
+        const info = { count, isNodeGateway };
+        this._remotePhoneCountByOrigin.set(origin, { ...info, fetchedAt: Date.now(), inFlight: null });
+        return info;
+      } catch (_) {
+        const fallbackInfo = {
+          count: cached ? cached.count : 0,
+          isNodeGateway: cached ? !!cached.isNodeGateway : false
+        };
+        // Cache kết quả lỗi ngắn 30s để tránh nghẽn mỗi bài khi Gateway tạm thời không phản hồi
+        this._remotePhoneCountByOrigin.set(origin, { ...fallbackInfo, fetchedAt: Date.now() - 30000, inFlight: null });
+        return fallbackInfo;
+      }
+    })();
+
+    this._remotePhoneCountByOrigin.set(origin, {
+      count: cached ? cached.count : 0,
+      isNodeGateway: cached ? !!cached.isNodeGateway : false,
+      fetchedAt: cached ? cached.fetchedAt : 0,
+      inFlight: fetchPromise
+    });
+
+    // Nếu đã có cache cũ, làm mới nền không làm chậm luồng đang chạy
+    if (cached && (cached.count > 0 || cached.fetchedAt > 0)) {
+      return { count: cached.count, isNodeGateway: !!cached.isNodeGateway };
+    }
+    return await fetchPromise;
+  }
+
+  async _getRemotePhoneCount(phoneSignUrl) {
+    const info = await this._getRemoteGatewayInfo(phoneSignUrl);
+    return info.count;
+  }
+
+  async isNodeGateway(phoneSignUrl) {
+    const info = await this._getRemoteGatewayInfo(phoneSignUrl);
+    return !!info.isNodeGateway;
+  }
+
+  /**
+   * Tính giới hạn đồng thời phía client cho pha ký (/precheck + /createpost).
+   * Trên máy trạm (không cắm USB trực tiếp), mở rộng trần từ 15 lên tối thiểu 48 (hoặc 12 * số phone Gateway).
+   */
+  async _resolveMaxSignConcurrent(phoneSignUrl) {
+    const envOverride = parseInt(process.env.MAX_SIGN_CONCURRENT || '', 10);
+    if (Number.isFinite(envOverride) && envOverride > 0) {
+      return envOverride;
+    }
+
+    const localCount = Array.isArray(this.selectedSerials) ? this.selectedSerials.length : 0;
+    if (localCount > 0) {
+      return Math.min(120, Math.max(15, localCount * 10));
+    }
+
+    const remoteCount = await this._getRemotePhoneCount(phoneSignUrl);
+    const maxConcurrent = Math.min(120, Math.max(48, remoteCount * 12));
+    const origin = this._getGatewayOrigin(phoneSignUrl) || 'remote';
+    const logKey = `${origin}:${maxConcurrent}`;
+    if (!this._loggedRemoteMaxSign.has(logKey)) {
+      this._loggedRemoteMaxSign.add(logKey);
+      console.log(`🌐 [PhoneSign] Chế độ máy trạm (${origin}, Gateway=${remoteCount || 'auto'} máy) -> mở rộng maxSignConcurrent = ${maxConcurrent}`);
+    }
+    return maxConcurrent;
+  }
+
   async withFreshPhoneSession(phoneSignUrl, fn) {
     if (!this._signActiveCount) this._signActiveCount = 0;
     if (!this._signWaitQueue) this._signWaitQueue = [];
-    const maxSignConcurrent = Math.max(15, this.getSelectedCount() * 8);
+    const maxSignConcurrent = await this._resolveMaxSignConcurrent(phoneSignUrl);
 
-    if (this._signActiveCount >= maxSignConcurrent) {
+    while (this._signActiveCount >= maxSignConcurrent) {
       await new Promise(resolve => this._signWaitQueue.push(resolve));
     }
     this._signActiveCount++;

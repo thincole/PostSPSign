@@ -8,6 +8,48 @@ const LOCAL_PHONE_URL = 'http://127.0.0.1:8080';
 const busyPhoneUrls = new Set();
 const waitQueue = [];
 const boundServers = new Map();
+const stickyUserGroupMap = new Map();
+const statsByPort = new Map();
+let crossGroupViolations = 0;
+
+function recordPortStat(assignedUrl, type, userId = '', ok = true) {
+  if (!assignedUrl) return;
+  const serial = adbService.getSerialForUrl(assignedUrl) || 'unknown';
+  const group = adbService.getDeviceGroupForUrl(assignedUrl);
+  const prof = adbService.getProfileForUrl(assignedUrl);
+  const existingGroup = userId ? stickyUserGroupMap.get(userId) : null;
+  if (userId && existingGroup && existingGroup !== group) {
+    crossGroupViolations++;
+  }
+  const entry = statsByPort.get(assignedUrl) || {
+    url: assignedUrl,
+    serial,
+    group,
+    model: prof?.deviceModel || '',
+    sdkInt: prof?.sdkInt || '',
+    prechecks: 0,
+    createposts: 0,
+    successPosts: 0,
+    uniqueUsers: new Set(),
+    lastUserId: '',
+    lastAt: null
+  };
+  entry.serial = serial;
+  entry.group = group;
+  entry.model = prof?.deviceModel || entry.model;
+  entry.sdkInt = prof?.sdkInt || entry.sdkInt;
+  if (type === 'precheck') entry.prechecks++;
+  if (type === 'createpost') {
+    entry.createposts++;
+    if (ok) entry.successPosts++;
+  }
+  if (userId) {
+    entry.uniqueUsers.add(userId);
+    entry.lastUserId = userId;
+  }
+  entry.lastAt = new Date().toISOString();
+  statsByPort.set(assignedUrl, entry);
+}
 
 function getLocalPhoneUrl() {
   return adbService.getNextLocalSignUrl() || LOCAL_PHONE_URL;
@@ -15,14 +57,48 @@ function getLocalPhoneUrl() {
 
 let rrCursor = 0;
 
-function pickIdlePhoneUrl() {
+function hashUserId(userId = '') {
+  const s = String(userId || '');
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
+
+function getCandidateUrlsForUser(userId = null) {
   const urls = adbService.getActiveLocalSignUrls();
-  if (urls.length === 0) return null;
-  for (let i = 0; i < urls.length; i++) {
-    const idx = (rrCursor + i) % urls.length;
-    const u = urls[idx];
+  if (urls.length === 0) return [];
+  if (!userId) return urls;
+
+  const existingGroup = stickyUserGroupMap.get(userId);
+  if (existingGroup) {
+    const matched = urls.filter(u => adbService.getDeviceGroupForUrl(u) === existingGroup);
+    if (matched.length > 0) {
+      return matched;
+    }
+  }
+
+  // Lần đầu tiên tài khoản (userId) xuất hiện:
+  // Chia cố định theo hash(userId) trên danh sách máy đang active để đảm bảo:
+  // 1) Tỷ lệ tải chuẩn theo số máy (3 TIGER = 60%, 1 SM-G990E = 20%, 1 SM-G981N = 20%)
+  // 2) Kể cả khi khởi động lại server, cùng 1 userId vẫn rơi đúng vào nhóm dòng máy cũ
+  const chosenUrl = urls[hashUserId(userId) % urls.length];
+
+  const assignedGroup = adbService.getDeviceGroupForUrl(chosenUrl);
+  stickyUserGroupMap.set(userId, assignedGroup);
+  const groupUrls = urls.filter(u => adbService.getDeviceGroupForUrl(u) === assignedGroup);
+  return groupUrls.length > 0 ? groupUrls : [chosenUrl];
+}
+
+function pickIdlePhoneUrlForUser(userId = null) {
+  const candidates = getCandidateUrlsForUser(userId);
+  if (candidates.length === 0) return null;
+  for (let i = 0; i < candidates.length; i++) {
+    const idx = (rrCursor + i) % candidates.length;
+    const u = candidates[idx];
     if (!busyPhoneUrls.has(u)) {
-      rrCursor = (idx + 1) % urls.length;
+      rrCursor = (rrCursor + 1) % 1000000;
       return u;
     }
   }
@@ -30,15 +106,18 @@ function pickIdlePhoneUrl() {
 }
 
 function drainWaitQueue() {
-  while (waitQueue.length > 0) {
-    const idleUrl = pickIdlePhoneUrl();
-    if (!idleUrl) break;
-    const nextRun = waitQueue.shift();
-    nextRun(idleUrl);
+  for (let i = 0; i < waitQueue.length; i++) {
+    const item = waitQueue[i];
+    const idleUrl = pickIdlePhoneUrlForUser(item.userId);
+    if (idleUrl) {
+      waitQueue.splice(i, 1);
+      i--;
+      item.runWithUrl(idleUrl);
+    }
   }
 }
 
-function enqueuePhoneTask(taskFn) {
+function enqueuePhoneTask(taskFn, userId = null) {
   return new Promise((resolve, reject) => {
     const runWithUrl = async (assignedUrl) => {
       busyPhoneUrls.add(assignedUrl);
@@ -53,17 +132,17 @@ function enqueuePhoneTask(taskFn) {
       }
     };
 
-    const idleUrl = pickIdlePhoneUrl();
+    const idleUrl = pickIdlePhoneUrlForUser(userId);
     if (idleUrl) {
       runWithUrl(idleUrl);
     } else {
-      waitQueue.push(runWithUrl);
+      waitQueue.push({ userId, runWithUrl });
     }
   });
 }
 
-function normalizeCookie(cookieStr = '') {
-  const prof = adbService.getDefaultProfile();
+function normalizeCookie(cookieStr = '', assignedUrl = null) {
+  const prof = adbService.getProfileForUrl(assignedUrl);
   if (!cookieStr || typeof cookieStr !== 'string') return '';
   if (/shopee_app_version=\d+/.test(cookieStr)) {
     return cookieStr.replace(/shopee_app_version=\d+/g, `shopee_app_version=${prof.appVersion}`);
@@ -259,14 +338,15 @@ async function handleCreatePost(req, res) {
   try {
     const body = req.body || {};
     const targetUrl = body.url || 'https://sv.shopee.vn/api/v2/biz/post/create_v2';
-    const cookie = normalizeCookie(body.cookie || '');
+    const rawCookie = body.cookie || '';
     const proxy = body.proxy || '';
-    const userId = (cookie.match(/SPC_U=(\d+)/) || [])[1] || '';
+    const userId = (rawCookie.match(/SPC_U=(\d+)/) || [])[1] || '';
     const normalized = normalizePayloadData(body.data || {});
     let dataObj = normalized.obj;
     let dataStr = normalized.str;
 
     const result = await enqueuePhoneTask(async (assignedBaseUrl) => {
+      const cookie = normalizeCookie(rawCookie, assignedBaseUrl);
       const syncAppInfoWithAssignedPhone = () => {
         if (dataObj && typeof dataObj === 'object') {
           const prof = adbService.getProfileForUrl(assignedBaseUrl);
@@ -322,6 +402,7 @@ async function handleCreatePost(req, res) {
               return { earlyReturn: preRes.data };
             }
             const extraCtx = preShopee?.data?.extra_context || preShopee?.extra_context || '';
+            recordPortStat(assignedBaseUrl, 'precheck', userId, !!extraCtx);
             if (extraCtx) {
               dataObj.extra_context = extraCtx;
               dataStr = JSON.stringify(dataObj);
@@ -389,8 +470,10 @@ async function handleCreatePost(req, res) {
         );
       }
 
+      const postId = postRes.data?.data?.data?.post_id || postRes.data?.data?.post_id;
+      recordPortStat(assignedBaseUrl, 'createpost', userId, !!(postRes.data?.code === 0 && postId));
       return postRes.data;
-    });
+    }, userId);
 
     // Chuẩn hóa output tương thích đồng thời cả chế độ Phone Sign (createPost)
     // lẫn chế độ Server Credit (createPostViaCredit) mà không tính credit
@@ -427,10 +510,44 @@ async function handleCreatePost(req, res) {
   }
 }
 
+function handleRoutingStats(req, res) {
+  const ports = [];
+  for (const [url, entry] of statsByPort.entries()) {
+    ports.push({
+      url: entry.url,
+      serial: entry.serial,
+      group: entry.group,
+      model: entry.model,
+      sdkInt: entry.sdkInt,
+      prechecks: entry.prechecks,
+      createposts: entry.createposts,
+      successPosts: entry.successPosts,
+      uniqueUsersCount: entry.uniqueUsers.size,
+      lastUserId: entry.lastUserId,
+      lastAt: entry.lastAt
+    });
+  }
+  const groupSummary = {};
+  for (const [, grp] of stickyUserGroupMap.entries()) {
+    groupSummary[grp] = (groupSummary[grp] || 0) + 1;
+  }
+  return res.json({
+    code: 0,
+    activeUrls: adbService.getActiveLocalSignUrls(),
+    busyUrls: Array.from(busyPhoneUrls),
+    waitQueueLength: waitQueue.length,
+    stickyUsersTotal: stickyUserGroupMap.size,
+    stickyUsersByGroup: groupSummary,
+    crossGroupViolations,
+    ports
+  });
+}
+
 function createGatewayRouter() {
   const router = express.Router();
   router.get('/debug_info', handleDebugInfo);
   router.post('/debug_info', handleDebugInfo);
+  router.get('/routing_stats', handleRoutingStats);
   router.post('/sign', handleSign);
   router.post('/precheck', handlePrecheck);
   router.post('/createpost', handleCreatePost);
@@ -466,6 +583,7 @@ function startGatewayListeners(port = 8080) {
       try {
         const srv = http.createServer(app);
         srv.timeout = 600000;
+        srv.keepAliveTimeout = 65000;
         srv.requestTimeout = 600000;
         srv.headersTimeout = 605000;
         srv.on('error', () => {

@@ -5,11 +5,11 @@
       "videoFolder": "F:\\Video AI\\VN\\Veo3go",
       "driveLink": "https://docs.google.com/spreadsheets/d/18OE86tzWPeKp3xlSYscmJFEQC87ZBuBwgTF8HOz8e1w/edit?gid=623566425#gid=623566425",
       "sheetName": "VN",
-      "maxVideosPerAccount": "60",
+      "maxVideosPerAccount": "30",
       "isAigc": true
     },
     "ph": {
-      "videoFolder": "F:\\Video AI\\PH\\Veo3go",
+      "videoFolder": "F:\\Video AI\\PH\\MuseAI\\1411",
       "driveLink": "https://docs.google.com/spreadsheets/d/18OE86tzWPeKp3xlSYscmJFEQC87ZBuBwgTF8HOz8e1w/edit?gid=623566425#gid=623566425",
       "sheetName": "PH",
       "maxVideosPerAccount": "60",
