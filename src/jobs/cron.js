@@ -285,9 +285,18 @@ const initJobs = () => {
                 }
               }
 
-              // Đếm số lần lỗi liên tiếp của luồng này
-              const fails = (consecutiveFailures.get(t.id) || 0) + 1;
-              consecutiveFailures.set(t.id, fails);
+              const isTokenServerErr =
+                uploadErr?.failedFunction === 'getToken' ||
+                errMsg.includes('getToken failed') ||
+                errMsg.includes('Empty token response') ||
+                errMsg.includes('Sigkey HTTP');
+              // Không đếm lỗi server cấp token (sigkey) vào chuỗi lỗi proxy
+              const fails = isTokenServerErr
+                ? (consecutiveFailures.get(t.id) || 0)
+                : (consecutiveFailures.get(t.id) || 0) + 1;
+              if (!isTokenServerErr) {
+                consecutiveFailures.set(t.id, fails);
+              }
 
               // TỰ ĐỘNG ĐỔI PROXY KHI PHÁT HIỆN PROXY ĐÃ CHẾT THỰC SỰ:
               // 1. Lỗi 407 (Proxy hết hạn gói / sai pass)
@@ -361,17 +370,18 @@ const initJobs = () => {
                 errMsg.includes('ETIMEDOUT');
               let autoChanged = false;
 
-              if (!isCookieErr && !isCaptchaErr && isHardProxyDead && fails >= 2) {
+              if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && isHardProxyDead && fails >= 2) {
                 await rotateThreadProxy(t.id, `${errMsg} (phát hiện chết liên tiếp ${fails} lần)`);
                 consecutiveFailures.delete(t.id);
                 autoChanged = true;
-              } else if (!isCookieErr && !isCaptchaErr && fails >= 3) {
+              } else if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && fails >= 3) {
                 await rotateThreadProxy(t.id, `Lỗi liên tiếp ${fails} lần: ${errMsg}`);
                 consecutiveFailures.delete(t.id);
                 autoChanged = true;
               }
 
               const isTransientRetryableTask =
+                isTokenServerErr ||
                 isHardProxyDead ||
                 errMsg.includes('socket hang up') ||
                 errMsg.includes('HTTP 502') ||

@@ -68,7 +68,6 @@ router.post('/rotate-error-proxies', async (req, res) => {
       return combined.includes('getuploadinfo failed: proxy') ||
         errText.includes('getUploadInfo failed: Proxy') ||
         (combined.includes('getuploadinfo failed') && (combined.includes('proxy') || combined.includes('timeout') || combined.includes('etimedout') || combined.includes('econnreset') || combined.includes('quá chậm'))) ||
-        combined.includes('gettoken failed: empty token response') ||
         combined.includes('econnrefused') ||
         combined.includes('econnreset') ||
         combined.includes('etimedout') ||

@@ -3,6 +3,7 @@ const os = require('os');
 const express = require('express');
 const axios = require('axios');
 const adbService = require('./adb.service');
+const vodTokenService = require('./vod-token.service');
 
 const LOCAL_PHONE_URL = 'http://127.0.0.1:8080';
 const busyPhoneUrls = new Set();
@@ -543,11 +544,42 @@ function handleRoutingStats(req, res) {
   });
 }
 
+async function handleGenerateToken(req, res) {
+  try {
+    const forceRefresh = req.body?.refresh === true || req.query?.refresh === '1';
+    const country = req.body?.country || req.query?.country || '';
+    const result = await vodTokenService.generateSelfToken({ forceRefresh, country });
+    return res.json(result.token);
+  } catch (err) {
+    return res.status(503).json({
+      detail: err?.message || 'Failed to generate self VOD token'
+    });
+  }
+}
+
+function handleGenerateTokenStatus(_req, res) {
+  return res.json({
+    code: 0,
+    ...vodTokenService.getTokenStatus()
+  });
+}
+
+function handleGatewayHealth(_req, res) {
+  return res.json({
+    status: 'ok',
+    selfToken: vodTokenService.getTokenStatus()
+  });
+}
+
 function createGatewayRouter() {
   const router = express.Router();
   router.get('/debug_info', handleDebugInfo);
   router.post('/debug_info', handleDebugInfo);
   router.get('/routing_stats', handleRoutingStats);
+  router.get('/health', handleGatewayHealth);
+  router.post('/generate_token', handleGenerateToken);
+  router.get('/generate_token', handleGenerateToken);
+  router.get('/generate_token/status', handleGenerateTokenStatus);
   router.post('/sign', handleSign);
   router.post('/precheck', handlePrecheck);
   router.post('/createpost', handleCreatePost);
