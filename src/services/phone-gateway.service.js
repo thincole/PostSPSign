@@ -12,6 +12,10 @@ const boundServers = new Map();
 const stickyUserGroupMap = new Map();
 const statsByPort = new Map();
 let crossGroupViolations = 0;
+let droppedZombieCount = 0;
+let droppedTimeoutCount = 0;
+const MAX_QUEUE_WAIT_MS = parseInt(process.env.GATEWAY_MAX_QUEUE_WAIT_MS || '180000', 10) || 180000;
+const MAX_QUEUE_TOTAL = parseInt(process.env.GATEWAY_MAX_QUEUE_TOTAL || '300', 10) || 300;
 
 function recordPortStat(assignedUrl, type, userId = '', ok = true) {
   if (!assignedUrl) return;
@@ -67,29 +71,68 @@ function hashUserId(userId = '') {
   return h;
 }
 
+function getGroupForSerial(serial = '') {
+  const s = String(serial || '').trim().toUpperCase();
+  if (!s) return 'TIGER';
+  if (s.startsWith('TIGER')) return 'TIGER';
+  return `SAMSUNG_${s}`;
+}
+
+function getCanonicalGroupSlots(activeUrls) {
+  const selected = Array.isArray(adbService.selectedSerials)
+    ? adbService.selectedSerials.filter(Boolean)
+    : [];
+  if (selected.length > 0) {
+    return selected.map(s => getGroupForSerial(s));
+  }
+  return activeUrls.map(u => adbService.getDeviceGroupForUrl(u));
+}
+
 function getCandidateUrlsForUser(userId = null) {
   const urls = adbService.getActiveLocalSignUrls();
   if (urls.length === 0) return [];
   if (!userId) return urls;
 
-  const existingGroup = stickyUserGroupMap.get(userId);
-  if (existingGroup) {
-    const matched = urls.filter(u => adbService.getDeviceGroupForUrl(u) === existingGroup);
-    if (matched.length > 0) {
-      return matched;
-    }
+  // Tính nhóm gốc (homeGroup) cố định trên toàn bộ danh sách selectedSerials
+  // thay vì chỉ trên tập máy tạm thời đang online lúc khởi động/rớt USB.
+  // Nhờ vậy khi 4 máy vừa reconnect chậm hơn 1 máy, tải không bao giờ bị ghim lệch về 1 máy duy nhất.
+  const canonicalSlots = getCanonicalGroupSlots(urls);
+  const homeGroup = canonicalSlots.length > 0
+    ? canonicalSlots[hashUserId(userId) % canonicalSlots.length]
+    : adbService.getDeviceGroupForUrl(urls[hashUserId(userId) % urls.length]);
+
+  const homeMatched = urls.filter(u => adbService.getDeviceGroupForUrl(u) === homeGroup);
+  if (homeMatched.length > 0) {
+    stickyUserGroupMap.set(userId, homeGroup);
+    return homeMatched;
   }
 
-  // Lần đầu tiên tài khoản (userId) xuất hiện:
-  // Chia cố định theo hash(userId) trên danh sách máy đang active để đảm bảo:
-  // 1) Tỷ lệ tải chuẩn theo số máy (3 TIGER = 60%, 1 SM-G990E = 20%, 1 SM-G981N = 20%)
-  // 2) Kể cả khi khởi động lại server, cùng 1 userId vẫn rơi đúng vào nhóm dòng máy cũ
-  const chosenUrl = urls[hashUserId(userId) % urls.length];
+  // Nhóm gốc đang tạm mất kết nối -> mượn tạm máy online khác nhưng KHÔNG ghi đè stickyUserGroupMap
+  // để ngay khi máy gốc lên lại thì tài khoản tự quay về đúng nhóm cân bằng.
+  const existingGroup = stickyUserGroupMap.get(userId);
+  if (existingGroup && existingGroup !== homeGroup) {
+    const existingMatched = urls.filter(u => adbService.getDeviceGroupForUrl(u) === existingGroup);
+    if (existingMatched.length > 0) {
+      return existingMatched;
+    }
+  }
+  const fallbackUrl = urls[hashUserId(userId) % urls.length];
+  const fallbackGroup = adbService.getDeviceGroupForUrl(fallbackUrl);
+  const fallbackMatched = urls.filter(u => adbService.getDeviceGroupForUrl(u) === fallbackGroup);
+  return fallbackMatched.length > 0 ? fallbackMatched : [fallbackUrl];
+}
 
-  const assignedGroup = adbService.getDeviceGroupForUrl(chosenUrl);
-  stickyUserGroupMap.set(userId, assignedGroup);
-  const groupUrls = urls.filter(u => adbService.getDeviceGroupForUrl(u) === assignedGroup);
-  return groupUrls.length > 0 ? groupUrls : [chosenUrl];
+let externalWaitTimer = null;
+
+function scheduleExternalWaitDrain() {
+  if (externalWaitTimer || waitQueue.length === 0) return;
+  externalWaitTimer = setTimeout(() => {
+    externalWaitTimer = null;
+    drainWaitQueue();
+    if (waitQueue.length > 0) {
+      scheduleExternalWaitDrain();
+    }
+  }, 200);
 }
 
 function pickIdlePhoneUrlForUser(userId = null) {
@@ -98,17 +141,46 @@ function pickIdlePhoneUrlForUser(userId = null) {
   for (let i = 0; i < candidates.length; i++) {
     const idx = (rrCursor + i) % candidates.length;
     const u = candidates[idx];
-    if (!busyPhoneUrls.has(u)) {
-      rrCursor = (rrCursor + 1) % 1000000;
-      return u;
-    }
+    if (busyPhoneUrls.has(u)) continue;
+    const serial = adbService.getSerialForUrl(u);
+    if (serial && adbService.isExternalDeviceLocked(serial)) continue;
+    rrCursor = (rrCursor + 1) % 1000000;
+    return u;
   }
   return null;
 }
 
+function pruneDeadWaitQueueItems() {
+  const now = Date.now();
+  for (let i = waitQueue.length - 1; i >= 0; i--) {
+    const item = waitQueue[i];
+    if (item.cancelled || (typeof item.isAborted === 'function' && item.isAborted())) {
+      waitQueue.splice(i, 1);
+      droppedZombieCount++;
+      item.abortWith(new Error('CLIENT_DISCONNECTED'));
+      continue;
+    }
+    if (item.maxWaitMs > 0 && now - item.enqueuedAt >= item.maxWaitMs) {
+      waitQueue.splice(i, 1);
+      droppedTimeoutCount++;
+      const err = new Error(`PhoneSign Gateway hàng đợi quá tải (chờ quá ${Math.round(item.maxWaitMs / 1000)}s)`);
+      err.statusCode = 503;
+      item.abortWith(err);
+    }
+  }
+}
+
 function drainWaitQueue() {
+  pruneDeadWaitQueueItems();
   for (let i = 0; i < waitQueue.length; i++) {
     const item = waitQueue[i];
+    if (item.cancelled || (typeof item.isAborted === 'function' && item.isAborted())) {
+      waitQueue.splice(i, 1);
+      i--;
+      droppedZombieCount++;
+      item.abortWith(new Error('CLIENT_DISCONNECTED'));
+      continue;
+    }
     const idleUrl = pickIdlePhoneUrlForUser(item.userId);
     if (idleUrl) {
       waitQueue.splice(i, 1);
@@ -116,28 +188,118 @@ function drainWaitQueue() {
       item.runWithUrl(idleUrl);
     }
   }
+  if (waitQueue.length > 0) {
+    scheduleExternalWaitDrain();
+  }
 }
 
-function enqueuePhoneTask(taskFn, userId = null) {
+function enqueuePhoneTask(taskFn, userId = null, opts = {}) {
+  const res = opts.res || null;
+  const maxWaitMs = Number.isFinite(opts.maxWaitMs) ? opts.maxWaitMs : MAX_QUEUE_WAIT_MS;
+  let clientClosed = false;
+  const isAborted = () => clientClosed || !!(res && (res.destroyed || (res.closed && !res.writableEnded)));
+
   return new Promise((resolve, reject) => {
+    let settled = false;
+    let queueItem = null;
+
+    const cleanupResListener = () => {
+      if (res && onResClose) {
+        res.removeListener('close', onResClose);
+      }
+    };
+
+    const safeResolve = (val) => {
+      if (settled) return;
+      settled = true;
+      cleanupResListener();
+      resolve(val);
+    };
+
+    const safeReject = (err) => {
+      if (settled) return;
+      settled = true;
+      cleanupResListener();
+      reject(err);
+    };
+
+    const onResClose = () => {
+      if (res && res.writableEnded) return;
+      clientClosed = true;
+      if (queueItem && !queueItem.started) {
+        queueItem.cancelled = true;
+        const idx = waitQueue.indexOf(queueItem);
+        if (idx !== -1) {
+          waitQueue.splice(idx, 1);
+          droppedZombieCount++;
+        }
+        safeReject(new Error('CLIENT_DISCONNECTED'));
+      }
+    };
+
+    if (res) {
+      res.on('close', onResClose);
+    }
+
     const runWithUrl = async (assignedUrl) => {
+      if (queueItem) queueItem.started = true;
+      if (isAborted()) {
+        droppedZombieCount++;
+        safeReject(new Error('CLIENT_DISCONNECTED'));
+        drainWaitQueue();
+        return;
+      }
       busyPhoneUrls.add(assignedUrl);
+      const serial = adbService.getSerialForUrl(assignedUrl);
+      const extLocked = serial ? await adbService.acquireCrossProcessLock(serial, 65000) : false;
       try {
+        if (isAborted()) {
+          droppedZombieCount++;
+          safeReject(new Error('CLIENT_DISCONNECTED'));
+          return;
+        }
         const result = await taskFn(assignedUrl);
-        resolve(result);
+        safeResolve(result);
       } catch (err) {
-        reject(err);
+        safeReject(err);
       } finally {
+        if (extLocked && serial) {
+          adbService.releaseCrossProcessLock(serial);
+        }
         busyPhoneUrls.delete(assignedUrl);
         drainWaitQueue();
       }
     };
 
+    if (isAborted()) {
+      droppedZombieCount++;
+      safeReject(new Error('CLIENT_DISCONNECTED'));
+      return;
+    }
+
     const idleUrl = pickIdlePhoneUrlForUser(userId);
     if (idleUrl) {
       runWithUrl(idleUrl);
     } else {
-      waitQueue.push({ userId, runWithUrl });
+      pruneDeadWaitQueueItems();
+      if (waitQueue.length >= MAX_QUEUE_TOTAL) {
+        const err = new Error(`PhoneSign Gateway hàng đợi đã đầy (${waitQueue.length}/${MAX_QUEUE_TOTAL})`);
+        err.statusCode = 503;
+        safeReject(err);
+        return;
+      }
+      queueItem = {
+        userId,
+        enqueuedAt: Date.now(),
+        maxWaitMs,
+        cancelled: false,
+        started: false,
+        isAborted,
+        runWithUrl,
+        abortWith: (err) => safeReject(err)
+      };
+      waitQueue.push(queueItem);
+      scheduleExternalWaitDrain();
     }
   });
 }
@@ -474,7 +636,9 @@ async function handleCreatePost(req, res) {
       const postId = postRes.data?.data?.data?.post_id || postRes.data?.data?.post_id;
       recordPortStat(assignedBaseUrl, 'createpost', userId, !!(postRes.data?.code === 0 && postId));
       return postRes.data;
-    }, userId);
+    }, userId, { res });
+
+    if (res.writableEnded || res.destroyed) return;
 
     // Chuẩn hóa output tương thích đồng thời cả chế độ Phone Sign (createPost)
     // lẫn chế độ Server Credit (createPostViaCredit) mà không tính credit
@@ -507,7 +671,11 @@ async function handleCreatePost(req, res) {
 
     return res.status(200).json(result);
   } catch (err) {
-    return res.status(502).json({ code: 1, error: err.message, msg: err.message });
+    if (err?.message === 'CLIENT_DISCONNECTED' || res.writableEnded || res.destroyed) {
+      return;
+    }
+    const statusCode = err?.statusCode || 502;
+    return res.status(statusCode).json({ code: 1, error: err.message, msg: err.message });
   }
 }
 
@@ -532,11 +700,23 @@ function handleRoutingStats(req, res) {
   for (const [, grp] of stickyUserGroupMap.entries()) {
     groupSummary[grp] = (groupSummary[grp] || 0) + 1;
   }
+  const waitQueueByGroup = {};
+  const activeUrls = adbService.getActiveLocalSignUrls();
+  const canonicalSlots = getCanonicalGroupSlots(activeUrls);
+  for (const item of waitQueue) {
+    const grp = item.userId
+      ? (stickyUserGroupMap.get(item.userId) || (canonicalSlots.length > 0 ? canonicalSlots[hashUserId(item.userId) % canonicalSlots.length] : 'ANY'))
+      : 'ANY';
+    waitQueueByGroup[grp] = (waitQueueByGroup[grp] || 0) + 1;
+  }
   return res.json({
     code: 0,
-    activeUrls: adbService.getActiveLocalSignUrls(),
+    activeUrls,
     busyUrls: Array.from(busyPhoneUrls),
     waitQueueLength: waitQueue.length,
+    waitQueueByGroup,
+    droppedZombieCount,
+    droppedTimeoutCount,
     stickyUsersTotal: stickyUserGroupMap.size,
     stickyUsersByGroup: groupSummary,
     crossGroupViolations,

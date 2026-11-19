@@ -1,4 +1,5 @@
 const { execFile } = require('child_process');
+const net = require('net');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -63,11 +64,15 @@ class AdbService {
       'com.shopee.ph': { code: '38528', name: '3.85.28' }
     };
     this._ensurePromise = null;
-    // Chỉ dùng 1 cổng ADB (mặc định 5038) để tránh tự dựng daemon 5037 khác version gây xung đột USB
-    this.adbServerPorts = (process.env.ADB_SERVER_PORTS || '5038')
+    // Cổng ADB độc quyền cho hệ thống PhoneSign (SP Phone Post & Duet Phone)
+    // Tách riêng khỏi 5037 (FNT / scrcpy / mặc định) và 5038 (Xiaowei / tool khác) để tránh bị cướp máy
+    this.adbServerPorts = (process.env.ADB_SERVER_PORTS || '5048')
       .split(',')
       .map(p => p.trim())
       .filter(Boolean);
+    this.primaryAdbPort = this.adbServerPorts[0] || '5048';
+    this.hijackAdbPorts = ['5037', '5038'].filter(p => !this.adbServerPorts.includes(p));
+    this._lastHijackReclaimAt = new Map();
     this._serialPortMap = new Map();
     this._devicePortMap = new Map(); // serial -> localPort (8080, 8081, 8082...)
     this._lastLaunchAt = new Map(); // serial -> timestamp
@@ -81,7 +86,125 @@ class AdbService {
     this._provisionedSerials = new Set();
     this._remotePhoneCountByOrigin = new Map(); // origin -> { count, fetchedAt, inFlight }
     this._loggedRemoteMaxSign = new Set();
+    this._crossProcessLocks = new Map();
     this.selectedSerials = this._loadSelectedSerials();
+  }
+
+  _getCrossLockPath(serial) {
+    const safe = String(serial || 'default').replace(/[^A-Za-z0-9._-]/g, '_');
+    return path.join(os.tmpdir(), 'spsign_phone_locks', `${safe}.lock`);
+  }
+
+  _isPidAlive(pid) {
+    if (!Number.isInteger(pid) || pid <= 0) return false;
+    if (pid === process.pid) return true;
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch (e) {
+      return !!(e && e.code === 'EPERM');
+    }
+  }
+
+  _readCrossLockMeta(lockPath) {
+    try {
+      const raw = fs.readFileSync(lockPath, 'utf-8');
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (e) {
+      if (e && e.code === 'ENOENT') return null;
+      return {};
+    }
+  }
+
+  _isCrossLockStale(lockPath, staleMs = 65000) {
+    const meta = this._readCrossLockMeta(lockPath);
+    if (meta === null) return false;
+    if (Number.isInteger(meta.pid) && !this._isPidAlive(meta.pid)) return true;
+    if (typeof meta.ts === 'number' && (Date.now() - meta.ts) > staleMs) return true;
+    if (Object.keys(meta).length === 0) {
+      try {
+        const st = fs.statSync(lockPath);
+        return (Date.now() - st.mtimeMs) > 5000;
+      } catch (_) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  isExternalDeviceLocked(serial, staleMs = 65000) {
+    if (!serial) return false;
+    const lockPath = this._getCrossLockPath(serial);
+    const meta = this._readCrossLockMeta(lockPath);
+    if (!meta) return false;
+    if (meta.pid === process.pid) return false;
+    return !this._isCrossLockStale(lockPath, staleMs);
+  }
+
+  tryAcquireCrossProcessLockSync(serial, staleMs = 65000) {
+    if (!serial) return true;
+    const curCount = this._crossProcessLocks.get(serial) || 0;
+    if (curCount > 0) {
+      this._crossProcessLocks.set(serial, curCount + 1);
+      return true;
+    }
+    const lockPath = this._getCrossLockPath(serial);
+    try {
+      fs.mkdirSync(path.dirname(lockPath), { recursive: true });
+      const fd = fs.openSync(lockPath, 'wx');
+      try {
+        const payload = JSON.stringify({ pid: process.pid, app: 'tool_upload', ts: Date.now() });
+        fs.writeFileSync(fd, payload, 'utf-8');
+      } finally {
+        fs.closeSync(fd);
+      }
+      this._crossProcessLocks.set(serial, 1);
+      return true;
+    } catch (e) {
+      if (e && e.code === 'EEXIST') {
+        if (this._isCrossLockStale(lockPath, staleMs)) {
+          try {
+            fs.unlinkSync(lockPath);
+            return this.tryAcquireCrossProcessLockSync(serial, staleMs);
+          } catch (_) {}
+        }
+        return false;
+      }
+      return false;
+    }
+  }
+
+  async acquireCrossProcessLock(serial, timeoutMs = 65000, staleMs = 65000) {
+    if (!serial) return true;
+    const deadline = Date.now() + Math.max(500, timeoutMs);
+    while (true) {
+      if (this.tryAcquireCrossProcessLockSync(serial, staleMs)) {
+        return true;
+      }
+      if (Date.now() >= deadline) {
+        return false;
+      }
+      await new Promise(r => setTimeout(r, 120));
+    }
+  }
+
+  releaseCrossProcessLock(serial) {
+    if (!serial) return;
+    const curCount = this._crossProcessLocks.get(serial) || 0;
+    if (curCount <= 0) return;
+    if (curCount > 1) {
+      this._crossProcessLocks.set(serial, curCount - 1);
+      return;
+    }
+    this._crossProcessLocks.delete(serial);
+    const lockPath = this._getCrossLockPath(serial);
+    const meta = this._readCrossLockMeta(lockPath);
+    if (meta === null || meta.pid === process.pid || Object.keys(meta).length === 0) {
+      try {
+        fs.unlinkSync(lockPath);
+      } catch (_) {}
+    }
   }
 
   get _inFreshSession() {
@@ -126,10 +249,10 @@ class AdbService {
     return this.selectedSerials;
   }
 
-  runCommand(args, customAdbPath = null) {
+  runCommand(args, customAdbPath = null, timeoutMs = 15000) {
     const bin = customAdbPath || this.adbPath;
     return new Promise((resolve, reject) => {
-      execFile(bin, args, { encoding: 'utf-8', timeout: 15000 }, (err, stdout, stderr) => {
+      execFile(bin, args, { encoding: 'utf-8', timeout: timeoutMs }, (err, stdout, stderr) => {
         if (err && !stdout) {
           return reject(new Error((stderr || '').trim() || err.message));
         }
@@ -138,10 +261,141 @@ class AdbService {
     });
   }
 
-  runCommandWithServerPort(serverPort, args) {
+  runCommandWithServerPort(serverPort, args, timeoutMs = 15000) {
     const fullArgs = serverPort ? ['-P', String(serverPort), ...args] : args;
     const bin = String(serverPort) === '5037' ? this.adb5037Path : this.adbPath;
-    return this.runCommand(fullArgs, bin);
+    return this.runCommand(fullArgs, bin, timeoutMs);
+  }
+
+  _isLocalPortOpen(port, timeoutMs = 150) {
+    return new Promise((resolve) => {
+      const portNum = parseInt(port, 10);
+      if (!Number.isFinite(portNum) || portNum <= 0) return resolve(false);
+      const sock = new net.Socket();
+      let settled = false;
+      const done = (ok) => {
+        if (settled) return;
+        settled = true;
+        try { sock.destroy(); } catch (_) {}
+        resolve(ok);
+      };
+      sock.setTimeout(timeoutMs);
+      sock.once('connect', () => done(true));
+      sock.once('timeout', () => done(false));
+      sock.once('error', () => done(false));
+      try {
+        sock.connect(portNum, '127.0.0.1');
+      } catch (_) {
+        done(false);
+      }
+    });
+  }
+
+  async _getActiveAdbServerPorts() {
+    return this.adbServerPorts.length > 0 ? this.adbServerPorts : [this.primaryAdbPort];
+  }
+
+  _sendAdbTcpCommand(port, cmd, timeoutMs = 800) {
+    return new Promise((resolve) => {
+      const portNum = parseInt(port, 10);
+      if (!Number.isFinite(portNum) || portNum <= 0) return resolve({ ok: false, data: '' });
+      const sock = new net.Socket();
+      let buf = Buffer.alloc(0);
+      let settled = false;
+      const finish = (ok, data = '') => {
+        if (settled) return;
+        settled = true;
+        try { sock.destroy(); } catch (_) {}
+        resolve({ ok, data });
+      };
+      sock.setTimeout(timeoutMs);
+      sock.on('data', (chunk) => {
+        buf = Buffer.concat([buf, chunk]);
+        if (cmd === 'host:kill' && buf.length >= 4) {
+          return finish(buf.slice(0, 4).toString() === 'OKAY', buf.toString('utf8'));
+        }
+        if (buf.length >= 8) {
+          const tag = buf.slice(0, 4).toString();
+          if (tag === 'OKAY') {
+            const len = parseInt(buf.slice(4, 8).toString(), 16);
+            if (!isNaN(len) && buf.length >= 8 + len) {
+              return finish(true, buf.slice(8, 8 + len).toString('utf8'));
+            }
+          } else if (tag === 'FAIL') {
+            return finish(false, buf.toString('utf8'));
+          }
+        }
+      });
+      sock.once('end', () => finish(buf.slice(0, 4).toString() === 'OKAY', buf.slice(8).toString('utf8')));
+      sock.once('timeout', () => finish(false, ''));
+      sock.once('error', () => finish(false, ''));
+      try {
+        sock.connect(portNum, '127.0.0.1', () => {
+          const hexLen = cmd.length.toString(16).padStart(4, '0');
+          sock.write(hexLen + cmd);
+        });
+      } catch (_) {
+        finish(false, '');
+      }
+    });
+  }
+
+  async _reclaimHijackedPhones() {
+    if (!Array.isArray(this.hijackAdbPorts) || this.hijackAdbPorts.length === 0) return false;
+    const now = Date.now();
+    let reclaimed = false;
+    const stolenSerials = new Set();
+    for (const roguePort of this.hijackAdbPorts) {
+      const lastTry = this._lastHijackReclaimAt.get(roguePort) || 0;
+      if (now - lastTry < 5000) continue;
+      // Truy vấn trực tiếp TCP protocol để KHÔNG bao giờ vô tình khởi động daemon 5037/5038
+      const devResp = await this._sendAdbTcpCommand(roguePort, 'host:devices', 600);
+      if (!devResp.ok || !devResp.data) continue;
+      const serialsOnRogue = devResp.data
+        .split('\n')
+        .map(l => l.trim())
+        .filter(Boolean)
+        .map(l => l.split(/\s+/)[0])
+        .filter(Boolean);
+      if (serialsOnRogue.length > 0) {
+        this._lastHijackReclaimAt.set(roguePort, Date.now());
+        serialsOnRogue.forEach(s => stolenSerials.add(s));
+        console.warn(`🛡️ [ADB-${this.primaryAdbPort}] Phát hiện ${serialsOnRogue.length} máy đang bị cổng ${roguePort} giữ (${serialsOnRogue.join(', ')}) -> Thu hồi về cổng độc quyền ${this.primaryAdbPort}`);
+        await this._sendAdbTcpCommand(roguePort, 'host:kill', 600);
+        reclaimed = true;
+      }
+    }
+    if (reclaimed) {
+      await this.runCommandWithServerPort(this.primaryAdbPort, ['start-server'], 6000).catch(() => {});
+      await new Promise(r => setTimeout(r, 350));
+      const checkResp = await this._sendAdbTcpCommand(this.primaryAdbPort, 'host:devices', 800);
+      const onPrimary = new Set(
+        (checkResp.data || '').split('\n').map(l => l.trim().split(/\s+/)[0]).filter(Boolean)
+      );
+      let restartedAny = false;
+      for (const s of stolenSerials) {
+        if (onPrimary.has(s)) continue;
+        const instanceId = this._getUsbInstanceIdForSerial(s);
+        if (!instanceId) continue;
+        restartedAny = true;
+        await new Promise((res) => {
+          execFile('pnputil', ['/restart-device', instanceId], { timeout: 6000 }, () => res());
+        });
+      }
+      if (restartedAny) {
+        await new Promise(r => setTimeout(r, 1500));
+      }
+      await this.runCommandWithServerPort(this.primaryAdbPort, ['devices', '-l'], 5000).catch(() => {});
+    }
+    return reclaimed;
+  }
+
+  _getUsbInstanceIdForSerial(serial = '') {
+    const s = String(serial || '').trim();
+    if (!s) return null;
+    if (s.startsWith('TIGER10')) return `USB\\VID_1782&PID_4003\\${s}`;
+    if (/^R[0-9A-Z]{8,}$/i.test(s)) return `USB\\VID_04E8&PID_6860\\${s}`;
+    return null;
   }
 
   async _getServerPortForSerial(serial) {
@@ -149,13 +403,17 @@ class AdbService {
       return this._serialPortMap.get(serial);
     }
     await this.getDevices();
-    return (serial && this._serialPortMap.get(serial)) || '5038';
+    return (serial && this._serialPortMap.get(serial)) || this.primaryAdbPort;
   }
 
   async getDevices(allowAutoRecover = true) {
+    if (allowAutoRecover) {
+      await this._reclaimHijackedPhones().catch(() => false);
+    }
     const seen = new Map();
-    const offlineSerials = [];
-    for (const srvPort of this.adbServerPorts) {
+    const offlinePortsBySerial = new Map();
+    const activePorts = await this._getActiveAdbServerPorts();
+    for (const srvPort of activePorts) {
       try {
         const output = await this.runCommandWithServerPort(srvPort, ['devices', '-l']);
         const lines = output.split('\n').map(l => l.trim()).filter(Boolean);
@@ -167,7 +425,8 @@ class AdbService {
             const serial = parts[0];
             const status = parts[1];
             if (status === 'offline') {
-              offlineSerials.push(serial);
+              if (!offlinePortsBySerial.has(serial)) offlinePortsBySerial.set(serial, new Set());
+              offlinePortsBySerial.get(serial).add(srvPort);
             }
             const modelMatch = line.match(/model:(\S+)/);
             const deviceMatch = line.match(/device:(\S+)/);
@@ -191,7 +450,15 @@ class AdbService {
     if (allowAutoRecover) {
       if (!this._lastPnpRestartMap) this._lastPnpRestartMap = new Map();
       const now = Date.now();
-      const toRecover = new Set(offlineSerials);
+      const toRecover = new Set();
+      const reconnectPorts = new Set();
+      for (const [serial, ports] of offlinePortsBySerial.entries()) {
+        const current = seen.get(serial);
+        if (!current || current.status !== 'device') {
+          toRecover.add(serial);
+          ports.forEach(p => reconnectPorts.add(p));
+        }
+      }
       if (Array.isArray(this.selectedSerials)) {
         for (const sel of this.selectedSerials) {
           const dev = seen.get(sel);
@@ -205,19 +472,26 @@ class AdbService {
       }
       if (toRecover.size > 0) {
         try {
-          for (const srvP of this.adbServerPorts) {
+          for (const srvP of reconnectPorts) {
             await this.runCommandWithServerPort(srvP, ['reconnect', 'offline']).catch(() => {});
           }
+          let restartedAny = false;
           for (const s of toRecover) {
-            if (s.startsWith('TIGER10')) {
-              this._lastPnpRestartMap.set(s, now);
-              await new Promise((res) => {
-                execFile('pnputil', ['/restart-device', `USB\\VID_1782&PID_4003\\${s}`], { timeout: 6000 }, () => res());
-              });
-            }
+            const instanceId = this._getUsbInstanceIdForSerial(s);
+            if (!instanceId) continue;
+            const lastRestart = this._lastPnpRestartMap.get(s) || 0;
+            if (now - lastRestart <= 45000) continue;
+            this._lastPnpRestartMap.set(s, now);
+            restartedAny = true;
+            await new Promise((res) => {
+              execFile('pnputil', ['/restart-device', instanceId], { timeout: 6000 }, () => res());
+            });
           }
-          await new Promise(r => setTimeout(r, 1500));
-          return await this.getDevices(false);
+          if (restartedAny || reconnectPorts.size > 0) {
+            await new Promise(r => setTimeout(r, 1500));
+            await this._reclaimHijackedPhones().catch(() => false);
+            return await this.getDevices(false);
+          }
         } catch (_) {}
       }
     }
@@ -228,7 +502,8 @@ class AdbService {
   async getForwardList() {
     const forwards = [];
     const seenKey = new Set();
-    for (const srvPort of this.adbServerPorts) {
+    const activePorts = await this._getActiveAdbServerPorts();
+    for (const srvPort of activePorts) {
       try {
         const output = await this.runCommandWithServerPort(srvPort, ['forward', '--list']);
         const lines = output.split('\n').map(l => l.trim()).filter(Boolean);
@@ -236,7 +511,7 @@ class AdbService {
         for (const line of lines) {
           const parts = line.split(/\s+/);
           if (parts.length >= 3) {
-            const key = `${parts[0]}|${parts[1]}|${parts[2]}`;
+            const key = `${srvPort}|${parts[0]}|${parts[1]}|${parts[2]}`;
             if (!seenKey.has(key)) {
               seenKey.add(key);
               forwards.push({
@@ -260,9 +535,13 @@ class AdbService {
     const ownerSrvPort = await this._getServerPortForSerial(serial);
     const currentForwards = await this.getForwardList();
 
-    // Nếu thiết bị này đã được forward sẵn đúng cổng localPort -> remotePort thì chỉ kiểm tra mở App
+    // Chỉ coi là đã forward nếu đúng cổng ADB đang giữ thiết bị (5038 hoặc 5037)
     const alreadyForwarded = currentForwards.some(
-      f => f.serial === serial && f.local === `tcp:${localPort}` && f.remote === `tcp:${remotePort}`
+      f =>
+        f.serial === serial &&
+        f.local === `tcp:${localPort}` &&
+        f.remote === `tcp:${remotePort}` &&
+        (!f.adbServerPort || f.adbServerPort === ownerSrvPort)
     );
 
     if (!alreadyForwarded) {
@@ -275,7 +554,8 @@ class AdbService {
           await this.runCommandWithServerPort(f.adbServerPort || ownerSrvPort, ['-s', f.serial, 'forward', '--remove', f.local]).catch(() => {});
         }
       }
-      for (const srvPort of this.adbServerPorts) {
+      const activePorts = await this._getActiveAdbServerPorts();
+      for (const srvPort of activePorts) {
         await this.runCommandWithServerPort(srvPort, ['forward', '--remove', `tcp:${localPort}`]).catch(() => {});
       }
 
@@ -350,10 +630,15 @@ class AdbService {
   }
 
   async _launchShopeeApp(srvPort, serial) {
+    if (this.isExternalDeviceLocked(serial)) {
+      return;
+    }
     const lastLaunch = this._lastLaunchAt.get(serial) || 0;
     if (Date.now() - lastLaunch < 12000) {
       return;
     }
+    const gotLock = await this.acquireCrossProcessLock(serial, 8000);
+    if (!gotLock) return;
     this._lastLaunchAt.set(serial, Date.now());
     try {
       await this._ensurePhoneSessionFiles(srvPort, serial);
@@ -366,7 +651,10 @@ class AdbService {
         'shell', 'am', 'start',
         '-n', 'com.shopee.vn/com.shopee.app.ui.home.HomeActivity_'
       ]).catch(() => {});
-    } catch (_) {}
+    } catch (_) {
+    } finally {
+      this.releaseCrossProcessLock(serial);
+    }
   }
 
   /**
@@ -413,10 +701,11 @@ class AdbService {
     if (needsRebind) {
       for (const f of forwards) {
         if (/^tcp:808\d$/.test(f.local)) {
-          await this.runCommandWithServerPort(f.adbServerPort || '5038', ['-s', f.serial, 'forward', '--remove', f.local]).catch(() => {});
+          await this.runCommandWithServerPort(f.adbServerPort || this.primaryAdbPort, ['-s', f.serial, 'forward', '--remove', f.local]).catch(() => {});
         }
       }
-      for (const srvPort of this.adbServerPorts) {
+      const activePorts = await this._getActiveAdbServerPorts();
+      for (const srvPort of activePorts) {
         for (let p = 8080; p < 8080 + Math.max(activeSerials.length, 4); p++) {
           await this.runCommandWithServerPort(srvPort, ['forward', '--remove', `tcp:${p}`]).catch(() => {});
         }
@@ -448,10 +737,15 @@ class AdbService {
 
     const onlineDevices = devices.filter(d => d.status === 'device');
     const onlineSerialSet = new Set(onlineDevices.map(d => d.serial));
+    const onlineServerBySerial = new Map(onlineDevices.map(d => [d.serial, d.adbServerPort]));
     const forwardBySerial = new Map();
     const nextPortMap = new Map();
     for (const f of forwards) {
-      if (/^tcp:808\d$/.test(f.local) && onlineSerialSet.has(f.serial)) {
+      if (
+        /^tcp:808\d$/.test(f.local) &&
+        onlineSerialSet.has(f.serial) &&
+        (!f.adbServerPort || f.adbServerPort === onlineServerBySerial.get(f.serial))
+      ) {
         forwardBySerial.set(f.serial, f.local);
         const portNum = parseInt(f.local.replace('tcp:', ''), 10);
         if (!isNaN(portNum)) {
@@ -530,7 +824,7 @@ class AdbService {
 
           // Nếu máy đang được tích chọn nhưng App Shopee chưa mở (sdkReady = false) -> tự động mở bằng _launchShopeeApp (throttle 12s/lần)
           if (isSelected && !sdkReady && !this._inFreshSession && dev.status === 'device') {
-            const srvPort = dev.adbServerPort || '5038';
+            const srvPort = dev.adbServerPort || this.primaryAdbPort;
             this._launchShopeeApp(srvPort, dev.serial).catch(() => {});
           }
         }
@@ -937,10 +1231,16 @@ class AdbService {
 
         const targetIdx = Array.isArray(this.selectedSerials) ? this.selectedSerials.indexOf(targetSerial) : -1;
         const localPortCheck = (targetIdx >= 0 ? 8080 + targetIdx : null) || this._devicePortMap.get(targetSerial) || port || 8080;
-        const srvPortCheck = this._serialPortMap.get(targetSerial) || '5038';
+        const srvPortCheck = this._serialPortMap.get(targetSerial) || this.primaryAdbPort;
         try {
           const fwds = await this.getForwardList();
-          const hasFwd = fwds.some(f => f.serial === targetSerial && f.local === `tcp:${localPortCheck}` && f.remote === 'tcp:8080');
+          const hasFwd = fwds.some(
+            f =>
+              f.serial === targetSerial &&
+              f.local === `tcp:${localPortCheck}` &&
+              f.remote === 'tcp:8080' &&
+              (!f.adbServerPort || f.adbServerPort === srvPortCheck)
+          );
           if (!hasFwd) {
             await this.runCommandWithServerPort(srvPortCheck, ['-s', targetSerial, 'forward', `tcp:${localPortCheck}`, 'tcp:8080']).catch(() => {});
             this._devicePortMap.set(targetSerial, localPortCheck);
@@ -951,50 +1251,73 @@ class AdbService {
       const targetIdxFinal = Array.isArray(this.selectedSerials) ? this.selectedSerials.indexOf(targetSerial) : -1;
       const localPort = (targetIdxFinal >= 0 ? 8080 + targetIdxFinal : null) || this._devicePortMap.get(targetSerial) || port || 8080;
       const localUrl = `http://127.0.0.1:${localPort}`;
-      const srvPort = this._serialPortMap.get(targetSerial) || '5038';
+      let srvPort = this._serialPortMap.get(targetSerial) || this.primaryAdbPort;
 
-      this._lastLaunchAt.set(targetSerial, Date.now());
+      const extLockOk = await this.acquireCrossProcessLock(targetSerial, 65000);
       try {
-        const lastCheck = this._lastSessionFileCheckMap.get(targetSerial) || 0;
-        if (Date.now() - lastCheck > 300000) {
-          await this._ensurePhoneSessionFiles(srvPort, targetSerial);
-          this._lastSessionFileCheckMap.set(targetSerial, Date.now());
-        }
-        await this.runCommandWithServerPort(srvPort, [
-          '-s', targetSerial,
-          'shell',
-          'am force-stop com.shopee.vn && am start -n com.shopee.vn/com.shopee.app.ui.home.HomeActivity_'
-        ]);
-      } catch (_) {}
-
-      const startWait = Date.now();
-      while (Date.now() - startWait < 10000) {
-        await new Promise(r => setTimeout(r, 120));
+        this._lastLaunchAt.set(targetSerial, Date.now());
         try {
-          const dbg = await this._queryDebugInfo(localUrl, 1000);
-          if (dbg && dbg.sdk_loaded && (dbg.risk_token_len || 0) >= 50) {
-            const profile = this._buildProfileFromDebugInfo(dbg, targetSerial);
-            this._cachedProfile = profile;
-            this._cachedAt = Date.now();
-            this._profileByUrl.set(localUrl, profile);
-            const sessionObj = {
-              startedAt: Date.now(),
-              userId: userId || null,
-              clean: true
-            };
-            this._lastFreshSession = sessionObj;
-            this._lastFreshSessionByUrl.set(localUrl, sessionObj);
-            return { ready: true, serial: targetSerial, localUrl, profile, debugInfo: dbg };
+          const lastCheck = this._lastSessionFileCheckMap.get(targetSerial) || 0;
+          if (Date.now() - lastCheck > 300000) {
+            await this._ensurePhoneSessionFiles(srvPort, targetSerial);
+            this._lastSessionFileCheckMap.set(targetSerial, Date.now());
+          }
+          try {
+            await this.runCommandWithServerPort(srvPort, [
+              '-s', targetSerial,
+              'shell',
+              'am force-stop com.shopee.vn && am start -n com.shopee.vn/com.shopee.app.ui.home.HomeActivity_'
+            ]);
+          } catch (_) {
+            // Nếu thiết bị vừa đổi chủ giữa 5038 <-> 5037 trong cửa sổ cache 60s, quét lại & forward sang cổng mới
+            this._lastTopologyCheckAt = 0;
+            await this.getDevices(false).catch(() => []);
+            const refreshedSrvPort = this._serialPortMap.get(targetSerial);
+            if (refreshedSrvPort && refreshedSrvPort !== srvPort) {
+              srvPort = refreshedSrvPort;
+              await this.runCommandWithServerPort(srvPort, ['-s', targetSerial, 'forward', `tcp:${localPort}`, 'tcp:8080']).catch(() => {});
+              await this.runCommandWithServerPort(srvPort, [
+                '-s', targetSerial,
+                'shell',
+                'am force-stop com.shopee.vn && am start -n com.shopee.vn/com.shopee.app.ui.home.HomeActivity_'
+              ]);
+            }
           }
         } catch (_) {}
-      }
 
-      return {
-        ready: false,
-        serial: targetSerial,
-        localUrl,
-        profile: this.getProfileForUrl(localUrl)
-      };
+        const startWait = Date.now();
+        while (Date.now() - startWait < 10000) {
+          await new Promise(r => setTimeout(r, 120));
+          try {
+            const dbg = await this._queryDebugInfo(localUrl, 1000);
+            if (dbg && dbg.sdk_loaded && (dbg.risk_token_len || 0) >= 50) {
+              const profile = this._buildProfileFromDebugInfo(dbg, targetSerial);
+              this._cachedProfile = profile;
+              this._cachedAt = Date.now();
+              this._profileByUrl.set(localUrl, profile);
+              const sessionObj = {
+                startedAt: Date.now(),
+                userId: userId || null,
+                clean: true
+              };
+              this._lastFreshSession = sessionObj;
+              this._lastFreshSessionByUrl.set(localUrl, sessionObj);
+              return { ready: true, serial: targetSerial, localUrl, profile, debugInfo: dbg };
+            }
+          } catch (_) {}
+        }
+
+        return {
+          ready: false,
+          serial: targetSerial,
+          localUrl,
+          profile: this.getProfileForUrl(localUrl)
+        };
+      } finally {
+        if (extLockOk) {
+          this.releaseCrossProcessLock(targetSerial);
+        }
+      }
     } finally {
       this._inFreshSession = false;
     }

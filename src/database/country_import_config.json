@@ -1,5 +1,5 @@
 {
-  "customCountryCode": "MY",
+  "customCountryCode": "PH",
   "countries": {
     "vn": {
       "videoFolder": "F:\\Video AI\\VN\\Veo3go",
@@ -9,10 +9,10 @@
       "isAigc": true
     },
     "ph": {
-      "videoFolder": "F:\\Video AI\\PH\\MuseAI\\1411",
+      "videoFolder": "F:/Video AI/PH/MuseAI/1411",
       "driveLink": "https://docs.google.com/spreadsheets/d/18OE86tzWPeKp3xlSYscmJFEQC87ZBuBwgTF8HOz8e1w/edit?gid=623566425#gid=623566425",
       "sheetName": "PH",
-      "maxVideosPerAccount": "2",
+      "maxVideosPerAccount": "55",
       "isAigc": true
     },
     "id": {
@@ -23,10 +23,10 @@
       "isAigc": true
     },
     "custom": {
-      "videoFolder": "F:\\Video AI\\MY",
+      "videoFolder": "F:\\Video AI\\PH\\Veo3go",
       "driveLink": "https://docs.google.com/spreadsheets/d/18OE86tzWPeKp3xlSYscmJFEQC87ZBuBwgTF8HOz8e1w/edit?gid=623566425#gid=623566425",
-      "sheetName": "MY",
-      "maxVideosPerAccount": "29",
+      "sheetName": "PHmoi",
+      "maxVideosPerAccount": "30",
       "isAigc": true
     }
   },

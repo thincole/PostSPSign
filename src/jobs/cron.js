@@ -362,19 +362,24 @@ const initJobs = () => {
                 ]);
                 return;
               }
+              const isPhoneGatewayErr =
+                errMsg.includes('PhoneSign Gateway') ||
+                errMsg.includes('300000ms') ||
+                (uploadErr?.failedFunction === 'createPost' && (errMsg.includes('HTTP 503') || errMsg.includes('HTTP 502')));
               const isHardProxyDead =
-                errMsg.includes('407') ||
-                errMsg.includes('ECONNREFUSED') ||
-                errMsg.includes('ECONNRESET') ||
-                errMsg.toLowerCase().includes('connection reset') ||
-                errMsg.includes('ETIMEDOUT');
+                !isPhoneGatewayErr &&
+                (errMsg.includes('407') ||
+                  errMsg.includes('ECONNREFUSED') ||
+                  errMsg.includes('ECONNRESET') ||
+                  errMsg.toLowerCase().includes('connection reset') ||
+                  errMsg.includes('ETIMEDOUT'));
               let autoChanged = false;
 
-              if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && isHardProxyDead && fails >= 2) {
+              if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && !isPhoneGatewayErr && isHardProxyDead && fails >= 2) {
                 await rotateThreadProxy(t.id, `${errMsg} (phát hiện chết liên tiếp ${fails} lần)`);
                 consecutiveFailures.delete(t.id);
                 autoChanged = true;
-              } else if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && fails >= 3) {
+              } else if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && !isPhoneGatewayErr && fails >= 3) {
                 await rotateThreadProxy(t.id, `Lỗi liên tiếp ${fails} lần: ${errMsg}`);
                 consecutiveFailures.delete(t.id);
                 autoChanged = true;
@@ -382,13 +387,16 @@ const initJobs = () => {
 
               const isTransientRetryableTask =
                 isTokenServerErr ||
+                isPhoneGatewayErr ||
                 isHardProxyDead ||
                 errMsg.includes('socket hang up') ||
                 errMsg.includes('HTTP 502') ||
+                errMsg.includes('HTTP 503') ||
                 errMsg.includes('Empty token response') ||
                 errMsg.includes('300014') ||
                 errMsg.includes('98001004') ||
-                errMsg.includes('Timeout');
+                errMsg.includes('Timeout') ||
+                errMsg.includes('timeout');
 
               const delayAfterError = autoChanged ? 8 : 20;
               const nextRetryTime = Math.floor(Date.now() / 1000) + delayAfterError;
