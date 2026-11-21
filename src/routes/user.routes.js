@@ -445,6 +445,42 @@ router.post('/login-shopee', async (req, res) => {
   });
 });
 
+// GET /mcn-status (Trạng thái job kiểm tra MCN hàng loạt)
+router.get('/mcn-status', (req, res) => {
+  try {
+    const mcnService = require('../services/mcn.service');
+    const since = parseInt(req.query.since || '0', 10) || 0;
+    res.json({ success: true, ...mcnService.getBatchStatus(since) });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /check-mcn (Kiểm tra ngày hết hạn MCN hàng loạt)
+router.post('/check-mcn', async (req, res) => {
+  try {
+    const mcnService = require('../services/mcn.service');
+    const userIds = Array.isArray(req.body?.userIds) ? req.body.userIds : [];
+    const status = await mcnService.startBatchMcnCheck(userIds);
+    res.json({ success: true, ...status });
+  } catch (err) {
+    console.error('Check MCN batch error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /:id/check-mcn (Kiểm tra ngày hết hạn MCN cho 1 tài khoản)
+router.post('/:id/check-mcn', async (req, res) => {
+  try {
+    const mcnService = require('../services/mcn.service');
+    const data = await mcnService.checkUserMcnById(req.params.id);
+    res.json({ success: true, data });
+  } catch (err) {
+    console.error('Check single user MCN error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // POST /:id/recover-cookie (Lớp 1 + Lớp 3 / Interactive cho từng tài khoản trong Quản Lý Người Dùng)
 router.post('/:id/recover-cookie', async (req, res) => {
   try {

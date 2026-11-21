@@ -105,7 +105,7 @@ const initJobs = () => {
     } catch (_) {}
   };
   keepPhoneSignAlive();
-  setInterval(keepPhoneSignAlive, 20000);
+  setInterval(keepPhoneSignAlive, 8000);
 
   // Lặp kiểm tra và kích hoạt upload mỗi 1 giây, giãn cách xuất phát 200ms/luồng
   setInterval(async () => {

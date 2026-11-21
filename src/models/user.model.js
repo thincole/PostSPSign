@@ -9,27 +9,50 @@ const createTableQuery = `
   )
 `;
 
+const MCN_COLUMNS = [
+    { name: 'mcn_end_at', def: 'INTEGER DEFAULT NULL' },
+    { name: 'mcn_days_left', def: 'INTEGER DEFAULT NULL' },
+    { name: 'mcn_name', def: "TEXT DEFAULT ''" },
+    { name: 'mcn_status', def: "TEXT DEFAULT ''" },
+    { name: 'mcn_checked_at', def: 'INTEGER DEFAULT NULL' }
+];
+
+let mcnColumnsReadyPromise = null;
+
+function ensureUserColumns() {
+    if (mcnColumnsReadyPromise) return mcnColumnsReadyPromise;
+    mcnColumnsReadyPromise = new Promise((resolve) => {
+        db.all('PRAGMA table_info(users)', [], (pragmaErr, rows) => {
+            if (pragmaErr || !Array.isArray(rows)) return resolve();
+            const existing = new Set(rows.map(r => r.name));
+            const alters = [];
+            if (!existing.has('proxy')) alters.push("ALTER TABLE users ADD COLUMN proxy TEXT DEFAULT ''");
+            if (!existing.has('country')) alters.push("ALTER TABLE users ADD COLUMN country TEXT DEFAULT 'vn'");
+            if (!existing.has('is_active')) alters.push("ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1");
+            for (const col of MCN_COLUMNS) {
+                if (!existing.has(col.name)) {
+                    alters.push(`ALTER TABLE users ADD COLUMN ${col.name} ${col.def}`);
+                }
+            }
+            if (alters.length === 0) return resolve();
+            let pending = alters.length;
+            for (const sql of alters) {
+                db.run(sql, [], () => {
+                    pending--;
+                    if (pending <= 0) resolve();
+                });
+            }
+        });
+    });
+    return mcnColumnsReadyPromise;
+}
+
 db.run(createTableQuery, [], (err) => {
     if (err) {
         console.error('Lỗi khởi tạo bảng users:', err);
         return;
     }
-    db.all('PRAGMA table_info(users)', [], (pragmaErr, rows) => {
-        if (pragmaErr) return;
-        const hasProxy = rows.some(r => r.name === 'proxy');
-        const hasCountry = rows.some(r => r.name === 'country');
-        const hasIsActive = rows.some(r => r.name === 'is_active');
-
-        if (!hasProxy) {
-            db.run("ALTER TABLE users ADD COLUMN proxy TEXT DEFAULT ''");
-        }
-        if (!hasCountry) {
-            db.run("ALTER TABLE users ADD COLUMN country TEXT DEFAULT 'vn'");
-        }
-        if (!hasIsActive) {
-            db.run("ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1");
-        }
-    });
+    ensureUserColumns();
 });
 
 class User {
@@ -194,6 +217,56 @@ class User {
             db.run('UPDATE users SET is_active = ? WHERE id = ?', [isActive ? 1 : 0, id], (err) => {
                 if (err) return reject(err);
                 resolve();
+            });
+        });
+    }
+
+    static ensureMcnColumns() {
+        return ensureUserColumns();
+    }
+
+    static updateMcnInfo(id, info = {}) {
+        return new Promise((resolve, reject) => {
+            db.run(
+                `UPDATE users
+                 SET mcn_end_at = ?, mcn_days_left = ?, mcn_name = ?, mcn_status = ?, mcn_checked_at = ?
+                 WHERE id = ?`,
+                [
+                    info.mcn_end_at ?? null,
+                    info.mcn_days_left ?? null,
+                    info.mcn_name || '',
+                    info.mcn_status || '',
+                    info.mcn_checked_at ?? null,
+                    id
+                ],
+                (err) => {
+                    if (err) return reject(err);
+                    resolve();
+                }
+            );
+        });
+    }
+
+    static getForMcnCheck(userIds = []) {
+        return new Promise((resolve, reject) => {
+            const hasIds = Array.isArray(userIds) && userIds.length > 0;
+            const placeholders = hasIds ? userIds.map(() => '?').join(',') : '';
+            const sql = `
+                SELECT u.id, u.username, u.cookie, u.proxy, u.country, u.is_active,
+                       u.mcn_end_at, u.mcn_days_left, u.mcn_name, u.mcn_status, u.mcn_checked_at,
+                       MAX(t.proxy_host) AS thread_proxy_host,
+                       MAX(t.proxy_port) AS thread_proxy_port,
+                       MAX(t.proxy_username) AS thread_proxy_username,
+                       MAX(t.proxy_password) AS thread_proxy_password
+                FROM users u
+                LEFT JOIN threads t ON u.id = t.user_id
+                ${hasIds ? `WHERE u.id IN (${placeholders})` : ''}
+                GROUP BY u.id
+                ORDER BY u.id ASC
+            `;
+            db.all(sql, hasIds ? userIds : [], (err, rows) => {
+                if (err) return reject(err);
+                resolve(rows || []);
             });
         });
     }

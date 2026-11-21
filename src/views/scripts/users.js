@@ -57,22 +57,30 @@ function saveUserCountry(userId, country, selectEl) {
 function filterUsers() {
   const searchInput = document.getElementById('userSearchInput');
   const countryFilter = document.getElementById('userCountryFilter');
+  const mcnFilter = document.getElementById('userMcnFilter');
   const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
   const selectedCountry = countryFilter ? countryFilter.value : 'all';
+  const selectedMcn = mcnFilter ? mcnFilter.value : 'all';
 
   const rows = document.querySelectorAll('#userTableBody tr.user-row');
   let visibleCount = 0;
 
   rows.forEach((row) => {
     const country = (row.dataset.country || 'vn').toLowerCase();
+    const mcnState = (row.dataset.mcnState || 'unchecked').toLowerCase();
     const username = (row.dataset.username || '').toLowerCase();
     const proxy = (row.dataset.proxy || '').toLowerCase();
     const cookie = (row.querySelector('input[readonly]')?.value || '').toLowerCase();
 
     const matchCountry = selectedCountry === 'all' || country === selectedCountry;
+    const matchMcn =
+      selectedMcn === 'all' ||
+      (selectedMcn === 'expiring' && mcnState === 'expiring') ||
+      (selectedMcn === 'active' && (mcnState === 'active' || mcnState === 'expiring')) ||
+      (selectedMcn === 'none' && (mcnState === 'none' || mcnState === 'unchecked'));
     const matchQuery = !query || username.includes(query) || proxy.includes(query) || cookie.includes(query);
 
-    if (matchCountry && matchQuery) {
+    if (matchCountry && matchMcn && matchQuery) {
       row.classList.remove('d-none');
       visibleCount++;
       const indexCell = row.querySelector('.user-index');
@@ -84,7 +92,7 @@ function filterUsers() {
 
   const summaryBadge = document.getElementById('userCountSummary');
   if (summaryBadge) {
-    if (selectedCountry === 'all' && !query) {
+    if (selectedCountry === 'all' && selectedMcn === 'all' && !query) {
       summaryBadge.textContent = `Tổng: ${rows.length} tài khoản`;
     } else {
       summaryBadge.textContent = `Hiển thị: ${visibleCount} / ${rows.length} tài khoản`;
@@ -647,6 +655,199 @@ async function recoverUsersCookiesFromGemLogin(btn) {
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = originalHtml;
+    }
+  }
+}
+
+// === Kiểm tra hạn MCN cho từng tài khoản & hàng loạt ===
+function formatMcnDateVN(endAtSec) {
+  if (!endAtSec || Number(endAtSec) <= 0) return '';
+  const d = new Date(Number(endAtSec) * 1000 + 7 * 3600 * 1000);
+  return (
+    String(d.getUTCDate()).padStart(2, '0') +
+    '/' +
+    String(d.getUTCMonth() + 1).padStart(2, '0') +
+    '/' +
+    d.getUTCFullYear()
+  );
+}
+
+function updateUserMcnRowUI(item) {
+  if (!item || !item.id) return;
+  const cell = document.getElementById('userMcnCell_' + item.id);
+  const row = document.querySelector(`#userTableBody tr.user-row[data-user-id="${item.id}"]`);
+  if (!cell) return;
+
+  const endAt = item.mcn_end_at ? Number(item.mcn_end_at) : 0;
+  const daysLeft = endAt > 0 ? Math.floor((endAt * 1000 - Date.now()) / 86400000) : null;
+  const isExpiring = daysLeft !== null && daysLeft < 7;
+  const mcnState = isExpiring
+    ? 'expiring'
+    : endAt > 0
+      ? 'active'
+      : item.mcn_status === 'none'
+        ? 'none'
+        : 'unchecked';
+
+  if (row) {
+    row.dataset.mcnState = mcnState;
+    row.classList.toggle('mcn-expiring-row', isExpiring);
+  }
+
+  let bodyHtml = '';
+  if (endAt > 0) {
+    const dateStr = formatMcnDateVN(endAt);
+    const label = daysLeft <= 0 ? 'Hết hạn' : `Còn ${daysLeft} ngày`;
+    bodyHtml = `
+      <div class="${isExpiring ? 'mcn-date-expiring' : 'fw-semibold text-dark'}">${dateStr}</div>
+      <span class="${isExpiring ? 'mcn-badge-expiring' : 'mcn-badge-ok'}">${label}</span>
+    `;
+    cell.title = item.mcn_name ? `MCN: ${item.mcn_name}` : 'Hạn MCN';
+  } else if (item.mcn_status === 'none') {
+    bodyHtml = '<span class="text-muted small">-</span>';
+    cell.title = 'Không gắn MCN';
+  } else {
+    bodyHtml = '<span class="text-warning small">Lỗi KT</span>';
+    cell.title = item.error ? `Lỗi: ${item.error}` : 'Lỗi kiểm tra hạn MCN';
+  }
+
+  cell.innerHTML = `
+    <div class="d-flex align-items-center justify-content-between gap-1">
+      <div>${bodyHtml}</div>
+      <button type="button" class="mcn-refresh-btn" onclick="checkSingleUserMcn('${item.id}', this)" title="Kiểm tra hạn MCN">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+  `;
+}
+
+async function checkSingleUserMcn(userId, btn) {
+  const originalHtml = btn ? btn.innerHTML : '<i class="bi bi-arrow-clockwise"></i>';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:11px;height:11px;"></span>';
+  }
+  try {
+    const res = await fetch(`/api/users/${userId}/check-mcn`, { method: 'POST' });
+    const json = await res.json();
+    if (json.success && json.data) {
+      updateUserMcnRowUI(json.data);
+      if (json.data.error && !json.data.mcn_end_at) {
+        showToast(`Lỗi kiểm tra MCN (${json.data.username || '#' + userId}): ${json.data.error}`, 'warning');
+      } else {
+        showToast(`Đã cập nhật hạn MCN cho ${json.data.username || '#' + userId}`, 'success');
+      }
+      return;
+    }
+    showToast(json.error || 'Lỗi kiểm tra hạn MCN', 'error');
+  } catch (err) {
+    showToast('Lỗi kết nối khi kiểm tra hạn MCN', 'error');
+  }
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}
+
+let _mcnPollTimer = null;
+
+async function checkUsersMcn(btn) {
+  const selectedIds = Array.from(
+    document.querySelectorAll('#userTableBody tr.user-row:not(.d-none) .user-checkbox:checked')
+  )
+    .map(cb => parseInt(cb.dataset.userId, 10))
+    .filter(id => !isNaN(id));
+
+  const visibleIds = Array.from(
+    document.querySelectorAll('#userTableBody tr.user-row:not(.d-none)')
+  )
+    .map(row => parseInt(row.dataset.userId, 10))
+    .filter(id => !isNaN(id));
+
+  const targetIds = selectedIds.length > 0 ? selectedIds : visibleIds;
+  if (targetIds.length === 0) {
+    showToast('Không có tài khoản nào để kiểm tra MCN', 'warning');
+    return;
+  }
+
+  const buttonEl = btn || document.getElementById('btnCheckMcn');
+  const originalHtml = buttonEl ? buttonEl.innerHTML : '<i class="bi bi-calendar-check me-1"></i>Kiểm Tra MCN';
+  if (buttonEl) {
+    buttonEl.disabled = true;
+    buttonEl.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>KT MCN (0/${targetIds.length})`;
+  }
+
+  try {
+    const startRes = await fetch('/api/users/check-mcn', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userIds: targetIds })
+    });
+    const startJson = await startRes.json();
+    if (!startJson.success) {
+      showToast(startJson.error || 'Không khởi động được kiểm tra MCN', 'error');
+      if (buttonEl) {
+        buttonEl.disabled = false;
+        buttonEl.innerHTML = originalHtml;
+      }
+      return;
+    }
+
+    if (startJson.alreadyRunning) {
+      showToast(`Đang chạy kiểm tra MCN (${startJson.done}/${startJson.total})...`, 'info');
+    } else {
+      showToast(`Đang kiểm tra hạn MCN cho ${startJson.total} tài khoản...`, 'info');
+    }
+
+    let since = 0;
+    if (Array.isArray(startJson.updates)) {
+      startJson.updates.forEach(updateUserMcnRowUI);
+      since = startJson.nextIndex || startJson.updates.length;
+    }
+
+    const pollOnce = async () => {
+      try {
+        const sRes = await fetch(`/api/users/mcn-status?since=${since}`);
+        const sJson = await sRes.json();
+        if (!sJson.success) return;
+
+        if (Array.isArray(sJson.updates) && sJson.updates.length > 0) {
+          sJson.updates.forEach(updateUserMcnRowUI);
+          since = sJson.nextIndex || (since + sJson.updates.length);
+        }
+
+        if (buttonEl) {
+          buttonEl.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>KT MCN (${sJson.done}/${sJson.total})`;
+        }
+
+        if (!sJson.running) {
+          clearInterval(_mcnPollTimer);
+          _mcnPollTimer = null;
+          if (buttonEl) {
+            buttonEl.disabled = false;
+            buttonEl.innerHTML = originalHtml;
+          }
+          filterUsers();
+          const warnPart = sJson.expiringSoon > 0 ? ` — ⚠️ ${sJson.expiringSoon} acc còn <7 ngày!` : '';
+          showToast(
+            `Xong MCN (${sJson.done}/${sJson.total}): ${sJson.active} có MCN, ${sJson.none} chưa gắn, ${sJson.errors} lỗi${warnPart}`,
+            sJson.expiringSoon > 0 ? 'warning' : 'success'
+          );
+        }
+      } catch (_) {}
+    };
+
+    if (_mcnPollTimer) clearInterval(_mcnPollTimer);
+    if (!startJson.running) {
+      await pollOnce();
+    } else {
+      _mcnPollTimer = setInterval(pollOnce, 1000);
+    }
+  } catch (err) {
+    showToast('Lỗi kết nối khi kiểm tra MCN', 'error');
+    if (buttonEl) {
+      buttonEl.disabled = false;
+      buttonEl.innerHTML = originalHtml;
     }
   }
 }

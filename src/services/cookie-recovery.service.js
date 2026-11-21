@@ -97,10 +97,13 @@ function isCookieDeadError(errMsg = '') {
   if (
     lower.includes('econnrefused') ||
     lower.includes('econnreset') ||
+    lower.includes('etimedout') ||
+    lower.includes('enotfound') ||
     lower.includes('connection reset') ||
     lower.includes('socket hang up') ||
     lower.includes('timeout') ||
-    lower.includes('http 502')
+    lower.includes('http 502') ||
+    lower.includes('http 503')
   ) {
     return false;
   }

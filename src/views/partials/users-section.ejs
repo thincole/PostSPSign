@@ -17,6 +17,9 @@
         <button class="btn btn-dark btn-sm fw-semibold" onclick="recoverUsersCookiesFromGemLogin(this)"
             title="Tự động làm mới hoặc mở GemLogin lấy lại Cookie cho các tài khoản đang chọn (hoặc các tài khoản lỗi Cookie)"><i
                 class="bi bi-key-fill text-warning me-1"></i>Lấy Cookie (GemLogin)</button>
+        <button class="btn btn-outline-danger btn-sm fw-semibold" id="btnCheckMcn" onclick="checkUsersMcn(this)"
+            title="Kiểm tra ngày hết hạn MCN cho các tài khoản đang chọn (hoặc tất cả đang hiển thị)"><i
+                class="bi bi-calendar-check me-1"></i>Kiểm Tra MCN</button>
     </div>
     <div class="col-auto ms-auto d-flex gap-2 flex-wrap">
         <button class="btn btn-outline-danger btn-sm" onclick="deleteSelectedUsers()"><i
@@ -45,6 +48,12 @@
             <option value="mx">🇲🇽 México (mx)</option>
             <option value="tw">🇹🇼 Đài Loan (tw)</option>
         </select>
+        <select class="form-select form-select-sm" id="userMcnFilter" onchange="filterUsers()" style="width: auto; min-width: 170px;">
+            <option value="all">📅 Tất cả hạn MCN</option>
+            <option value="expiring">🔴 Sắp hết hạn (&lt; 7 ngày)</option>
+            <option value="active">🟢 Đang gắn MCN</option>
+            <option value="none">⚪ Chưa gắn MCN</option>
+        </select>
         <span class="badge bg-light text-dark border px-2 py-1" id="userCountSummary">Tổng: <%= users.length %> tài khoản</span>
     </div>
 </div>
@@ -64,14 +73,26 @@
                 <th>Cookie</th>
                 <th>Proxy</th>
                 <th style="width:130px">Quốc gia</th>
+                <th style="width:130px">Hạn MCN</th>
                 <th style="width:200px">Lỗi</th>
                 <th style="width:100px" class="text-center">Kích hoạt</th>
                 <th style="width:120px">Thao tác</th>
             </tr>
         </thead>
         <tbody id="userTableBody">
-            <% users.forEach((user, index)=> { %>
-                <tr class="user-row" data-user-id="<%= user.id %>" data-country="<%= user.country || 'vn' %>" data-username="<%= (user.username || '').toLowerCase() %>" data-proxy="<%= (user.proxy || '').toLowerCase() %>">
+            <% users.forEach((user, index)=> {
+                const mcnEndAt = user.mcn_end_at ? Number(user.mcn_end_at) : 0;
+                const mcnDaysLeft = mcnEndAt > 0 ? Math.floor((mcnEndAt * 1000 - Date.now()) / 86400000) : null;
+                const mcnExpiring = mcnDaysLeft !== null && mcnDaysLeft < 7;
+                const mcnState = mcnExpiring ? 'expiring' : (mcnEndAt > 0 ? 'active' : (user.mcn_status === 'none' ? 'none' : 'unchecked'));
+                let mcnDateStr = '';
+                if (mcnEndAt > 0) {
+                    const _d = new Date(mcnEndAt * 1000 + 7 * 3600 * 1000);
+                    mcnDateStr = String(_d.getUTCDate()).padStart(2, '0') + '/' + String(_d.getUTCMonth() + 1).padStart(2, '0') + '/' + _d.getUTCFullYear();
+                }
+                const mcnTip = user.mcn_name ? ('MCN: ' + user.mcn_name) : (user.mcn_status === 'none' ? 'Không gắn MCN' : 'Bấm biểu tượng xoay để kiểm tra hạn MCN');
+            %>
+                <tr class="user-row<%= mcnExpiring ? ' mcn-expiring-row' : '' %>" data-user-id="<%= user.id %>" data-country="<%= user.country || 'vn' %>" data-mcn-state="<%= mcnState %>" data-username="<%= (user.username || '').toLowerCase() %>" data-proxy="<%= (user.proxy || '').toLowerCase() %>">
                     <td>
                         <div class="form-check form-switch mb-0">
                             <input type="checkbox" class="form-check-input user-checkbox" data-user-id="<%= user.id %>"
@@ -132,6 +153,25 @@
                             <option value="mx" <%=user.country==='mx' ? 'selected' : '' %>>🇲🇽 México</option>
                             <option value="tw" <%=user.country==='tw' ? 'selected' : '' %>>🇹🇼 Đài Loan</option>
                         </select>
+                    </td>
+                    <td class="mcn-cell" id="userMcnCell_<%= user.id %>" title="<%= mcnTip %>">
+                        <div class="d-flex align-items-center justify-content-between gap-1">
+                            <div>
+                                <% if (mcnEndAt > 0) { %>
+                                    <div class="<%= mcnExpiring ? 'mcn-date-expiring' : 'fw-semibold text-dark' %>"><%= mcnDateStr %></div>
+                                    <span class="<%= mcnExpiring ? 'mcn-badge-expiring' : 'mcn-badge-ok' %>"><%= mcnDaysLeft <= 0 ? 'Hết hạn' : ('Còn ' + mcnDaysLeft + ' ngày') %></span>
+                                <% } else if (user.mcn_status === 'none') { %>
+                                    <span class="text-muted small">-</span>
+                                <% } else if (user.mcn_status === 'error') { %>
+                                    <span class="text-warning small">Lỗi KT</span>
+                                <% } else { %>
+                                    <span class="text-muted small">Chưa KT</span>
+                                <% } %>
+                            </div>
+                            <button type="button" class="mcn-refresh-btn" onclick="checkSingleUserMcn('<%= user.id %>', this)" title="Kiểm tra hạn MCN">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
                     </td>
                     <td>
                         <% if (user.thread_error) { %>

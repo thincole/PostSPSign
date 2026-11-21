@@ -1,7 +1,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopee Video Manager V26.0.15</title>
+  <title>Shopee Video Manager V26.0.16</title>
 
   <!-- Bootstrap CSS -->
   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -293,6 +293,56 @@
     .input-group-text {
       font-size: 0.82rem;
       border-radius: 6px 0 0 6px;
+    }
+
+    /* MCN expiring highlight (< 7 days) */
+    .table tbody tr.mcn-expiring-row {
+      background-color: #fde8e8 !important;
+    }
+    .table tbody tr.mcn-expiring-row:hover {
+      background-color: #fbd5d5 !important;
+    }
+    .table tbody tr.mcn-expiring-row td:first-child {
+      box-shadow: inset 4px 0 0 #dc3545;
+    }
+    .mcn-cell {
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+    .mcn-date-expiring {
+      color: #c81e1e;
+      font-weight: 700;
+    }
+    .mcn-badge-expiring {
+      background: #dc3545;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    .mcn-badge-ok {
+      background: #eef6ff;
+      color: #1e429f;
+      border: 1px solid #c3ddfd;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    .mcn-refresh-btn {
+      border: none;
+      background: transparent;
+      color: #6c757d;
+      padding: 1px 4px;
+      font-size: 0.75rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .mcn-refresh-btn:hover {
+      color: var(--primary);
     }
   </style>
 </head>

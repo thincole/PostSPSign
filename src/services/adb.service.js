@@ -63,6 +63,8 @@ class AdbService {
       'com.shopee.vn': { code: '36448', name: '3.64.48' },
       'com.shopee.ph': { code: '38528', name: '3.85.28' }
     };
+    this._pkgVersionBySerial = new Map(); // `${serial}:${pkg}` -> { code, name, fetchedAt }
+    this._deviceModelMap = new Map(); // serial -> model string (e.g. 'SM-N950F', 'SM-G981N', 'TIGER 10')
     this._ensurePromise = null;
     // Cổng ADB độc quyền cho hệ thống PhoneSign (SP Phone Post & Duet Phone)
     // Tách riêng khỏi 5037 (FNT / scrcpy / mặc định) và 5038 (Xiaowei / tool khác) để tránh bị cướp máy
@@ -373,14 +375,16 @@ class AdbService {
         (checkResp.data || '').split('\n').map(l => l.trim().split(/\s+/)[0]).filter(Boolean)
       );
       let restartedAny = false;
-      for (const s of stolenSerials) {
-        if (onPrimary.has(s)) continue;
-        const instanceId = this._getUsbInstanceIdForSerial(s);
-        if (!instanceId) continue;
-        restartedAny = true;
-        await new Promise((res) => {
-          execFile('pnputil', ['/restart-device', instanceId], { timeout: 6000 }, () => res());
-        });
+      if (process.env.ENABLE_PNP_RESTART === '1') {
+        for (const s of stolenSerials) {
+          if (onPrimary.has(s)) continue;
+          const instanceId = this._getUsbInstanceIdForSerial(s);
+          if (!instanceId) continue;
+          restartedAny = true;
+          await new Promise((res) => {
+            execFile('pnputil', ['/restart-device', instanceId], { timeout: 6000 }, () => res());
+          });
+        }
       }
       if (restartedAny) {
         await new Promise(r => setTimeout(r, 1500));
@@ -433,11 +437,15 @@ class AdbService {
             const model = modelMatch ? modelMatch[1] : (deviceMatch ? deviceMatch[1] : (serial.startsWith('TIGER10') ? 'TIGER 10' : 'Unknown'));
 
             if (!seen.has(serial) || status === 'device') {
+              const cleanModel = model.replace(/_/g, ' ');
               this._serialPortMap.set(serial, srvPort);
+              if (cleanModel && cleanModel !== 'Unknown') {
+                this._deviceModelMap.set(serial, cleanModel);
+              }
               seen.set(serial, {
                 serial,
                 status,
-                model: model.replace(/_/g, ' '),
+                model: cleanModel,
                 adbServerPort: srvPort,
                 raw: line
               });
@@ -476,16 +484,18 @@ class AdbService {
             await this.runCommandWithServerPort(srvP, ['reconnect', 'offline']).catch(() => {});
           }
           let restartedAny = false;
-          for (const s of toRecover) {
-            const instanceId = this._getUsbInstanceIdForSerial(s);
-            if (!instanceId) continue;
-            const lastRestart = this._lastPnpRestartMap.get(s) || 0;
-            if (now - lastRestart <= 45000) continue;
-            this._lastPnpRestartMap.set(s, now);
-            restartedAny = true;
-            await new Promise((res) => {
-              execFile('pnputil', ['/restart-device', instanceId], { timeout: 6000 }, () => res());
-            });
+          if (process.env.ENABLE_PNP_RESTART === '1') {
+            for (const s of toRecover) {
+              const instanceId = this._getUsbInstanceIdForSerial(s);
+              if (!instanceId) continue;
+              const lastRestart = this._lastPnpRestartMap.get(s) || 0;
+              if (now - lastRestart <= 45000) continue;
+              this._lastPnpRestartMap.set(s, now);
+              restartedAny = true;
+              await new Promise((res) => {
+                execFile('pnputil', ['/restart-device', instanceId], { timeout: 6000 }, () => res());
+              });
+            }
           }
           if (restartedAny || reconnectPorts.size > 0) {
             await new Promise(r => setTimeout(r, 1500));
@@ -767,11 +777,22 @@ class AdbService {
     const selectedSet = new Set(this.selectedSerials || []);
 
     // Tự động khôi phục ADB Forward (tcp:8080, 8081, 8082...) cố định theo vị trí máy trong danh sách tích chọn
+    if (!this._lastSeenOnlineAt) this._lastSeenOnlineAt = new Map();
+    const nowSeen = Date.now();
     const selectedList = this.selectedSerials || [];
     for (let i = 0; i < selectedList.length; i++) {
       const s = selectedList[i];
-      if (!onlineSerialSet.has(s)) continue;
       const desiredPort = 8080 + i;
+      if (!onlineSerialSet.has(s)) {
+        // Giữ lại mapping trong 90s nếu máy vừa nháy rớt USB hub tạm thời,
+        // tránh xóa trắng _devicePortMap khiến 3 máy TIGER ngồi rảnh 20s–3 phút sau mỗi nhịp nháy.
+        const lastSeen = this._lastSeenOnlineAt.get(s) || 0;
+        if (lastSeen > 0 && (nowSeen - lastSeen) < 90000 && this._devicePortMap.has(s)) {
+          nextPortMap.set(s, this._devicePortMap.get(s));
+        }
+        continue;
+      }
+      this._lastSeenOnlineAt.set(s, nowSeen);
       nextPortMap.set(s, desiredPort);
       if (forwardBySerial.get(s) !== `tcp:${desiredPort}`) {
         try {
@@ -810,6 +831,8 @@ class AdbService {
               androidId = dbg.android_id || null;
               packageName = dbg.package || 'com.shopee.vn';
               riskTokenLen = dbg.risk_token_len || 0;
+              const srvPort = dev.adbServerPort || this.primaryAdbPort;
+              await this._ensureDevicePkgVersion(srvPort, dev.serial, packageName).catch(() => {});
               const prof = this._buildProfileFromDebugInfo(dbg, dev.serial);
               this._profileByUrl.set(localUrl, prof);
             }
@@ -877,6 +900,34 @@ class AdbService {
     return Math.max(1, selected.length);
   }
 
+  async _ensureDevicePkgVersion(srvPort, serial, packageName = 'com.shopee.vn') {
+    if (!serial || !packageName || String(serial).startsWith('GATEWAY-')) return null;
+    const key = `${serial}:${packageName}`;
+    const cached = this._pkgVersionBySerial.get(key);
+    if (cached && (Date.now() - cached.fetchedAt) < 600000) {
+      return cached;
+    }
+    try {
+      const out = await this.runCommandWithServerPort(
+        srvPort || this._serialPortMap.get(serial) || this.primaryAdbPort,
+        ['-s', serial, 'shell', `dumpsys package ${packageName} | grep -E "versionCode=|versionName=" | head -n 2`],
+        4000
+      );
+      const codeMatch = String(out || '').match(/versionCode=(\d+)/);
+      const nameMatch = String(out || '').match(/versionName=([^\s]+)/);
+      if (codeMatch && codeMatch[1]) {
+        const entry = {
+          code: codeMatch[1],
+          name: (nameMatch && nameMatch[1]) ? nameMatch[1] : codeMatch[1],
+          fetchedAt: Date.now()
+        };
+        this._pkgVersionBySerial.set(key, entry);
+        return entry;
+      }
+    } catch (_) {}
+    return cached || null;
+  }
+
   _buildProfileFromDebugInfo(dbg = {}, serial = null) {
     const resolvedSerial = serial || (Array.isArray(this.selectedSerials) && this.selectedSerials[0]) || DEFAULT_TIGER10_PROFILE.serial;
     const model = String(dbg.model || DEFAULT_TIGER10_PROFILE.model).trim();
@@ -884,7 +935,11 @@ class AdbService {
     const sdkInt = String(dbg.sdk_int || DEFAULT_TIGER10_PROFILE.sdkInt).trim();
     const androidId = String(dbg.android_id || DEFAULT_TIGER10_PROFILE.androidId).trim();
     const packageName = String(dbg.package || DEFAULT_TIGER10_PROFILE.packageName).trim();
-    const pkgVer = this._pkgVersionCache[packageName] || this._pkgVersionCache['com.shopee.vn'];
+    if (resolvedSerial && model) {
+      this._deviceModelMap.set(resolvedSerial, model);
+    }
+    const perSerialVer = resolvedSerial ? this._pkgVersionBySerial.get(`${resolvedSerial}:${packageName}`) : null;
+    const pkgVer = perSerialVer || this._pkgVersionCache[packageName] || this._pkgVersionCache['com.shopee.vn'];
     const appVersion = pkgVer.code;
     const appVersionName = pkgVer.name;
     const deviceModelInfo = `Brand/${brand} Model/${model} OSVer/${sdkInt} Manufacturer/${brand}`;
@@ -1156,22 +1211,31 @@ class AdbService {
     return null;
   }
 
-  getDeviceGroupForUrl(phoneUrl = null) {
-    const serial = String(this.getSerialForUrl(phoneUrl) || '').toUpperCase();
-    if (serial.startsWith('TIGER')) {
+  getGroupForSerial(serial = '', modelHint = '') {
+    const s = String(serial || '').trim().toUpperCase();
+    const m = String(modelHint || (serial ? this._deviceModelMap.get(serial) : '') || '').toUpperCase();
+    if (s.startsWith('TIGER') || m.includes('TIGER') || m.includes('OSCAL')) {
       return 'TIGER';
     }
-    if (serial) {
-      return `SAMSUNG_${serial}`;
+    if (
+      m.includes('N950') ||
+      /^CE(08|09|10)[0-9A-F]{12,}$/.test(s) ||
+      s.startsWith('988A9B')
+    ) {
+      return 'NOTE8';
     }
-    const prof = this._profileByUrl.get(phoneUrl);
-    if (prof) {
-      const brandUpper = String(prof.brand || '').toUpperCase();
-      const modelUpper = String(prof.model || '').toUpperCase();
-      if (brandUpper.includes('OSCAL') || modelUpper.includes('TIGER')) {
-        return 'TIGER';
-      }
-      return `SAMSUNG_${modelUpper || 'DEFAULT'}`;
+    if (s) {
+      return `SAMSUNG_${s}`;
+    }
+    return 'TIGER';
+  }
+
+  getDeviceGroupForUrl(phoneUrl = null) {
+    const serial = this.getSerialForUrl(phoneUrl) || '';
+    const prof = phoneUrl ? this._profileByUrl.get(phoneUrl) : null;
+    const modelHint = prof?.model || (serial ? this._deviceModelMap.get(serial) : '') || '';
+    if (serial || modelHint) {
+      return this.getGroupForSerial(serial, modelHint);
     }
     return 'TIGER';
   }
@@ -1189,7 +1253,38 @@ class AdbService {
     return this._cachedProfile || DEFAULT_TIGER10_PROFILE;
   }
 
-  async restartShopeeAppForSign(phoneSignUrl = 'http://127.0.0.1:8080', preferredSerial = null, userId = null) {
+  async ensureForwardForUrl(phoneSignUrl = 'http://127.0.0.1:8080', preferredSerial = null) {
+    let port = 8080;
+    try {
+      const parsed = new URL((phoneSignUrl || 'http://127.0.0.1:8080').trim());
+      if (parsed.port) port = parseInt(parsed.port, 10) || 8080;
+    } catch (_) {}
+
+    let targetSerial = preferredSerial || this.getSerialForUrl(phoneSignUrl);
+    if (!targetSerial && Array.isArray(this.selectedSerials)) {
+      const idx = Math.max(0, port - 8080);
+      if (this.selectedSerials[idx] && !String(this.selectedSerials[idx]).startsWith('GATEWAY-')) {
+        targetSerial = this.selectedSerials[idx];
+      }
+    }
+    if (!targetSerial) return false;
+
+    const srvPort = this._serialPortMap.get(targetSerial) || this.primaryAdbPort;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await this.runCommandWithServerPort(srvPort, ['-s', targetSerial, 'forward', `tcp:${port}`, 'tcp:8080'], 3000);
+        this._devicePortMap.set(targetSerial, port);
+        return true;
+      } catch (_) {
+        if (attempt < 2) {
+          await new Promise(r => setTimeout(r, 900));
+        }
+      }
+    }
+    return false;
+  }
+
+  async restartShopeeAppForSign(phoneSignUrl = 'http://127.0.0.1:8080', preferredSerial = null, userId = null, forceRebindForward = false) {
     this._inFreshSession = true;
     try {
       let port = 8080;
@@ -1210,7 +1305,7 @@ class AdbService {
       }
 
       const now = Date.now();
-      if (!targetSerial || !this._lastTopologyCheckAt || (now - this._lastTopologyCheckAt) > 60000) {
+      if (forceRebindForward || !targetSerial || !this._lastTopologyCheckAt || (now - this._lastTopologyCheckAt) > 60000) {
         const onlineDevs = (await this.getDevices().catch(() => [])).filter(d => d.status === 'device');
         if (onlineDevs.length === 0) {
           return {
@@ -1286,11 +1381,13 @@ class AdbService {
         } catch (_) {}
 
         const startWait = Date.now();
+        let reboundInLoop = false;
         while (Date.now() - startWait < 10000) {
           await new Promise(r => setTimeout(r, 120));
           try {
             const dbg = await this._queryDebugInfo(localUrl, 1000);
             if (dbg && dbg.sdk_loaded && (dbg.risk_token_len || 0) >= 50) {
+              await this._ensureDevicePkgVersion(srvPort, targetSerial, dbg.package || 'com.shopee.vn').catch(() => {});
               const profile = this._buildProfileFromDebugInfo(dbg, targetSerial);
               this._cachedProfile = profile;
               this._cachedAt = Date.now();
@@ -1304,7 +1401,16 @@ class AdbService {
               this._lastFreshSessionByUrl.set(localUrl, sessionObj);
               return { ready: true, serial: targetSerial, localUrl, profile, debugInfo: dbg };
             }
-          } catch (_) {}
+            if (!dbg && !reboundInLoop && Date.now() - startWait >= 300) {
+              reboundInLoop = true;
+              await this.ensureForwardForUrl(localUrl, targetSerial).catch(() => false);
+            }
+          } catch (_) {
+            if (!reboundInLoop && Date.now() - startWait >= 300) {
+              reboundInLoop = true;
+              await this.ensureForwardForUrl(localUrl, targetSerial).catch(() => false);
+            }
+          }
         }
 
         return {
@@ -1413,7 +1519,9 @@ class AdbService {
       return envOverride;
     }
 
-    const localCount = Array.isArray(this.selectedSerials) ? this.selectedSerials.length : 0;
+    const localCount = Array.isArray(this.selectedSerials)
+      ? this.selectedSerials.filter(s => s && !String(s).startsWith('GATEWAY-')).length
+      : 0;
     if (localCount > 0) {
       return Math.min(120, Math.max(15, localCount * 10));
     }

@@ -1,21 +1,147 @@
 const http = require('http');
 const os = require('os');
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const axios = require('axios');
 const adbService = require('./adb.service');
 const vodTokenService = require('./vod-token.service');
 
 const LOCAL_PHONE_URL = 'http://127.0.0.1:8080';
+const STICKY_ROUTING_PATH = process.env.GATEWAY_STICKY_ROUTING_PATH || path.join(__dirname, '../database/sticky_routing.json');
 const busyPhoneUrls = new Set();
 const waitQueue = [];
 const boundServers = new Map();
 const stickyUserGroupMap = new Map();
+const stickyUserMap = new Map(); // userId -> { serial, backupSerial, group, updatedAt }
 const statsByPort = new Map();
 let crossGroupViolations = 0;
 let droppedZombieCount = 0;
 let droppedTimeoutCount = 0;
+let fastFailed418Count = 0;
+let serveTickCounter = 0;
+const clientLastServedTick = new Map();
+const clientServedCounts = new Map();
+const recent418ByUser = new Map(); // userId -> { count, lastAt }
+const recentFailures = [];
+const MAX_RECENT_FAILURES = 50;
+
+function recordRecentFailure(info) {
+  recentFailures.push({ ts: new Date().toISOString(), ...info });
+  if (recentFailures.length > MAX_RECENT_FAILURES) {
+    recentFailures.splice(0, recentFailures.length - MAX_RECENT_FAILURES);
+  }
+}
 const MAX_QUEUE_WAIT_MS = parseInt(process.env.GATEWAY_MAX_QUEUE_WAIT_MS || '180000', 10) || 180000;
 const MAX_QUEUE_TOTAL = parseInt(process.env.GATEWAY_MAX_QUEUE_TOTAL || '300', 10) || 300;
+const SAMSUNG_SLOT_WEIGHT = Math.max(1, parseInt(process.env.GATEWAY_SAMSUNG_WEIGHT || '2', 10) || 2);
+const NOTE8_SLOT_WEIGHT = Math.max(1, parseInt(process.env.GATEWAY_NOTE8_WEIGHT || '1', 10) || 1);
+const TIGER_SLOT_WEIGHT = Math.max(1, parseInt(process.env.GATEWAY_TIGER_WEIGHT || '1', 10) || 1);
+const PRIMARY_GRACE_MS = Math.max(0, parseInt(process.env.GATEWAY_PRIMARY_GRACE_MS || '3000', 10) || 3000);
+const STRICT_NO_BORROW = process.env.GATEWAY_STRICT_NO_BORROW === '1';
+const GROUP_OFFLINE_BORROW_MS = Math.max(0, parseInt(process.env.GATEWAY_GROUP_OFFLINE_BORROW_MS || '15000', 10) || 15000);
+const groupOfflineSince = new Map(); // group -> first timestamp when 0 online urls in group
+const CAPTCHA_418_WINDOW_MS = Math.max(10000, parseInt(process.env.GATEWAY_418_WINDOW_MS || '180000', 10) || 180000);
+const CAPTCHA_418_SKIP_RETRY_AT = 2;
+const CAPTCHA_418_FASTFAIL_AT = 3;
+
+let stickySaveTimer = null;
+let stickyDirty = false;
+
+function loadStickyRoutingFromDisk() {
+  try {
+    if (!fs.existsSync(STICKY_ROUTING_PATH)) return;
+    const raw = JSON.parse(fs.readFileSync(STICKY_ROUTING_PATH, 'utf8'));
+    const users = raw && typeof raw === 'object' ? (raw.users || raw) : {};
+    for (const [uid, rec] of Object.entries(users)) {
+      if (!uid || !rec || typeof rec !== 'object' || !rec.serial) continue;
+      const group = rec.group || adbService.getGroupForSerial(rec.serial);
+      const entry = {
+        serial: String(rec.serial),
+        backupSerial: rec.backupSerial ? String(rec.backupSerial) : null,
+        group: String(group),
+        updatedAt: Number(rec.updatedAt) || Date.now()
+      };
+      stickyUserMap.set(String(uid), entry);
+      stickyUserGroupMap.set(String(uid), entry.group);
+    }
+  } catch (e) {
+    console.warn('[PhoneSign Gateway] Không đọc được sticky_routing.json:', e.message);
+  }
+}
+
+function flushStickyRoutingSync() {
+  if (!stickyDirty) return;
+  stickyDirty = false;
+  if (stickySaveTimer) {
+    clearTimeout(stickySaveTimer);
+    stickySaveTimer = null;
+  }
+  try {
+    const usersObj = {};
+    for (const [uid, rec] of stickyUserMap.entries()) {
+      usersObj[uid] = rec;
+    }
+    fs.mkdirSync(path.dirname(STICKY_ROUTING_PATH), { recursive: true });
+    const tmpPath = `${STICKY_ROUTING_PATH}.tmp`;
+    fs.writeFileSync(tmpPath, JSON.stringify({ version: 1, updatedAt: new Date().toISOString(), users: usersObj }, null, 2), 'utf8');
+    fs.renameSync(tmpPath, STICKY_ROUTING_PATH);
+  } catch (e) {
+    stickyDirty = true;
+    console.warn('[PhoneSign Gateway] Không ghi được sticky_routing.json:', e.message);
+  }
+}
+
+function scheduleSaveStickyRouting() {
+  stickyDirty = true;
+  if (stickySaveTimer) return;
+  stickySaveTimer = setTimeout(() => {
+    stickySaveTimer = null;
+    flushStickyRoutingSync();
+  }, 1500);
+  if (typeof stickySaveTimer.unref === 'function') {
+    stickySaveTimer.unref();
+  }
+}
+
+loadStickyRoutingFromDisk();
+process.once('beforeExit', flushStickyRoutingSync);
+
+function isCaptcha418Response(data) {
+  return !!(data && (data.http_status === 418 || data.data?.error === 90309999));
+}
+
+function getActive418Count(userId) {
+  if (!userId) return 0;
+  const rec = recent418ByUser.get(userId);
+  if (!rec) return 0;
+  if (Date.now() - rec.lastAt > CAPTCHA_418_WINDOW_MS) {
+    recent418ByUser.delete(userId);
+    return 0;
+  }
+  return rec.count;
+}
+
+function record418Hit(userId) {
+  if (!userId) return 0;
+  const now = Date.now();
+  if (recent418ByUser.size > 2000) {
+    for (const [k, v] of recent418ByUser.entries()) {
+      if (now - v.lastAt > CAPTCHA_418_WINDOW_MS) recent418ByUser.delete(k);
+    }
+  }
+  const prev = recent418ByUser.get(userId);
+  const nextCount = prev && (now - prev.lastAt <= CAPTCHA_418_WINDOW_MS) ? prev.count + 1 : 1;
+  recent418ByUser.set(userId, { count: nextCount, lastAt: now });
+  return nextCount;
+}
+
+function getClientKey(req) {
+  const raw = String(req?.ip || req?.socket?.remoteAddress || req?.connection?.remoteAddress || 'unknown').trim();
+  const ip = raw.startsWith('::ffff:') ? raw.slice(7) : raw;
+  if (ip === '127.0.0.1' || ip === '::1') return 'local';
+  return ip || 'unknown';
+}
 
 function recordPortStat(assignedUrl, type, userId = '', ok = true) {
   if (!assignedUrl) return;
@@ -30,8 +156,9 @@ function recordPortStat(assignedUrl, type, userId = '', ok = true) {
     url: assignedUrl,
     serial,
     group,
-    model: prof?.deviceModel || '',
+    model: prof?.model || prof?.deviceModel || '',
     sdkInt: prof?.sdkInt || '',
+    appVersion: prof?.appVersion || '',
     prechecks: 0,
     createposts: 0,
     successPosts: 0,
@@ -41,8 +168,9 @@ function recordPortStat(assignedUrl, type, userId = '', ok = true) {
   };
   entry.serial = serial;
   entry.group = group;
-  entry.model = prof?.deviceModel || entry.model;
+  entry.model = prof?.model || prof?.deviceModel || entry.model;
   entry.sdkInt = prof?.sdkInt || entry.sdkInt;
+  entry.appVersion = prof?.appVersion || entry.appVersion;
   if (type === 'precheck') entry.prechecks++;
   if (type === 'createpost') {
     entry.createposts++;
@@ -72,54 +200,225 @@ function hashUserId(userId = '') {
 }
 
 function getGroupForSerial(serial = '') {
-  const s = String(serial || '').trim().toUpperCase();
-  if (!s) return 'TIGER';
-  if (s.startsWith('TIGER')) return 'TIGER';
-  return `SAMSUNG_${s}`;
+  return adbService.getGroupForSerial(serial);
+}
+
+function getGroupWeight(group = '') {
+  const g = String(group || '');
+  if (g.startsWith('SAMSUNG_')) return SAMSUNG_SLOT_WEIGHT;
+  if (g === 'NOTE8') return NOTE8_SLOT_WEIGHT;
+  return TIGER_SLOT_WEIGHT;
 }
 
 function getCanonicalGroupSlots(activeUrls) {
   const selected = Array.isArray(adbService.selectedSerials)
-    ? adbService.selectedSerials.filter(Boolean)
+    ? adbService.selectedSerials.filter(s => s && !String(s).startsWith('GATEWAY-'))
     : [];
-  if (selected.length > 0) {
-    return selected.map(s => getGroupForSerial(s));
+  const baseGroups = selected.length > 0
+    ? selected.map(s => getGroupForSerial(s))
+    : activeUrls.map(u => adbService.getDeviceGroupForUrl(u));
+  const slots = [];
+  for (const grp of baseGroups) {
+    const w = getGroupWeight(grp);
+    for (let i = 0; i < w; i++) slots.push(grp);
   }
-  return activeUrls.map(u => adbService.getDeviceGroupForUrl(u));
+  return slots;
 }
 
-function getCandidateUrlsForUser(userId = null) {
+function getRealSelectedSerials(activeUrls) {
+  const selected = Array.isArray(adbService.selectedSerials)
+    ? adbService.selectedSerials.filter(s => s && !String(s).startsWith('GATEWAY-'))
+    : [];
+  if (selected.length > 0) return selected;
+  const fromUrls = [];
+  for (const u of activeUrls || []) {
+    const s = adbService.getSerialForUrl(u);
+    if (s && !String(s).startsWith('GATEWAY-') && !fromUrls.includes(s)) fromUrls.push(s);
+  }
+  return fromUrls;
+}
+
+function getSerialWeight(serial = '') {
+  return getGroupWeight(getGroupForSerial(serial));
+}
+
+function getPrimaryLoadBySerial() {
+  const counts = new Map();
+  for (const rec of stickyUserMap.values()) {
+    if (rec && rec.serial) {
+      counts.set(rec.serial, (counts.get(rec.serial) || 0) + 1);
+    }
+  }
+  return counts;
+}
+
+function getBackupLoadBySerial() {
+  const counts = new Map();
+  for (const rec of stickyUserMap.values()) {
+    if (rec && rec.backupSerial) {
+      counts.set(rec.backupSerial, (counts.get(rec.backupSerial) || 0) + 1);
+    }
+  }
+  return counts;
+}
+
+function pickLeastLoadedSerial(serialPool, userId, onlineSerialSet = null) {
+  if (!serialPool || serialPool.length === 0) return null;
+  const preferred = onlineSerialSet
+    ? serialPool.filter(s => onlineSerialSet.has(s))
+    : [];
+  const pool = preferred.length > 0 ? preferred : serialPool;
+  const loadMap = getPrimaryLoadBySerial();
+  let bestSerial = pool[0];
+  let bestScore = Infinity;
+  let bestTie = Infinity;
+  for (const s of pool) {
+    const score = (loadMap.get(s) || 0) / getSerialWeight(s);
+    const tie = hashUserId(`${userId}:${s}`);
+    if (score < bestScore - 1e-9 || (Math.abs(score - bestScore) <= 1e-9 && tie < bestTie)) {
+      bestScore = score;
+      bestTie = tie;
+      bestSerial = s;
+    }
+  }
+  return bestSerial;
+}
+
+function pickBackupSerialInGroup(primarySerial, group, allSerials, userId, onlineSerialSet = null) {
+  const peers = (allSerials || []).filter(s => s !== primarySerial && getGroupForSerial(s) === group);
+  if (peers.length === 0) return null;
+  const preferred = onlineSerialSet ? peers.filter(s => onlineSerialSet.has(s)) : [];
+  const pool = preferred.length > 0 ? preferred : peers;
+  const pLoad = getPrimaryLoadBySerial();
+  const bLoad = getBackupLoadBySerial();
+  let best = pool[0];
+  let bestScore = Infinity;
+  let bestTie = Infinity;
+  for (const s of pool) {
+    const score = ((pLoad.get(s) || 0) + (bLoad.get(s) || 0) * 0.5) / getSerialWeight(s);
+    const tie = hashUserId(`bak:${userId}:${s}`);
+    if (score < bestScore - 1e-9 || (Math.abs(score - bestScore) <= 1e-9 && tie < bestTie)) {
+      bestScore = score;
+      bestTie = tie;
+      best = s;
+    }
+  }
+  return best;
+}
+
+function ensureStickyPinForUser(userId, activeUrls) {
+  const selectedSerials = getRealSelectedSerials(activeUrls);
+  const selectedSet = new Set(selectedSerials);
+  const onlineSerialSet = new Set();
+  for (const u of activeUrls || []) {
+    const s = adbService.getSerialForUrl(u);
+    if (s) onlineSerialSet.add(s);
+  }
+
+  let pin = stickyUserMap.get(userId);
+  if (pin) {
+    // Nếu chủ máy đã bỏ tích hẳn TOÀN BỘ nhóm cũ khỏi selectedSerials -> gán lại sạch sang máy đang chọn.
+    // Nếu nhóm cũ vẫn còn trong selectedSerials (kể cả máy gốc đang nháy USB tạm) -> giữ nguyên nhóm, không nhảy chéo dòng.
+    const sameGroupSelected = selectedSerials.filter(s => getGroupForSerial(s) === pin.group);
+    if (selectedSerials.length > 0 && sameGroupSelected.length === 0) {
+      const nextPrimary = pickLeastLoadedSerial(selectedSerials, userId, onlineSerialSet);
+      const nextGroup = getGroupForSerial(nextPrimary);
+      const nextBackup = pickBackupSerialInGroup(nextPrimary, nextGroup, selectedSerials, userId, onlineSerialSet);
+      pin = { serial: nextPrimary, backupSerial: nextBackup, group: nextGroup, updatedAt: Date.now() };
+      stickyUserMap.set(userId, pin);
+      stickyUserGroupMap.set(userId, pin.group);
+      scheduleSaveStickyRouting();
+      return pin;
+    }
+    let changed = false;
+    if (selectedSet.size > 0 && !selectedSet.has(pin.serial) && sameGroupSelected.length > 0) {
+      // Chỉ 1 máy lẻ trong cùng nhóm bị bỏ tích -> chuyển primary sang máy cùng dòng còn lại
+      pin.serial = pickLeastLoadedSerial(sameGroupSelected, userId, onlineSerialSet);
+      changed = true;
+    }
+    if (
+      sameGroupSelected.length > 1 &&
+      (!pin.backupSerial || pin.backupSerial === pin.serial || !selectedSet.has(pin.backupSerial))
+    ) {
+      pin.backupSerial = pickBackupSerialInGroup(pin.serial, pin.group, sameGroupSelected, userId, onlineSerialSet);
+      changed = true;
+    }
+    if (changed) {
+      pin.updatedAt = Date.now();
+      stickyUserMap.set(userId, pin);
+      stickyUserGroupMap.set(userId, pin.group);
+      scheduleSaveStickyRouting();
+    }
+    return pin;
+  }
+
+  const primarySerial = pickLeastLoadedSerial(selectedSerials, userId, onlineSerialSet);
+  if (!primarySerial) return null;
+  const group = getGroupForSerial(primarySerial);
+  const backupSerial = pickBackupSerialInGroup(primarySerial, group, selectedSerials, userId, onlineSerialSet);
+  pin = { serial: primarySerial, backupSerial, group, updatedAt: Date.now() };
+  stickyUserMap.set(userId, pin);
+  stickyUserGroupMap.set(userId, pin.group);
+  scheduleSaveStickyRouting();
+  return pin;
+}
+
+function getCandidateUrlsForUser(userId = null, waitMs = 0) {
   const urls = adbService.getActiveLocalSignUrls();
   if (urls.length === 0) return [];
   if (!userId) return urls;
 
-  // Tính nhóm gốc (homeGroup) cố định trên toàn bộ danh sách selectedSerials
-  // thay vì chỉ trên tập máy tạm thời đang online lúc khởi động/rớt USB.
-  // Nhờ vậy khi 4 máy vừa reconnect chậm hơn 1 máy, tải không bao giờ bị ghim lệch về 1 máy duy nhất.
-  const canonicalSlots = getCanonicalGroupSlots(urls);
-  const homeGroup = canonicalSlots.length > 0
-    ? canonicalSlots[hashUserId(userId) % canonicalSlots.length]
-    : adbService.getDeviceGroupForUrl(urls[hashUserId(userId) % urls.length]);
-
-  const homeMatched = urls.filter(u => adbService.getDeviceGroupForUrl(u) === homeGroup);
-  if (homeMatched.length > 0) {
-    stickyUserGroupMap.set(userId, homeGroup);
-    return homeMatched;
+  const urlBySerial = new Map();
+  for (const u of urls) {
+    const s = adbService.getSerialForUrl(u);
+    if (s) urlBySerial.set(s, u);
   }
 
-  // Nhóm gốc đang tạm mất kết nối -> mượn tạm máy online khác nhưng KHÔNG ghi đè stickyUserGroupMap
-  // để ngay khi máy gốc lên lại thì tài khoản tự quay về đúng nhóm cân bằng.
-  const existingGroup = stickyUserGroupMap.get(userId);
-  if (existingGroup && existingGroup !== homeGroup) {
-    const existingMatched = urls.filter(u => adbService.getDeviceGroupForUrl(u) === existingGroup);
-    if (existingMatched.length > 0) {
-      return existingMatched;
+  const pin = ensureStickyPinForUser(userId, urls);
+  if (!pin) return urls;
+
+  const primaryUrl = pin.serial ? urlBySerial.get(pin.serial) : null;
+  const backupUrl = pin.backupSerial ? urlBySerial.get(pin.backupSerial) : null;
+  const sameGroupOnline = urls.filter(u => adbService.getDeviceGroupForUrl(u) === pin.group);
+  if (sameGroupOnline.length > 0) {
+    groupOfflineSince.delete(pin.group);
+  }
+
+  // Tầng 1: ưu tiên tuyệt đối đúng primarySerial (1 android_id cố định) trong cửa sổ PRIMARY_GRACE_MS
+  if (primaryUrl && waitMs < PRIMARY_GRACE_MS) {
+    return [primaryUrl];
+  }
+
+  // Tầng 2: nếu primary bận > PRIMARY_GRACE_MS hoặc tạm rớt USB -> chỉ fallback trong CÙNG nhóm dòng máy
+  const ordered = [];
+  if (primaryUrl) ordered.push(primaryUrl);
+  if (backupUrl && !ordered.includes(backupUrl)) ordered.push(backupUrl);
+  // Chỉ mở sang các máy khác cùng nhóm nếu cả primary lẫn backup đều đang offline
+  if (!primaryUrl && !backupUrl) {
+    for (const u of sameGroupOnline) {
+      if (!ordered.includes(u)) ordered.push(u);
     }
   }
+  if (ordered.length > 0) {
+    return ordered;
+  }
+
+  // Cả nhóm pin.group hiện có 0 máy online (đã quá 90s grace USB của adbService -> hub đã rút hoặc chết nguồn).
+  // Chờ thêm GROUP_OFFLINE_BORROW_MS (mặc định 15s) tránh nhảy nhầm lúc khởi động; sau đó mượn tạm
+  // 1 máy online cố định theo hash(userId) (KHÔNG ghi đè stickyUserMap) để tránh kẹt hàng đợi 180s -> HTTP 503.
+  if (STRICT_NO_BORROW) {
+    return [];
+  }
+  const now = Date.now();
+  const offlineAt = groupOfflineSince.get(pin.group);
+  if (!offlineAt) {
+    groupOfflineSince.set(pin.group, now);
+    if (GROUP_OFFLINE_BORROW_MS > 0) return [];
+  } else if (now - offlineAt < GROUP_OFFLINE_BORROW_MS) {
+    return [];
+  }
   const fallbackUrl = urls[hashUserId(userId) % urls.length];
-  const fallbackGroup = adbService.getDeviceGroupForUrl(fallbackUrl);
-  const fallbackMatched = urls.filter(u => adbService.getDeviceGroupForUrl(u) === fallbackGroup);
-  return fallbackMatched.length > 0 ? fallbackMatched : [fallbackUrl];
+  return fallbackUrl ? [fallbackUrl] : [];
 }
 
 let externalWaitTimer = null;
@@ -135,9 +434,20 @@ function scheduleExternalWaitDrain() {
   }, 200);
 }
 
-function pickIdlePhoneUrlForUser(userId = null) {
-  const candidates = getCandidateUrlsForUser(userId);
+function pickIdlePhoneUrlForUser(userId = null, waitMs = 0) {
+  const candidates = getCandidateUrlsForUser(userId, waitMs);
   if (candidates.length === 0) return null;
+  if (userId) {
+    // Giữ nguyên thứ tự ưu tiên: primaryUrl -> backupUrl -> sameGroup
+    for (let i = 0; i < candidates.length; i++) {
+      const u = candidates[i];
+      if (busyPhoneUrls.has(u)) continue;
+      const serial = adbService.getSerialForUrl(u);
+      if (serial && adbService.isExternalDeviceLocked(serial)) continue;
+      return u;
+    }
+    return null;
+  }
   for (let i = 0; i < candidates.length; i++) {
     const idx = (rrCursor + i) % candidates.length;
     const u = candidates[idx];
@@ -170,23 +480,46 @@ function pruneDeadWaitQueueItems() {
   }
 }
 
+function markClientServed(clientKey = 'unknown') {
+  serveTickCounter++;
+  clientLastServedTick.set(clientKey, serveTickCounter);
+  clientServedCounts.set(clientKey, (clientServedCounts.get(clientKey) || 0) + 1);
+}
+
 function drainWaitQueue() {
   pruneDeadWaitQueueItems();
-  for (let i = 0; i < waitQueue.length; i++) {
-    const item = waitQueue[i];
-    if (item.cancelled || (typeof item.isAborted === 'function' && item.isAborted())) {
-      waitQueue.splice(i, 1);
-      i--;
-      droppedZombieCount++;
-      item.abortWith(new Error('CLIENT_DISCONNECTED'));
-      continue;
+  while (waitQueue.length > 0) {
+    let bestIdx = -1;
+    let bestUrl = null;
+    let bestLastServed = Infinity;
+    let bestEnqueuedAt = Infinity;
+    for (let i = 0; i < waitQueue.length; i++) {
+      const item = waitQueue[i];
+      if (item.cancelled || (typeof item.isAborted === 'function' && item.isAborted())) {
+        waitQueue.splice(i, 1);
+        i--;
+        droppedZombieCount++;
+        item.abortWith(new Error('CLIENT_DISCONNECTED'));
+        continue;
+      }
+      const waitMs = Math.max(0, Date.now() - item.enqueuedAt);
+      const idleUrl = pickIdlePhoneUrlForUser(item.userId, waitMs);
+      if (!idleUrl) continue;
+      const clientLast = clientLastServedTick.get(item.clientKey) || 0;
+      if (
+        clientLast < bestLastServed ||
+        (clientLast === bestLastServed && item.enqueuedAt < bestEnqueuedAt)
+      ) {
+        bestIdx = i;
+        bestUrl = idleUrl;
+        bestLastServed = clientLast;
+        bestEnqueuedAt = item.enqueuedAt;
+      }
     }
-    const idleUrl = pickIdlePhoneUrlForUser(item.userId);
-    if (idleUrl) {
-      waitQueue.splice(i, 1);
-      i--;
-      item.runWithUrl(idleUrl);
-    }
+    if (bestIdx === -1 || !bestUrl) break;
+    const [chosen] = waitQueue.splice(bestIdx, 1);
+    markClientServed(chosen.clientKey);
+    chosen.runWithUrl(bestUrl);
   }
   if (waitQueue.length > 0) {
     scheduleExternalWaitDrain();
@@ -195,6 +528,7 @@ function drainWaitQueue() {
 
 function enqueuePhoneTask(taskFn, userId = null, opts = {}) {
   const res = opts.res || null;
+  const clientKey = opts.clientKey || 'unknown';
   const maxWaitMs = Number.isFinite(opts.maxWaitMs) ? opts.maxWaitMs : MAX_QUEUE_WAIT_MS;
   let clientClosed = false;
   const isAborted = () => clientClosed || !!(res && (res.destroyed || (res.closed && !res.writableEnded)));
@@ -279,6 +613,7 @@ function enqueuePhoneTask(taskFn, userId = null, opts = {}) {
 
     const idleUrl = pickIdlePhoneUrlForUser(userId);
     if (idleUrl) {
+      markClientServed(clientKey);
       runWithUrl(idleUrl);
     } else {
       pruneDeadWaitQueueItems();
@@ -290,6 +625,7 @@ function enqueuePhoneTask(taskFn, userId = null, opts = {}) {
       }
       queueItem = {
         userId,
+        clientKey,
         enqueuedAt: Date.now(),
         maxWaitMs,
         cancelled: false,
@@ -397,9 +733,18 @@ async function callLocalPhoneWithRetry(requestFn, preferredUrl = null) {
   try {
     return await requestFn(targetLocalUrl);
   } catch (err) {
+    const code = String(err?.code || '');
+    const msg = String(err?.message || '');
+    const isConnLost = code === 'ECONNREFUSED' || code === 'ECONNRESET' || msg.includes('ECONNREFUSED') || msg.includes('socket hang up');
     if (preferredUrl) {
-      await adbService.restartShopeeAppForSign(targetLocalUrl);
+      if (isConnLost) {
+        await adbService.ensureForwardForUrl(targetLocalUrl).catch(() => false);
+      }
+      await adbService.restartShopeeAppForSign(targetLocalUrl, null, null, isConnLost);
       return await requestFn(targetLocalUrl);
+    }
+    if (isConnLost) {
+      await adbService.ensureForwardForUrl(targetLocalUrl).catch(() => false);
     }
     await adbService.ensurePhoneSignReady(targetLocalUrl);
     try {
@@ -508,6 +853,29 @@ async function handleCreatePost(req, res) {
     let dataObj = normalized.obj;
     let dataStr = normalized.str;
 
+    const clientKey = getClientKey(req);
+
+    // Chặn đốt điện thoại khi cùng 1 userId dính Captcha 418 liên tiếp (>= 3 lần trong 3 phút)
+    if (userId && getActive418Count(userId) >= CAPTCHA_418_FASTFAIL_AT) {
+      fastFailed418Count++;
+      recordRecentFailure({
+        client: clientKey,
+        userId,
+        port: 'FAST_FAIL_418',
+        stage: 'fast_fail_418',
+        httpStatus: 418,
+        code: 90309999,
+        msg: 'Gateway fast-fail 418 (userId đang dính Captcha 418 liên tiếp)'
+      });
+      return res.status(200).json({
+        code: 418,
+        http_status: 418,
+        data: { error: 90309999, fast_fail: true },
+        msg: 'HTTP 418 Captcha (Gateway fast-fail)',
+        error: 'HTTP 418 Captcha (Gateway fast-fail)'
+      });
+    }
+
     const result = await enqueuePhoneTask(async (assignedBaseUrl) => {
       const cookie = normalizeCookie(rawCookie, assignedBaseUrl);
       const syncAppInfoWithAssignedPhone = () => {
@@ -586,6 +954,15 @@ async function handleCreatePost(req, res) {
         const early = await refreshSessionAndPrecheck();
         if (early && early.earlyReturn) {
           adbService.markSessionUsed(userId, false, assignedBaseUrl);
+          recordRecentFailure({
+            client: clientKey,
+            userId,
+            port: assignedBaseUrl,
+            stage: 'precheck',
+            httpStatus: early.earlyReturn?.http_status || null,
+            code: early.earlyReturn?.data?.code ?? early.earlyReturn?.code ?? null,
+            msg: String(early.earlyReturn?.data?.msg || early.earlyReturn?.msg || JSON.stringify(early.earlyReturn || {})).slice(0, 220)
+          });
           return early.earlyReturn;
         }
       }
@@ -604,14 +981,16 @@ async function handleCreatePost(req, res) {
         assignedBaseUrl
       );
 
-      if (
+      const firstIs418 = isCaptcha418Response(postRes.data);
+      let hit418Count = firstIs418 ? record418Hit(userId) : 0;
+      const shouldRetryOnPhone =
         postRes.data &&
-        (postRes.data.http_status === 418 ||
-          postRes.data.data?.error === 90309999 ||
+        cookie &&
+        ((firstIs418 && hit418Count < CAPTCHA_418_SKIP_RETRY_AT) ||
           postRes.data.data?.code === 98001004 ||
-          postRes.data.data?.code === 300014) &&
-        cookie
-      ) {
+          postRes.data.data?.code === 300014);
+
+      if (shouldRetryOnPhone) {
         if (postRes.data.data?.code === 98001004) {
           await new Promise(r => setTimeout(r, 1500));
         }
@@ -631,12 +1010,36 @@ async function handleCreatePost(req, res) {
           ),
           assignedBaseUrl
         );
+        if (isCaptcha418Response(postRes.data)) {
+          record418Hit(userId);
+        }
       }
 
       const postId = postRes.data?.data?.data?.post_id || postRes.data?.data?.post_id;
-      recordPortStat(assignedBaseUrl, 'createpost', userId, !!(postRes.data?.code === 0 && postId));
+      const postOk = !!(postRes.data?.code === 0 && postId);
+      if (postOk && userId) {
+        recent418ByUser.delete(userId);
+      }
+      recordPortStat(assignedBaseUrl, 'createpost', userId, postOk);
+      if (!postOk) {
+        recordRecentFailure({
+          client: clientKey,
+          userId,
+          port: assignedBaseUrl,
+          stage: 'createpost',
+          httpStatus: postRes.data?.http_status || postRes.status || null,
+          code: postRes.data?.data?.code ?? postRes.data?.data?.error ?? postRes.data?.code ?? null,
+          msg: String(
+            postRes.data?.data?.msg ||
+            postRes.data?.data?.error_msg ||
+            postRes.data?.msg ||
+            postRes.data?.error ||
+            JSON.stringify(postRes.data || {})
+          ).slice(0, 260)
+        });
+      }
       return postRes.data;
-    }, userId, { res });
+    }, userId, { res, clientKey });
 
     if (res.writableEnded || res.destroyed) return;
 
@@ -688,6 +1091,7 @@ function handleRoutingStats(req, res) {
       group: entry.group,
       model: entry.model,
       sdkInt: entry.sdkInt,
+      appVersion: entry.appVersion,
       prechecks: entry.prechecks,
       createposts: entry.createposts,
       successPosts: entry.successPosts,
@@ -697,17 +1101,34 @@ function handleRoutingStats(req, res) {
     });
   }
   const groupSummary = {};
-  for (const [, grp] of stickyUserGroupMap.entries()) {
-    groupSummary[grp] = (groupSummary[grp] || 0) + 1;
+  const serialSummary = {};
+  for (const rec of stickyUserMap.values()) {
+    if (!rec) continue;
+    groupSummary[rec.group] = (groupSummary[rec.group] || 0) + 1;
+    serialSummary[rec.serial] = (serialSummary[rec.serial] || 0) + 1;
   }
   const waitQueueByGroup = {};
+  const waitQueueByClient = {};
   const activeUrls = adbService.getActiveLocalSignUrls();
-  const canonicalSlots = getCanonicalGroupSlots(activeUrls);
   for (const item of waitQueue) {
-    const grp = item.userId
-      ? (stickyUserGroupMap.get(item.userId) || (canonicalSlots.length > 0 ? canonicalSlots[hashUserId(item.userId) % canonicalSlots.length] : 'ANY'))
-      : 'ANY';
+    const pin = item.userId ? stickyUserMap.get(item.userId) : null;
+    const grp = pin ? pin.group : 'ANY';
     waitQueueByGroup[grp] = (waitQueueByGroup[grp] || 0) + 1;
+    const ck = item.clientKey || 'unknown';
+    waitQueueByClient[ck] = (waitQueueByClient[ck] || 0) + 1;
+  }
+  const servedByClient = {};
+  for (const [k, v] of clientServedCounts.entries()) {
+    servedByClient[k] = v;
+  }
+  const now418 = Date.now();
+  let active418UsersCount = 0;
+  for (const [k, v] of recent418ByUser.entries()) {
+    if (now418 - v.lastAt > CAPTCHA_418_WINDOW_MS) {
+      recent418ByUser.delete(k);
+    } else if (v.count >= CAPTCHA_418_FASTFAIL_AT) {
+      active418UsersCount++;
+    }
   }
   return res.json({
     code: 0,
@@ -715,11 +1136,17 @@ function handleRoutingStats(req, res) {
     busyUrls: Array.from(busyPhoneUrls),
     waitQueueLength: waitQueue.length,
     waitQueueByGroup,
+    waitQueueByClient,
+    servedByClient,
     droppedZombieCount,
     droppedTimeoutCount,
-    stickyUsersTotal: stickyUserGroupMap.size,
+    fastFailed418Count,
+    active418UsersCount,
+    stickyUsersTotal: stickyUserMap.size,
     stickyUsersByGroup: groupSummary,
+    stickyUsersBySerial: serialSummary,
     crossGroupViolations,
+    recentFailures: recentFailures.slice(-30),
     ports
   });
 }
@@ -816,5 +1243,16 @@ function startGatewayListeners(port = 8080) {
 module.exports = {
   createGatewayRouter,
   startGatewayListeners,
-  enqueuePhoneTask
+  enqueuePhoneTask,
+  _internal: {
+    getCandidateUrlsForUser,
+    pickIdlePhoneUrlForUser,
+    ensureStickyPinForUser,
+    flushStickyRoutingSync,
+    loadStickyRoutingFromDisk,
+    stickyUserMap,
+    record418Hit,
+    getActive418Count,
+    recent418ByUser
+  }
 };
