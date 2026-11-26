@@ -108,7 +108,7 @@ router.get('/credit', async (req, res) => {
   try {
     const settings = await Config.getCreditSettings();
     res.json({
-      sign_mode: settings.sign_mode || 'credit',
+      sign_mode: settings.sign_mode || 'phone',
       credit_url: settings.raw_credit_url || settings.credit_url,
       credit_key: settings.raw_credit_key || settings.credit_key,
       phone_sign_url: settings.phone_sign_url || 'http://100.79.170.67:8080',
@@ -122,7 +122,7 @@ router.get('/credit', async (req, res) => {
 // POST /api/config/credit
 router.post('/credit', async (req, res) => {
   try {
-    const { credit_url, credit_key, sign_mode = 'credit', phone_sign_url, phone_sign_key } = req.body;
+    const { credit_url, credit_key, sign_mode = 'phone', phone_sign_url, phone_sign_key } = req.body;
     if (sign_mode === 'credit' && (!credit_url || !credit_key)) {
       return res.status(400).json({ success: false, message: 'URL và Key Credit không được để trống' });
     }

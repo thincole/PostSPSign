@@ -18,10 +18,9 @@ src/database/app.db
 src/database/adb_selected_devices.json
 src/database/sp_phone_backup/
 
-# Uploads, Cookies, and Temp folders
+# Uploads and Temp folders
 uploads/*
 !uploads/.gitkeep
-cookie_shopee/
 temp_update/
 temp_update_bat/
 

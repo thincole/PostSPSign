@@ -1,0 +1,74 @@
+{
+  "manifest_version": 3,
+  "name": "Shopee Cookie - Multi Country (TIGER 10)",
+  "version": "3.2",
+  "description": "Get & Auto-Sync cookies from Shopee URLs (VN, MY, PH, TW, TH, SG, ID) - TIGER 10 (36448) + Tool MLS Sync",
+  "permissions": [
+    "cookies",
+    "tabs",
+    "storage",
+    "activeTab",
+    "scripting",
+    "webRequest",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "*://shopee.vn/*",
+    "*://*.shopee.vn/*",
+    "*://shopee.com.my/*",
+    "*://*.shopee.com.my/*",
+    "*://shopee.ph/*",
+    "*://*.shopee.ph/*",
+    "*://shopee.tw/*",
+    "*://*.shopee.tw/*",
+    "*://shopee.co.th/*",
+    "*://*.shopee.co.th/*",
+    "*://shopee.sg/*",
+    "*://*.shopee.sg/*",
+    "*://shopee.co.id/*",
+    "*://*.shopee.co.id/*",
+    "http://127.0.0.1:6868/*",
+    "http://localhost:6868/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://shopee.vn/*",
+        "*://*.shopee.vn/*",
+        "*://shopee.com.my/*",
+        "*://*.shopee.com.my/*",
+        "*://shopee.ph/*",
+        "*://*.shopee.ph/*",
+        "*://shopee.tw/*",
+        "*://*.shopee.tw/*",
+        "*://shopee.co.th/*",
+        "*://*.shopee.co.th/*",
+        "*://shopee.sg/*",
+        "*://*.shopee.sg/*",
+        "*://shopee.co.id/*",
+        "*://*.shopee.co.id/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

@@ -45,7 +45,6 @@ $exclude = @(
     'database.sqlite-shm',
     'database.sqlite-wal',
     'uploads',
-    'cookie_shopee',
     'node_modules',
     '.git',
     'temp_update_bat'

@@ -41,6 +41,42 @@ const PRIMARY_GRACE_MS = Math.max(0, parseInt(process.env.GATEWAY_PRIMARY_GRACE_
 const STRICT_NO_BORROW = process.env.GATEWAY_STRICT_NO_BORROW === '1';
 const GROUP_OFFLINE_BORROW_MS = Math.max(0, parseInt(process.env.GATEWAY_GROUP_OFFLINE_BORROW_MS || '15000', 10) || 15000);
 const groupOfflineSince = new Map(); // group -> first timestamp when 0 online urls in group
+const DEAD_PHONE_COOLDOWN_MS = Math.max(15000, parseInt(process.env.GATEWAY_DEAD_PHONE_COOLDOWN_MS || '90000', 10) || 90000);
+const deadPhoneUntil = new Map(); // localUrl -> timestamp until quarantined after conn lost
+
+function isConnLostErr(err) {
+  const code = String(err?.code || '');
+  const msg = String(err?.message || '');
+  return (
+    code === 'ECONNREFUSED' ||
+    code === 'ECONNRESET' ||
+    msg.includes('ECONNREFUSED') ||
+    msg.includes('ECONNRESET') ||
+    msg.includes('socket hang up')
+  );
+}
+
+function isPhoneTemporarilyDead(url) {
+  const until = deadPhoneUntil.get(url);
+  if (!until) return false;
+  if (Date.now() >= until) {
+    deadPhoneUntil.delete(url);
+    return false;
+  }
+  return true;
+}
+
+function markPhoneTemporarilyDead(url, reason = '') {
+  if (!url) return;
+  deadPhoneUntil.set(url, Date.now() + DEAD_PHONE_COOLDOWN_MS);
+  console.warn(`⚠️ [PhoneSign Gateway] Tạm cách ly ${url} trong ${Math.round(DEAD_PHONE_COOLDOWN_MS / 1000)}s (${reason || 'mất kết nối'}) — tự failover sang máy dự phòng`);
+}
+
+function markPhoneHealthy(url) {
+  if (url && deadPhoneUntil.has(url)) {
+    deadPhoneUntil.delete(url);
+  }
+}
 const CAPTCHA_418_WINDOW_MS = Math.max(10000, parseInt(process.env.GATEWAY_418_WINDOW_MS || '180000', 10) || 180000);
 const CAPTCHA_418_SKIP_RETRY_AT = 2;
 const CAPTCHA_418_FASTFAIL_AT = 3;
@@ -364,8 +400,10 @@ function ensureStickyPinForUser(userId, activeUrls) {
 }
 
 function getCandidateUrlsForUser(userId = null, waitMs = 0) {
-  const urls = adbService.getActiveLocalSignUrls();
-  if (urls.length === 0) return [];
+  const rawUrls = adbService.getActiveLocalSignUrls();
+  if (rawUrls.length === 0) return [];
+  const healthyUrls = rawUrls.filter(u => !isPhoneTemporarilyDead(u));
+  const urls = healthyUrls.length > 0 ? healthyUrls : rawUrls;
   if (!userId) return urls;
 
   const urlBySerial = new Map();
@@ -731,26 +769,40 @@ function buildPrecheckPayload(cookieStr = '', assignedUrl = null) {
 async function callLocalPhoneWithRetry(requestFn, preferredUrl = null) {
   const targetLocalUrl = preferredUrl || getLocalPhoneUrl();
   try {
-    return await requestFn(targetLocalUrl);
+    const okRes = await requestFn(targetLocalUrl);
+    markPhoneHealthy(targetLocalUrl);
+    return okRes;
   } catch (err) {
-    const code = String(err?.code || '');
-    const msg = String(err?.message || '');
-    const isConnLost = code === 'ECONNREFUSED' || code === 'ECONNRESET' || msg.includes('ECONNREFUSED') || msg.includes('socket hang up');
+    const isConnLost = isConnLostErr(err);
     if (preferredUrl) {
       if (isConnLost) {
         await adbService.ensureForwardForUrl(targetLocalUrl).catch(() => false);
       }
       await adbService.restartShopeeAppForSign(targetLocalUrl, null, null, isConnLost);
-      return await requestFn(targetLocalUrl);
+      try {
+        const retryRes = await requestFn(targetLocalUrl);
+        markPhoneHealthy(targetLocalUrl);
+        return retryRes;
+      } catch (err2) {
+        if (isConnLostErr(err2)) {
+          markPhoneTemporarilyDead(targetLocalUrl, err2.code || err2.message);
+        }
+        throw err2;
+      }
     }
     if (isConnLost) {
       await adbService.ensureForwardForUrl(targetLocalUrl).catch(() => false);
     }
     await adbService.ensurePhoneSignReady(targetLocalUrl);
     try {
-      return await requestFn(targetLocalUrl);
+      const retryRes = await requestFn(targetLocalUrl);
+      markPhoneHealthy(targetLocalUrl);
+      return retryRes;
     } catch (err2) {
-      const altUrls = adbService.getActiveLocalSignUrls().filter(u => u !== targetLocalUrl);
+      if (isConnLostErr(err2)) {
+        markPhoneTemporarilyDead(targetLocalUrl, err2.code || err2.message);
+      }
+      const altUrls = adbService.getActiveLocalSignUrls().filter(u => u !== targetLocalUrl && !isPhoneTemporarilyDead(u));
       if (altUrls.length > 0) {
         return await requestFn(altUrls[0]);
       }
@@ -849,9 +901,6 @@ async function handleCreatePost(req, res) {
     const rawCookie = body.cookie || '';
     const proxy = body.proxy || '';
     const userId = (rawCookie.match(/SPC_U=(\d+)/) || [])[1] || '';
-    const normalized = normalizePayloadData(body.data || {});
-    let dataObj = normalized.obj;
-    let dataStr = normalized.str;
 
     const clientKey = getClientKey(req);
 
@@ -876,7 +925,13 @@ async function handleCreatePost(req, res) {
       });
     }
 
-    const result = await enqueuePhoneTask(async (assignedBaseUrl) => {
+    const runCreatePostOnPhone = async (assignedBaseUrl) => {
+      const rawDataCopy = (body.data && typeof body.data === 'object')
+        ? JSON.parse(JSON.stringify(body.data))
+        : (body.data || {});
+      const normalized = normalizePayloadData(rawDataCopy, assignedBaseUrl);
+      let dataObj = normalized.obj;
+      let dataStr = normalized.str;
       const cookie = normalizeCookie(rawCookie, assignedBaseUrl);
       const syncAppInfoWithAssignedPhone = () => {
         if (dataObj && typeof dataObj === 'object') {
@@ -1039,7 +1094,18 @@ async function handleCreatePost(req, res) {
         });
       }
       return postRes.data;
-    }, userId, { res, clientKey });
+    };
+
+    let result;
+    try {
+      result = await enqueuePhoneTask(runCreatePostOnPhone, userId, { res, clientKey });
+    } catch (firstErr) {
+      if (!isConnLostErr(firstErr) || res.writableEnded || res.destroyed) {
+        throw firstErr;
+      }
+      // Máy ghim vừa mất kết nối & đã bị cách ly -> thử lại ngay 1 lần trên máy dự phòng cùng nhóm đang sống
+      result = await enqueuePhoneTask(runCreatePostOnPhone, userId, { res, clientKey });
+    }
 
     if (res.writableEnded || res.destroyed) return;
 

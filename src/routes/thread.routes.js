@@ -272,10 +272,17 @@ router.get('/cookie-targets', async (req, res) => {
   }
 });
 
-// LỚP 2: Nhận Cookie từ Extension cookie_shopee (kèm tự động làm giàu từ GemLogin CDP/SQLite & tự chạy lại luồng)
+// LỚP 2: Nhận Cookie từ Extension cookie_shopee — CHỈ chấp nhận đồng bộ thủ công (manual: true khi bấm nút)
 router.post('/cookie-sync', async (req, res) => {
   setExtensionCors(res);
   try {
+    if (req.body?.manual !== true) {
+      return res.json({
+        success: false,
+        ignored: true,
+        error: 'Chế độ thủ công: chỉ đồng bộ khi bấm nút Đẩy vào Tool MLS trên Extension.'
+      });
+    }
     const cookieRecoveryService = require('../services/cookie-recovery.service');
     const result = await cookieRecoveryService.syncCookieFromExtension(req.body || {});
     res.json(result);

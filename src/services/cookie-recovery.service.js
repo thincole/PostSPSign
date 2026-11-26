@@ -1502,15 +1502,24 @@ function ensureGemLoginGlobalExtensionInstalled() {
       : '';
 
     const normalizedDestPath = `${userHome}\\.gemlogin/extensions/cookie_shopee`;
-    const filtered = extList.filter(
-      x => x && x.id !== 'eblcdhecfebdnclnndkgaidgnggeefmp' && x.id !== 'jgdjcbnaodblmdfapldbhpkldnjcfpmf' && !String(x.path || '').includes('cookie_shopee')
-    );
+    const filtered = extList.filter(x => {
+      if (!x) return false;
+      const p = String(x.path || '').toLowerCase();
+      const n = String(x.name || '').toLowerCase();
+      return (
+        x.id !== 'eblcdhecfebdnclnndkgaidgnggeefmp' &&
+        x.id !== 'jgdjcbnaodblmdfapldbhpkldnjcfpmf' &&
+        !p.includes('cookie_shopee') &&
+        !p.includes('cookie shopee') &&
+        !n.includes('shopee cookie')
+      );
+    });
     filtered.push({
       id: 'eblcdhecfebdnclnndkgaidgnggeefmp',
       icon: iconB64,
       name: 'Shopee Cookie - Multi Country (TIGER 10)',
       path: normalizedDestPath,
-      description: 'Get & Auto-Sync cookies from Shopee URLs (TIGER 10 - 36448)',
+      description: 'Get & Manual-Sync cookies from Shopee URLs (TIGER 10 - 36448)',
       disabled: true,
       deletable: true
     });

@@ -22,7 +22,6 @@ class UpdaterService {
       'app.db',
       'adb_selected_devices.json',
       'sp_phone_backup',
-      'cookie_shopee',
       'uploads',
       'node_modules',
       '.git',

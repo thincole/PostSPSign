@@ -73,7 +73,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "Invoke-WebRequest -Uri '%ZIP_URL%' -OutFile $zip -UseBasicParsing; " ^
     "Expand-Archive -LiteralPath $zip -DestinationPath $ext -Force; " ^
     "$inner = Get-ChildItem -Path $ext -Directory | Select-Object -First 1; " ^
-    "$exclude = @('node.exe','bin','day-code-github.bat','.env','.machine_id','database.sqlite','database.sqlite-shm','database.sqlite-wal','uploads','cookie_shopee','node_modules','.git'); " ^
+    "$exclude = @('node.exe','bin','day-code-github.bat','.env','.machine_id','database.sqlite','database.sqlite-shm','database.sqlite-wal','uploads','node_modules','.git'); " ^
     "Get-ChildItem -Path $inner.FullName -Force | ForEach-Object { if ($exclude -notcontains $_.Name) { Copy-Item -Path $_.FullName -Destination (Get-Location) -Recurse -Force } }; " ^
     "Remove-Item $zip -Force -ErrorAction SilentlyContinue; " ^
     "Remove-Item $ext -Recurse -Force -ErrorAction SilentlyContinue"

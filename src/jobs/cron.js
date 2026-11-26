@@ -9,9 +9,13 @@ const adbService = require('../services/adb.service');
 const cookieRecoveryService = require('../services/cookie-recovery.service');
 
 // Helper tự động đổi sang Proxy sống mới khi phát hiện Proxy cũ chết hẳn
-async function rotateThreadProxy(threadId, reason = '') {
+async function rotateThreadProxy(threadId, reason = '', excludeHost = '') {
   return new Promise((resolve) => {
-    db.all("SELECT proxy FROM proxies ORDER BY RANDOM() LIMIT 5", [], (err, rows) => {
+    const sql = excludeHost
+      ? "SELECT proxy FROM proxies WHERE proxy NOT LIKE ? ORDER BY RANDOM() LIMIT 5"
+      : "SELECT proxy FROM proxies ORDER BY RANDOM() LIMIT 5";
+    const params = excludeHost ? [`${excludeHost}:%`] : [];
+    db.all(sql, params, (err, rows) => {
       if (err || !rows || rows.length === 0) return resolve(null);
       const chosen = rows[0].proxy;
       const parts = chosen.split(':');
@@ -366,6 +370,7 @@ const initJobs = () => {
                 errMsg.includes('PhoneSign Gateway') ||
                 errMsg.includes('300000ms') ||
                 (uploadErr?.failedFunction === 'createPost' && (errMsg.includes('HTTP 503') || errMsg.includes('HTTP 502')));
+              const isProxyAuth407 = !isPhoneGatewayErr && errMsg.includes('407');
               const isHardProxyDead =
                 !isPhoneGatewayErr &&
                 (errMsg.includes('407') ||
@@ -375,12 +380,12 @@ const initJobs = () => {
                   errMsg.includes('ETIMEDOUT'));
               let autoChanged = false;
 
-              if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && !isPhoneGatewayErr && isHardProxyDead && fails >= 2) {
-                await rotateThreadProxy(t.id, `${errMsg} (phát hiện chết liên tiếp ${fails} lần)`);
+              if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && !isPhoneGatewayErr && (isProxyAuth407 || (isHardProxyDead && fails >= 2))) {
+                await rotateThreadProxy(t.id, `${errMsg} (lần ${fails})`, t.proxy_host || '');
                 consecutiveFailures.delete(t.id);
                 autoChanged = true;
               } else if (!isCookieErr && !isCaptchaErr && !isTokenServerErr && !isPhoneGatewayErr && fails >= 3) {
-                await rotateThreadProxy(t.id, `Lỗi liên tiếp ${fails} lần: ${errMsg}`);
+                await rotateThreadProxy(t.id, `Lỗi liên tiếp ${fails} lần: ${errMsg}`, t.proxy_host || '');
                 consecutiveFailures.delete(t.id);
                 autoChanged = true;
               }
@@ -389,6 +394,7 @@ const initJobs = () => {
                 isTokenServerErr ||
                 isPhoneGatewayErr ||
                 isHardProxyDead ||
+                errMsg.includes('PREUPLOAD không trả về vid') ||
                 errMsg.includes('socket hang up') ||
                 errMsg.includes('HTTP 502') ||
                 errMsg.includes('HTTP 503') ||

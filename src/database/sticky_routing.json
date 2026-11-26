@@ -1,12 +1,372 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-20T18:22:01.657Z",
+  "updatedAt": "2026-11-26T03:02:02.271Z",
   "users": {
     "561890414": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198481385
+      "updatedAt": 1795487556437
+    },
+    "1397258044": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795248109491
+    },
+    "1476956036": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795662120586
+    },
+    "1476959724": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795662120438
+    },
+    "1476964869": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795662120061
+    },
+    "1476967620": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662120316
+    },
+    "1476970989": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795662119205
+    },
+    "1476985630": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265530174
+    },
+    "1476993392": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662120861
+    },
+    "1477012880": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662119912
+    },
+    "1477013524": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265213108
+    },
+    "1477014404": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265211647
+    },
+    "1477017234": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662120383
+    },
+    "1477035463": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795255303055
+    },
+    "1477042003": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662120761
+    },
+    "1477042579": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265542558
+    },
+    "1477042621": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662120530
+    },
+    "1478639661": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662119519
+    },
+    "1478664593": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265541216
+    },
+    "1478683247": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499295731
+    },
+    "1537851525": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795255303194
+    },
+    "1537866673": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265212279
+    },
+    "1537885075": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265460665
+    },
+    "1537887961": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265270201
+    },
+    "1538161451": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265456091
+    },
+    "1538179815": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499291636
+    },
+    "1539558049": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432638057
+    },
+    "1539664894": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432638336
+    },
+    "1539672170": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795432622117
+    },
+    "1540719627": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432630344
+    },
+    "1540721362": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795432634425
+    },
+    "1540724550": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432627241
+    },
+    "1540740560": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432638605
+    },
+    "1540772514": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795432627458
+    },
+    "1540772837": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432622575
+    },
+    "1540773833": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432630552
+    },
+    "1540774081": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795432627716
+    },
+    "1540775047": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432634068
+    },
+    "1540776333": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795432621828
+    },
+    "1540776646": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795432635674
+    },
+    "1540777648": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432626430
+    },
+    "1540778523": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432627330
+    },
+    "1540778896": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432624926
+    },
+    "1540779192": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432621103
+    },
+    "1540780132": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432635702
+    },
+    "1540818317": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432616260
+    },
+    "1540819234": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795432624105
+    },
+    "1540845323": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795432622775
+    },
+    "1540846318": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432625785
+    },
+    "1540847708": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432626813
+    },
+    "1540848798": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795432624053
+    },
+    "1540849754": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432622885
+    },
+    "1540850811": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795432642545
+    },
+    "1540853402": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795432639844
+    },
+    "1540955284": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499291036
+    },
+    "1540956945": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795255301807
+    },
+    "1541021585": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499291154
+    },
+    "1541023248": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499366850
+    },
+    "1541027056": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265210116
+    },
+    "1541028576": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265456818
+    },
+    "1541029963": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265210472
     },
     "1543858725": {
       "serial": "TIGER10VN0000277",
@@ -45,10 +405,10 @@
       "updatedAt": 1795198529411
     },
     "1545045451": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0000332",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198426281
+      "updatedAt": 1795487504432
     },
     "1545048926": {
       "serial": "TIGER10VN0000859",
@@ -58,33 +418,33 @@
     },
     "1545057060": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198515240
+      "updatedAt": 1795487562463
     },
     "1545063826": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198435250
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504434
     },
     "1545066585": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193943364
+      "updatedAt": 1795487516273
     },
     "1545069144": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198441206
+      "updatedAt": 1795487551460
     },
     "1545071104": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0000332",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198622568
+      "updatedAt": 1795487504434
     },
     "1545075926": {
       "serial": "TIGER10VN0000277",
@@ -105,10 +465,10 @@
       "updatedAt": 1795198569017
     },
     "1545363743": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193982879
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487544533
     },
     "1545365663": {
       "serial": "R3CN20H8F0W",
@@ -118,15 +478,15 @@
     },
     "1545372423": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193957348
+      "updatedAt": 1795487558969
     },
     "1545379659": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193958196
+      "updatedAt": 1795487549090
     },
     "1545381309": {
       "serial": "TIGER10VN0000859",
@@ -147,10 +507,10 @@
       "updatedAt": 1795198588285
     },
     "1545393466": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198673933
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487519747
     },
     "1545396915": {
       "serial": "TIGER10VN0000277",
@@ -159,16 +519,544 @@
       "updatedAt": 1795198625869
     },
     "1545821233": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193987588
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487536705
     },
     "1545828397": {
       "serial": "TIGER10VN0000277",
       "backupSerial": "TIGER10VN0000332",
       "group": "TIGER",
       "updatedAt": 1795192830409
+    },
+    "1548413976": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499295663
+    },
+    "1548463181": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499377184
+    },
+    "1549264099": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662119154
+    },
+    "1550602941": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265460474
+    },
+    "1550609450": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795255303238
+    },
+    "1550619293": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265455910
+    },
+    "1550627870": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265272305
+    },
+    "1550640328": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795255302209
+    },
+    "1550642952": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795255302549
+    },
+    "1550645189": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499295750
+    },
+    "1550650576": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795255302252
+    },
+    "1550652917": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265215459
+    },
+    "1550657644": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795255302522
+    },
+    "1550659911": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265211319
+    },
+    "1550662696": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795255302713
+    },
+    "1550673988": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265456506
+    },
+    "1550681577": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265210954
+    },
+    "1550684294": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265214539
+    },
+    "1550694913": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265214223
+    },
+    "1551267973": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795255303446
+    },
+    "1551277801": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265212026
+    },
+    "1551287637": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499337483
+    },
+    "1551290115": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795255302103
+    },
+    "1551304077": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265459789
+    },
+    "1551312302": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265212236
+    },
+    "1551319499": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265516288
+    },
+    "1551334165": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265485684
+    },
+    "1551337869": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795255301741
+    },
+    "1551351846": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499297624
+    },
+    "1551367154": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265212926
+    },
+    "1551371076": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265533904
+    },
+    "1551377155": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265459560
+    },
+    "1551395009": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499290829
+    },
+    "1551397717": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265255591
+    },
+    "1551400481": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795255302061
+    },
+    "1551403645": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265468486
+    },
+    "1551410527": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265214362
+    },
+    "1551415811": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265458543
+    },
+    "1551427580": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265456069
+    },
+    "1551449764": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795662119408
+    },
+    "1551456107": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499293936
+    },
+    "1551464588": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499293320
+    },
+    "1551468245": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265211157
+    },
+    "1551486077": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499292572
+    },
+    "1551490794": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265460031
+    },
+    "1551497929": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265213406
+    },
+    "1551501347": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265212157
+    },
+    "1551882970": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499294675
+    },
+    "1551885119": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499024100
+    },
+    "1551890754": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265211033
+    },
+    "1551893688": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499299033
+    },
+    "1551902676": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795255303193
+    },
+    "1551907165": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265216442
+    },
+    "1551913924": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265273236
+    },
+    "1551921377": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265460977
+    },
+    "1551923763": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795255302689
+    },
+    "1551925794": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265266529
+    },
+    "1551928191": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265308501
+    },
+    "1551946009": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795255301883
+    },
+    "1551967217": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499346283
+    },
+    "1551978114": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265461029
+    },
+    "1551980151": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265213827
+    },
+    "1551984763": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265528760
+    },
+    "1551987231": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265457866
+    },
+    "1551989203": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265457332
+    },
+    "1551993593": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499357685
+    },
+    "1551995585": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265210524
+    },
+    "1551997648": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499289530
+    },
+    "1552006204": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499292661
+    },
+    "1552008590": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265214204
+    },
+    "1552010680": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265533703
+    },
+    "1552014404": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265213795
+    },
+    "1552019043": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265457050
+    },
+    "1552021334": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265262702
+    },
+    "1552024244": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499336925
+    },
+    "1552026467": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265253050
+    },
+    "1552035014": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795265283498
+    },
+    "1552037874": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795265268245
+    },
+    "1552044398": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499351322
+    },
+    "1552053312": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499340857
+    },
+    "1552068398": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265273938
+    },
+    "1552091933": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499294060
+    },
+    "1552119711": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795265255988
+    },
+    "1552128917": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795265241538
+    },
+    "1552158832": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795255303162
+    },
+    "1552170879": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265277971
+    },
+    "1552174392": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795265511260
+    },
+    "1552189062": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795255302833
     },
     "1567034431": {
       "serial": "TIGER10VN0000859",
@@ -201,16 +1089,16 @@
       "updatedAt": 1795198468029
     },
     "1568284571": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193891468
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504437
     },
     "1568321826": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193888870
+      "updatedAt": 1795487775092
     },
     "1568343393": {
       "serial": "TIGER10VN0000277",
@@ -231,22 +1119,22 @@
       "updatedAt": 1795198624725
     },
     "1568485833": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198788232
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487509882
     },
     "1568513504": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
-      "group": "TIGER",
-      "updatedAt": 1795193886463
-    },
-    "1568517317": {
-      "serial": "TIGER10VN0000859",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198577543
+      "updatedAt": 1795487504433
+    },
+    "1568517317": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487734464
     },
     "1568522953": {
       "serial": "TIGER10VN0000277",
@@ -255,22 +1143,22 @@
       "updatedAt": 1795193895341
     },
     "1568526129": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198546496
+      "updatedAt": 1795487740324
     },
     "1568530418": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198515350
+      "updatedAt": 1795487806198
     },
     "1568610724": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193906046
+      "updatedAt": 1795487748092
     },
     "1568614179": {
       "serial": "TIGER10VN0000277",
@@ -280,9 +1168,9 @@
     },
     "1568616680": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193905195
+      "updatedAt": 1795487795336
     },
     "1568631278": {
       "serial": "TIGER10VN0000277",
@@ -292,27 +1180,27 @@
     },
     "1568635896": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198428671
+      "updatedAt": 1795487847545
     },
     "1568649827": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193908821
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487782132
     },
     "1568653690": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193909681
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504436
     },
     "1568657303": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198797154
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487747856
     },
     "1568659086": {
       "serial": "TIGER10VN0000277",
@@ -321,58 +1209,58 @@
       "updatedAt": 1795198792316
     },
     "1568662074": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198681914
-    },
-    "1568662234": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0000332",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198812567
+      "updatedAt": 1795487504430
+    },
+    "1568662234": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487741326
     },
     "1568665801": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198477865
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487723326
     },
     "1568668235": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193925873
+      "updatedAt": 1795487520637
     },
     "1568670046": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193930475
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504440
     },
     "1568775988": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0000332",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198796727
+      "updatedAt": 1795487840280
     },
     "1568793436": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193935431
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487784234
     },
     "1568794924": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198769061
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487789250
     },
     "1568799259": {
-      "serial": "TIGER10VN0000859",
-      "backupSerial": "TIGER10VN0000277",
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
       "group": "TIGER",
-      "updatedAt": 1795193945132
+      "updatedAt": 1795487504438
     },
     "1568878121": {
       "serial": "R3CN20H8F0W",
@@ -466,15 +1354,21 @@
     },
     "1568978568": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193982054
+      "updatedAt": 1795487530994
     },
     "1568980410": {
       "serial": "TIGER10VN0000277",
       "backupSerial": "TIGER10VN0000332",
       "group": "TIGER",
       "updatedAt": 1795198578116
+    },
+    "1568984141": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795277007907
     },
     "1568985910": {
       "serial": "TIGER10VN0000277",
@@ -483,10 +1377,10 @@
       "updatedAt": 1795193939653
     },
     "1568992004": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193949505
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487788327
     },
     "1569027126": {
       "serial": "TIGER10VN0000277",
@@ -514,9 +1408,9 @@
     },
     "1569186640": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198518596
+      "updatedAt": 1795487792598
     },
     "1569187468": {
       "serial": "TIGER10VN0000859",
@@ -525,10 +1419,10 @@
       "updatedAt": 1795192819356
     },
     "1569189396": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193955982
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487565672
     },
     "1569189851": {
       "serial": "R3CN20H8F0W",
@@ -544,15 +1438,15 @@
     },
     "1569195949": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198861627
+      "updatedAt": 1795487504431
     },
     "1569199570": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198502838
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487781396
     },
     "1569199604": {
       "serial": "TIGER10VN0000859",
@@ -579,10 +1473,10 @@
       "updatedAt": 1795198639622
     },
     "1569209087": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0000332",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198635276
+      "updatedAt": 1795487504438
     },
     "1569209197": {
       "serial": "TIGER10VN0000332",
@@ -592,21 +1486,21 @@
     },
     "1569212327": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198775917
+      "updatedAt": 1795487555411
     },
     "1569216178": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
-      "group": "TIGER",
-      "updatedAt": 1795193991710
-    },
-    "1569225576": {
-      "serial": "TIGER10VN0000859",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193986305
+      "updatedAt": 1795487504439
+    },
+    "1569225576": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504437
     },
     "1569232812": {
       "serial": "TIGER10VN0000277",
@@ -651,10 +1545,10 @@
       "updatedAt": 1795198492250
     },
     "1569581111": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198568161
+      "updatedAt": 1795487563626
     },
     "1569582243": {
       "serial": "TIGER10VN0000332",
@@ -729,10 +1623,10 @@
       "updatedAt": 1795192823580
     },
     "1569887129": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198562914
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487558736
     },
     "1569887301": {
       "serial": "R3CN20H8F0W",
@@ -837,10 +1731,10 @@
       "updatedAt": 1795198591900
     },
     "1571594540": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0000332",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198451806
+      "updatedAt": 1795487504433
     },
     "1571596176": {
       "serial": "TIGER10VN0000277",
@@ -849,10 +1743,10 @@
       "updatedAt": 1795198670308
     },
     "1571596297": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193961827
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504439
     },
     "1571599561": {
       "serial": "TIGER10VN0000277",
@@ -879,10 +1773,10 @@
       "updatedAt": 1795198552842
     },
     "1571608911": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198426280
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487562168
     },
     "1571609331": {
       "serial": "R3CN20H8F0W",
@@ -920,6 +1814,12 @@
       "group": "TIGER",
       "updatedAt": 1795192831329
     },
+    "1574127252": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627192967
+    },
     "1574147279": {
       "serial": "TIGER10VN0000277",
       "backupSerial": "TIGER10VN0000332",
@@ -932,11 +1832,77 @@
       "group": "TIGER",
       "updatedAt": 1795198426279
     },
+    "1574369623": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499298613
+    },
+    "1574372083": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499337837
+    },
+    "1574376566": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499293662
+    },
+    "1574385270": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499290827
+    },
     "1574387059": {
       "serial": "R3CN20H8F0W",
       "backupSerial": null,
       "group": "SAMSUNG_R3CN20H8F0W",
       "updatedAt": 1795198440101
+    },
+    "1574404100": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499297821
+    },
+    "1574406190": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499338697
+    },
+    "1574412580": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499357404
+    },
+    "1574414495": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499329057
+    },
+    "1574416808": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499291651
+    },
+    "1574418657": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499297569
+    },
+    "1574420490": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499296769
     },
     "1574708823": {
       "serial": "TIGER10VN0000859",
@@ -944,11 +1910,47 @@
       "group": "TIGER",
       "updatedAt": 1795198441745
     },
-    "7161163990": {
+    "1575112002": {
       "serial": "R3CN20H8F0W",
       "backupSerial": null,
       "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795186687084
+      "updatedAt": 1795499352725
+    },
+    "1599749244": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795248102793
+    },
+    "1600427026": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795248103474
+    },
+    "1600427710": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795248102683
+    },
+    "1602789128": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795248103452
+    },
+    "1677860631": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795248103742
+    },
+    "7161163990": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487829748
     },
     "7752950469": {
       "serial": "TIGER10VN0000277",
@@ -958,39 +1960,39 @@
     },
     "4920273864": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795186696559
+      "updatedAt": 1795487719257
     },
     "5636425746": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795186748349
+      "updatedAt": 1795487716958
     },
     "4838139743": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198495854
+      "updatedAt": 1795487768721
     },
     "7828670134": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795186794928
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487712002
     },
     "6679906578": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198539081
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487737920
     },
     "5754488102": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795186826915
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487732163
     },
     "6593284824": {
       "serial": "TIGER10VN0000277",
@@ -1000,15 +2002,15 @@
     },
     "4461764340": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795186872022
+      "updatedAt": 1795487817217
     },
     "8392899637": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198607041
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487727203
     },
     "15399035064": {
       "serial": "R3CN20H8F0W",
@@ -1509,34 +2511,34 @@
       "updatedAt": 1795193025581
     },
     "16566419510": {
-      "serial": "ce09171929d1bf28047e",
-      "backupSerial": "ce0817183922402c057e",
-      "group": "NOTE8",
-      "updatedAt": 1795193025582
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228605886
     },
     "15973868037": {
-      "serial": "ce10171a7b6a3a3b037e",
-      "backupSerial": "ce10171a886408440d7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193025619
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228058709
     },
     "15650885178": {
-      "serial": "ce0817183922402c057e",
-      "backupSerial": "988a9b32385531474f30",
-      "group": "NOTE8",
-      "updatedAt": 1795193025881
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228364086
     },
     "16822617558": {
-      "serial": "ce10171a886408440d7e",
-      "backupSerial": "988a9b32385531474f30",
-      "group": "NOTE8",
-      "updatedAt": 1795193025931
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228308402
     },
     "13860237853": {
-      "serial": "988a9b32385531474f30",
-      "backupSerial": "ce08171828b4e732037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193026004
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228591922
     },
     "16856206841": {
       "serial": "R3CN20H8F0W",
@@ -1557,10 +2559,10 @@
       "updatedAt": 1795193026337
     },
     "17098549930": {
-      "serial": "ce0817183922402c057e",
-      "backupSerial": "ce09171929d1bf28047e",
-      "group": "NOTE8",
-      "updatedAt": 1795193026680
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228540484
     },
     "15457078211": {
       "serial": "R5CRC3DKRFD",
@@ -1569,28 +2571,28 @@
       "updatedAt": 1795193026738
     },
     "16774359667": {
-      "serial": "ce10171a886408440d7e",
-      "backupSerial": "ce08171828b4e732037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193026804
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228106470
     },
     "13262899765": {
-      "serial": "ce10171a7b6a3a3b037e",
-      "backupSerial": "ce09171929d1bf28047e",
-      "group": "NOTE8",
-      "updatedAt": 1795193026993
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228542210
     },
     "14406368602": {
-      "serial": "ce081718649284780b7e",
-      "backupSerial": "988a9b32385531474f30",
-      "group": "NOTE8",
-      "updatedAt": 1795193027494
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228360994
     },
     "15435323122": {
-      "serial": "ce08171828b4e732037e",
-      "backupSerial": "ce09171929d1bf28047e",
-      "group": "NOTE8",
-      "updatedAt": 1795193027620
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228059813
     },
     "15507565588": {
       "serial": "R3CN20H8F0W",
@@ -1599,10 +2601,10 @@
       "updatedAt": 1795193046170
     },
     "16686717772": {
-      "serial": "988a9b32385531474f30",
-      "backupSerial": "ce0817183922402c057e",
-      "group": "NOTE8",
-      "updatedAt": 1795193050749
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228559033
     },
     "15966546735": {
       "serial": "TIGER10VN0000332",
@@ -1611,10 +2613,10 @@
       "updatedAt": 1795193053696
     },
     "14577505595": {
-      "serial": "ce09171929d1bf28047e",
-      "backupSerial": "ce10171a886408440d7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193057420
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228545826
     },
     "15128578133": {
       "serial": "TIGER10VN0000859",
@@ -1635,16 +2637,16 @@
       "updatedAt": 1795193077439
     },
     "14212026700": {
-      "serial": "ce08171828b4e732037e",
-      "backupSerial": "ce10171a7b6a3a3b037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193082784
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228511097
     },
     "14337348121": {
-      "serial": "ce0817183922402c057e",
-      "backupSerial": "ce081718649284780b7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193083201
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228340833
     },
     "17166897889": {
       "serial": "TIGER10VN0000277",
@@ -1653,10 +2655,10 @@
       "updatedAt": 1795193087280
     },
     "16511871670": {
-      "serial": "ce09171929d1bf28047e",
-      "backupSerial": "ce10171a886408440d7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193089879
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228085256
     },
     "16593516790": {
       "serial": "R5CRC3DKRFD",
@@ -1665,10 +2667,10 @@
       "updatedAt": 1795193092772
     },
     "15676427187": {
-      "serial": "ce081718649284780b7e",
-      "backupSerial": "ce10171a7b6a3a3b037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193092792
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228086268
     },
     "16479796787": {
       "serial": "R3CN20H8F0W",
@@ -1677,16 +2679,16 @@
       "updatedAt": 1795193093449
     },
     "15557265820": {
-      "serial": "ce10171a886408440d7e",
-      "backupSerial": "ce10171a7b6a3a3b037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193098678
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228058812
     },
     "14742595418": {
-      "serial": "988a9b32385531474f30",
-      "backupSerial": "ce08171828b4e732037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193098788
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228570402
     },
     "16023101033": {
       "serial": "TIGER10VN0000332",
@@ -1701,10 +2703,10 @@
       "updatedAt": 1795193102633
     },
     "16127947770": {
-      "serial": "ce10171a7b6a3a3b037e",
-      "backupSerial": "ce0817183922402c057e",
-      "group": "NOTE8",
-      "updatedAt": 1795193102684
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228572175
     },
     "14502887743": {
       "serial": "R3CN20H8F0W",
@@ -1725,16 +2727,16 @@
       "updatedAt": 1795193105971
     },
     "15747865319": {
-      "serial": "ce0817183922402c057e",
-      "backupSerial": "ce081718649284780b7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193114925
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227925784
     },
     "16193354424": {
-      "serial": "ce10171a886408440d7e",
-      "backupSerial": "ce08171828b4e732037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193117390
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228057955
     },
     "14390148276": {
       "serial": "R3CN20H8F0W",
@@ -1743,16 +2745,16 @@
       "updatedAt": 1795193118414
     },
     "12951525511": {
-      "serial": "ce08171828b4e732037e",
-      "backupSerial": "ce09171929d1bf28047e",
-      "group": "NOTE8",
-      "updatedAt": 1795193120151
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228300847
     },
     "16417535179": {
-      "serial": "ce081718649284780b7e",
-      "backupSerial": "988a9b32385531474f30",
-      "group": "NOTE8",
-      "updatedAt": 1795193129054
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228744801
     },
     "14484347162": {
       "serial": "R5CRC3DKRFD",
@@ -1761,10 +2763,10 @@
       "updatedAt": 1795193130163
     },
     "14896173136": {
-      "serial": "988a9b32385531474f30",
-      "backupSerial": "ce09171929d1bf28047e",
-      "group": "NOTE8",
-      "updatedAt": 1795193143056
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228295797
     },
     "15369628666": {
       "serial": "TIGER10VN0000332",
@@ -1779,16 +2781,16 @@
       "updatedAt": 1795193159254
     },
     "15119699675": {
-      "serial": "ce09171929d1bf28047e",
-      "backupSerial": "ce10171a7b6a3a3b037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193160846
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228285069
     },
     "15511081946": {
-      "serial": "ce10171a7b6a3a3b037e",
-      "backupSerial": "ce081718649284780b7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193165543
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228059879
     },
     "16867113704": {
       "serial": "R3CN20H8F0W",
@@ -1821,34 +2823,34 @@
       "updatedAt": 1795193177301
     },
     "16781147412": {
-      "serial": "ce09171929d1bf28047e",
-      "backupSerial": "ce0817183922402c057e",
-      "group": "NOTE8",
-      "updatedAt": 1795193183691
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227891676
     },
     "15152186515": {
-      "serial": "ce0817183922402c057e",
-      "backupSerial": "ce10171a886408440d7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193190120
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228089113
     },
     "14529145129": {
-      "serial": "ce10171a886408440d7e",
-      "backupSerial": "ce081718649284780b7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193192137
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228316657
     },
     "14999428074": {
-      "serial": "ce08171828b4e732037e",
-      "backupSerial": "988a9b32385531474f30",
-      "group": "NOTE8",
-      "updatedAt": 1795193194454
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228068198
     },
     "14693660706": {
-      "serial": "988a9b32385531474f30",
-      "backupSerial": "ce10171a7b6a3a3b037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193197238
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228711431
     },
     "16631120168": {
       "serial": "TIGER10VN0000332",
@@ -1863,16 +2865,16 @@
       "updatedAt": 1795193203227
     },
     "13481999129": {
-      "serial": "ce10171a7b6a3a3b037e",
-      "backupSerial": "ce081718649284780b7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193216453
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228533504
     },
     "16819559630": {
-      "serial": "ce081718649284780b7e",
-      "backupSerial": "ce0817183922402c057e",
-      "group": "NOTE8",
-      "updatedAt": 1795193222904
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228120546
     },
     "16146113376": {
       "serial": "R3CN20H8F0W",
@@ -1893,16 +2895,16 @@
       "updatedAt": 1795193234191
     },
     "13602223980": {
-      "serial": "ce0817183922402c057e",
-      "backupSerial": "ce08171828b4e732037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193239514
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228583659
     },
     "16300414095": {
-      "serial": "ce081718649284780b7e",
-      "backupSerial": "ce10171a886408440d7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193239912
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228058873
     },
     "12961377293": {
       "serial": "R3CN20H8F0W",
@@ -1917,22 +2919,22 @@
       "updatedAt": 1795193244794
     },
     "13499720198": {
-      "serial": "ce08171828b4e732037e",
-      "backupSerial": "ce10171a886408440d7e",
-      "group": "NOTE8",
-      "updatedAt": 1795193246394
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228516201
     },
     "13396922568": {
-      "serial": "ce10171a886408440d7e",
-      "backupSerial": "988a9b32385531474f30",
-      "group": "NOTE8",
-      "updatedAt": 1795193248091
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228282860
     },
     "14375233761": {
-      "serial": "988a9b32385531474f30",
-      "backupSerial": "ce09171929d1bf28047e",
-      "group": "NOTE8",
-      "updatedAt": 1795193252285
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228348471
     },
     "16440246166": {
       "serial": "TIGER10VN0000332",
@@ -1947,46 +2949,46 @@
       "updatedAt": 1795193254542
     },
     "15958694704": {
-      "serial": "ce09171929d1bf28047e",
-      "backupSerial": "ce10171a7b6a3a3b037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193255332
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228280045
     },
     "6966638460": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198683238
-    },
-    "4820951439": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193664085
-    },
-    "7718789863": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198753483
-    },
-    "4744038678": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193664335
-    },
-    "4853151335": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0000332",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198648646
+      "updatedAt": 1795487504437
+    },
+    "4820951439": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487509603
+    },
+    "7718789863": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504439
+    },
+    "4744038678": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487544926
+    },
+    "4853151335": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487600302
     },
     "6136665828": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198747542
+      "updatedAt": 1795487569144
     },
     "7278876154": {
       "serial": "TIGER10VN0000277",
@@ -1996,15 +2998,15 @@
     },
     "6118690443": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193665315
+      "updatedAt": 1795487511185
     },
     "7057657772": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198491361
+      "updatedAt": 1795487586990
     },
     "8007665805": {
       "serial": "TIGER10VN0000277",
@@ -2019,52 +3021,52 @@
       "updatedAt": 1795198632167
     },
     "5895973953": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198624742
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487574565
     },
     "6069563561": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198565099
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504439
     },
     "4864049836": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193666594
+      "updatedAt": 1795487534399
     },
     "8456561526": {
-      "serial": "ce09171929d1bf28047e",
-      "backupSerial": "ce08171828b4e732037e",
-      "group": "NOTE8",
-      "updatedAt": 1795193666648
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795276762801
     },
     "6427531257": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193668116
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487541396
     },
     "7375631098": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198913081
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487646442
     },
     "6018964044": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193669925
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487537009
     },
     "4803070864": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198718690
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487577089
     },
     "4626631844": {
       "serial": "TIGER10VN0000277",
@@ -2079,10 +3081,10 @@
       "updatedAt": 1795198426277
     },
     "10984370277": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198531988
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504439
     },
     "10028096723": {
       "serial": "TIGER10VN0000277",
@@ -2098,39 +3100,39 @@
     },
     "11277493043": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
-      "group": "TIGER",
-      "updatedAt": 1795198792361
-    },
-    "8800008354": {
-      "serial": "TIGER10VN0000859",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198778107
+      "updatedAt": 1795487504440
+    },
+    "8800008354": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487590316
     },
     "15334328751": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198491699
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487572727
     },
     "16748156770": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193680520
+      "updatedAt": 1795487609943
     },
     "10591267484": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193685664
+      "updatedAt": 1795487607749
     },
     "14509140599": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193686113
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487548472
     },
     "4360607745": {
       "serial": "TIGER10VN0000277",
@@ -2139,10 +3141,10 @@
       "updatedAt": 1795198801818
     },
     "16640400015": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0000332",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198678541
+      "updatedAt": 1795487504440
     },
     "15825450003": {
       "serial": "TIGER10VN0000277",
@@ -2157,22 +3159,22 @@
       "updatedAt": 1795198621344
     },
     "11692974750": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198426277
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504438
     },
     "14007477884": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198718330
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487634335
     },
     "16203736071": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198471911
+      "updatedAt": 1795487611485
     },
     "12958582274": {
       "serial": "TIGER10VN0000277",
@@ -2181,52 +3183,52 @@
       "updatedAt": 1795193692836
     },
     "12996200230": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193694434
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487569947
     },
     "4428470674": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198864297
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487582044
     },
     "16969837255": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193697449
+      "updatedAt": 1795487593011
     },
     "13351069162": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193698456
+      "updatedAt": 1795487552885
     },
     "13401308098": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198508421
+      "updatedAt": 1795487576196
     },
     "14525745670": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193702053
-    },
-    "16425330420": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198760461
+      "updatedAt": 1795487567266
+    },
+    "16425330420": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487593663
     },
     "13707609138": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198544826
+      "updatedAt": 1795487613439
     },
     "14039898491": {
       "serial": "TIGER10VN0000277",
@@ -2236,81 +3238,81 @@
     },
     "17008048103": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193712444
+      "updatedAt": 1795487625869
     },
     "15199166504": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198868805
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487609351
     },
     "15742805482": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193715136
+      "updatedAt": 1795487537941
     },
     "16783377078": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198751394
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487587256
     },
     "15108035377": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198742925
-    },
-    "16483742097": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193718758
-    },
-    "14907937659": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198697054
+      "updatedAt": 1795487629021
+    },
+    "16483742097": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487594231
+    },
+    "14907937659": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487540704
     },
     "14058624170": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198529708
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487612739
     },
     "16080470940": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198722243
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487540930
     },
     "15845159105": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198463937
+      "updatedAt": 1795487596387
     },
     "13143780193": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193735345
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487615003
     },
     "13651363812": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198664094
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487618682
     },
     "16699399283": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198732467
+      "updatedAt": 1795487551801
     },
     "14834355163": {
       "serial": "TIGER10VN0000277",
@@ -2319,94 +3321,94 @@
       "updatedAt": 1795193738264
     },
     "13962734470": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198512087
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487660742
     },
     "17088939836": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198536950
+      "updatedAt": 1795487600121
     },
     "13371551000": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198476554
+      "updatedAt": 1795487589236
     },
     "15505908759": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193743010
+      "updatedAt": 1795487555104
     },
     "14029604503": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198830829
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487627031
     },
     "16984771752": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193746332
+      "updatedAt": 1795487653603
     },
     "13409115820": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198426277
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487616592
     },
     "17132124248": {
       "serial": "TIGER10VN0000277",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198700946
+      "updatedAt": 1795487643825
     },
     "16881861446": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193750824
-    },
-    "14934699162": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198658157
+      "updatedAt": 1795487659585
+    },
+    "14934699162": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487689622
     },
     "13393435110": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193752754
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487642277
     },
     "15271514972": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198640456
+      "updatedAt": 1795487708874
     },
     "15550494866": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198758051
+      "updatedAt": 1795487664338
     },
     "15595992147": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193756789
-    },
-    "16121093555": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198861967
+      "updatedAt": 1795487620125
+    },
+    "16121093555": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487635512
     },
     "17134126848": {
       "serial": "TIGER10VN0000277",
@@ -2415,22 +3417,22 @@
       "updatedAt": 1795193757058
     },
     "17152356806": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198901871
+      "updatedAt": 1795487647139
     },
     "15883680664": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198486003
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487645477
     },
     "14233416830": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198430806
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487705884
     },
     "16893641463": {
       "serial": "TIGER10VN0000277",
@@ -2440,15 +3442,15 @@
     },
     "13893865690": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193762838
+      "updatedAt": 1795487704435
     },
     "16396839613": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198437260
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487622924
     },
     "13329317820": {
       "serial": "TIGER10VN0000859",
@@ -2457,16 +3459,16 @@
       "updatedAt": 1795193765579
     },
     "16287447581": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198445067
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487678607
     },
     "15747451066": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193768756
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487671131
     },
     "14606414702": {
       "serial": "TIGER10VN0000277",
@@ -2475,10 +3477,10 @@
       "updatedAt": 1795198920152
     },
     "16795378095": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193770893
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487630717
     },
     "13552674652": {
       "serial": "TIGER10VN0000277",
@@ -2487,34 +3489,34 @@
       "updatedAt": 1795198564792
     },
     "16161354874": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198482440
+      "updatedAt": 1795487603954
     },
     "17054333297": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198840173
-    },
-    "16718052091": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198842225
-    },
-    "13399818318": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198496557
+      "updatedAt": 1795487627007
+    },
+    "16718052091": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487583186
+    },
+    "13399818318": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487648651
     },
     "15279454129": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198698314
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487693364
     },
     "16693625021": {
       "serial": "TIGER10VN0000277",
@@ -2524,33 +3526,33 @@
     },
     "16341648008": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193777337
+      "updatedAt": 1795487623208
     },
     "17159295979": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193777899
+      "updatedAt": 1795487669379
     },
     "16183770373": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198789257
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487641864
     },
     "16510756792": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198426277
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487662023
     },
     "13825909897": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193781111
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487654476
     },
     "16953604503": {
       "serial": "TIGER10VN0000277",
@@ -2560,39 +3562,39 @@
     },
     "15194811970": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198711085
+      "updatedAt": 1795487666276
     },
     "15091004119": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198560677
+      "updatedAt": 1795487585971
     },
     "14541975593": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198458279
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487683554
     },
     "5530890266": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193787994
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487580739
     },
     "5194374498": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198525263
+      "updatedAt": 1795487545261
     },
     "14431487008": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198824122
+      "updatedAt": 1795487694127
     },
     "15645339787": {
       "serial": "TIGER10VN0000277",
@@ -2614,21 +3616,21 @@
     },
     "16204745228": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193794364
+      "updatedAt": 1795487606700
     },
     "13026645328": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198675696
+      "updatedAt": 1795487686040
     },
     "14762299759": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193795515
+      "updatedAt": 1795487590562
     },
     "10220857548": {
       "serial": "R3CN20H8F0W",
@@ -2637,16 +3639,16 @@
       "updatedAt": 1795193795576
     },
     "13524506678": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198620315
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487662613
     },
     "16187661531": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198603239
+      "updatedAt": 1795487573470
     },
     "16602083942": {
       "serial": "TIGER10VN0000277",
@@ -2661,16 +3663,16 @@
       "updatedAt": 1795193797970
     },
     "14750190343": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198548903
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487632095
     },
     "15103060406": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198557227
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487640856
     },
     "16616573924": {
       "serial": "TIGER10VN0000277",
@@ -2679,58 +3681,58 @@
       "updatedAt": 1795198731690
     },
     "14897189358": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198606697
+      "updatedAt": 1795487689989
     },
     "16040526454": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198644277
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487630808
     },
     "15816833269": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193800880
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487686673
     },
     "15652347737": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193803104
+      "updatedAt": 1795487678868
     },
     "13012400775": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193803459
+      "updatedAt": 1795487673355
     },
     "16291801514": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198616572
+      "updatedAt": 1795487666243
     },
     "16379537502": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193804405
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487720949
     },
     "13250938841": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198584985
+      "updatedAt": 1795487651202
     },
     "14612954829": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193804868
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487651903
     },
     "14156186579": {
       "serial": "TIGER10VN0000277",
@@ -2739,16 +3741,16 @@
       "updatedAt": 1795193807938
     },
     "13487533839": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198651444
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487682397
     },
     "14001791424": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198799237
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487674944
     },
     "13628156150": {
       "serial": "TIGER10VN0000277",
@@ -2763,52 +3765,52 @@
       "updatedAt": 1795198552326
     },
     "16509026480": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198751333
+      "updatedAt": 1795487698083
     },
     "14624746867": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198581442
+      "updatedAt": 1795487700869
     },
     "13979321969": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198618718
+      "updatedAt": 1795487675676
     },
     "14190316256": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198467403
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487713357
     },
     "7479452165": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193823785
+      "updatedAt": 1795487724704
     },
     "15696728201": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193826064
+      "updatedAt": 1795487672540
     },
     "14980624320": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193826762
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487676853
     },
     "15413762945": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198520643
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487729100
     },
     "5111065153": {
       "serial": "TIGER10VN0000277",
@@ -2818,15 +3820,15 @@
     },
     "8355631716": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193831191
+      "updatedAt": 1795487693297
     },
     "4974755870": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795193831703
+      "updatedAt": 1795487735280
     },
     "6389578030": {
       "serial": "TIGER10VN0000277",
@@ -2835,34 +3837,34 @@
       "updatedAt": 1795198467252
     },
     "5637352274": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198714119
+      "updatedAt": 1795487701753
     },
     "5348783012": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198739323
-    },
-    "4738239627": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193837789
-    },
-    "5568293648": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198426276
+      "updatedAt": 1795487711460
+    },
+    "4738239627": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487584139
+    },
+    "5568293648": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487784300
     },
     "15796497236": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198599729
+      "updatedAt": 1795487702569
     },
     "7368225670": {
       "serial": "TIGER10VN0000277",
@@ -2871,28 +3873,28 @@
       "updatedAt": 1795198655932
     },
     "5520947445": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198635589
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487714923
     },
     "8421426074": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198737177
+      "updatedAt": 1795487738469
     },
     "7310772443": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193842399
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487705999
     },
     "7381482273": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198599806
+      "updatedAt": 1795487750964
     },
     "8105296823": {
       "serial": "TIGER10VN0000277",
@@ -2902,15 +3904,15 @@
     },
     "6420221125": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198541308
+      "updatedAt": 1795487758378
     },
     "7986135390": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198666552
+      "updatedAt": 1795487690743
     },
     "15207498992": {
       "serial": "TIGER10VN0000277",
@@ -2920,21 +3922,21 @@
     },
     "7231564658": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795193856111
+      "updatedAt": 1795487765995
     },
     "6030044304": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198884713
+      "updatedAt": 1795487758456
     },
     "7763013701": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193861485
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487762332
     },
     "7504275090": {
       "serial": "TIGER10VN0000859",
@@ -2943,46 +3945,46 @@
       "updatedAt": 1795193862148
     },
     "5284476256": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198547423
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487743661
     },
     "8520688907": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198707769
+      "updatedAt": 1795487768206
     },
     "4590667020": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198592914
+      "updatedAt": 1795487722492
     },
     "7514904068": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198764677
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487728353
     },
     "6862855988": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193868091
-    },
-    "5973292188": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198520088
+      "updatedAt": 1795487744542
+    },
+    "5973292188": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487751010
     },
     "5329630005": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795193870246
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487778107
     },
     "8525076116": {
       "serial": "TIGER10VN0000277",
@@ -2992,15 +3994,15 @@
     },
     "5090823974": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198811884
+      "updatedAt": 1795487778685
     },
     "6956204316": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198526935
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487744816
     },
     "6756552390": {
       "serial": "TIGER10VN0000277",
@@ -3009,10 +4011,10 @@
       "updatedAt": 1795198500102
     },
     "6252959229": {
-      "serial": "TIGER10VN0000859",
+      "serial": "TIGER10VN0001115",
       "backupSerial": "TIGER10VN0000277",
       "group": "TIGER",
-      "updatedAt": 1795198833770
+      "updatedAt": 1795487754923
     },
     "5540263377": {
       "serial": "TIGER10VN0000277",
@@ -3021,10 +4023,10 @@
       "updatedAt": 1795198529120
     },
     "7517023237": {
-      "serial": "R3CN20H8F0W",
-      "backupSerial": null,
-      "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198819617
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487764604
     },
     "7241335991": {
       "serial": "TIGER10VN0000277",
@@ -3034,15 +4036,1467 @@
     },
     "5534222502": {
       "serial": "TIGER10VN0000332",
-      "backupSerial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
       "group": "TIGER",
-      "updatedAt": 1795198611817
+      "updatedAt": 1795487765033
     },
     "7045923069": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504436
+    },
+    "12988198219": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622493
+    },
+    "16422745321": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622679
+    },
+    "14225327296": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622730
+    },
+    "14657847457": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622824
+    },
+    "15678379200": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622831
+    },
+    "13995497636": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622924
+    },
+    "16939773649": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622925
+    },
+    "16831738947": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622929
+    },
+    "13380942753": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622942
+    },
+    "14033233902": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622971
+    },
+    "16505375261": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622991
+    },
+    "13847368763": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227622992
+    },
+    "13571496501": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227623053
+    },
+    "14864701824": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227623132
+    },
+    "12995139904": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227623189
+    },
+    "14143610200": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227624636
+    },
+    "14293917889": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227626669
+    },
+    "12965259340": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227628984
+    },
+    "15482322754": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227630829
+    },
+    "12982052328": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227632957
+    },
+    "15256788817": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227635242
+    },
+    "16222219607": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227636909
+    },
+    "16784250848": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227639008
+    },
+    "16662866282": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227641080
+    },
+    "16603483716": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227643268
+    },
+    "13285320091": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227645503
+    },
+    "13418857264": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227647750
+    },
+    "14479967327": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227649880
+    },
+    "16824225771": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227652000
+    },
+    "16094208169": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227654594
+    },
+    "15894884602": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227656154
+    },
+    "16911435533": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227658255
+    },
+    "16235120060": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227660390
+    },
+    "16786477481": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227662578
+    },
+    "15556509683": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227665267
+    },
+    "14822854659": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227667113
+    },
+    "14893117872": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227669308
+    },
+    "15059026335": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227671770
+    },
+    "15398513749": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227674594
+    },
+    "14311315228": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227675992
+    },
+    "15789565474": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227678174
+    },
+    "13117018935": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227680285
+    },
+    "13834377928": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227682498
+    },
+    "13845347633": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227685193
+    },
+    "15530870505": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227688950
+    },
+    "16427610291": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227690970
+    },
+    "12898575360": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227693160
+    },
+    "14192728497": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227695288
+    },
+    "15356984730": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227697547
+    },
+    "13615541571": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227699747
+    },
+    "14374014771": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227702036
+    },
+    "13753174152": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227704617
+    },
+    "14217342201": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227706207
+    },
+    "14032910062": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227708296
+    },
+    "16386356542": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227710662
+    },
+    "13183731309": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227712901
+    },
+    "14739832277": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227715238
+    },
+    "13928757081": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227717393
+    },
+    "13159461226": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227719456
+    },
+    "14088678045": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227721748
+    },
+    "14425826060": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227724537
+    },
+    "13384454551": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227726348
+    },
+    "15923035917": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227729004
+    },
+    "15327825834": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227730625
+    },
+    "14416920532": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227732770
+    },
+    "15620856400": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227735677
+    },
+    "13343040387": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227737795
+    },
+    "12918982211": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227740007
+    },
+    "14793697719": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227742202
+    },
+    "15150026303": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227744606
+    },
+    "14038933903": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227746800
+    },
+    "14331549632": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795227749061
+    },
+    "12973698857": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795228781978
+    },
+    "16771392898": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237121401
+    },
+    "15897951323": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237121804
+    },
+    "17011789446": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237122033
+    },
+    "16615145256": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237122790
+    },
+    "14702164112": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237123050
+    },
+    "13686654585": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237123124
+    },
+    "16475723263": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237123308
+    },
+    "13479010578": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237123721
+    },
+    "14675888008": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237124637
+    },
+    "15434226925": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237124653
+    },
+    "13943669035": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237124864
+    },
+    "16563522217": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237125505
+    },
+    "16281157694": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237125556
+    },
+    "15696928431": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237125674
+    },
+    "16502526306": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237125741
+    },
+    "14795556348": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237126394
+    },
+    "15871952358": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237126643
+    },
+    "14421295553": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237126801
+    },
+    "15083926797": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237127234
+    },
+    "16030177433": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237127669
+    },
+    "13020405941": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237127951
+    },
+    "16625117637": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237128828
+    },
+    "16041151539": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237128870
+    },
+    "15588059403": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237129500
+    },
+    "16638648582": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237129881
+    },
+    "14089832384": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237130517
+    },
+    "13825046790": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237130775
+    },
+    "16816783482": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237131377
+    },
+    "15440022172": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237132278
+    },
+    "15147229143": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237132619
+    },
+    "13705816275": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237132648
+    },
+    "14303458449": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237133437
+    },
+    "15638880701": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237133781
+    },
+    "12917339754": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237134524
+    },
+    "15399110269": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237144539
+    },
+    "15122333051": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237145896
+    },
+    "16848420618": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237147441
+    },
+    "16218477777": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237150417
+    },
+    "13547110349": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237152160
+    },
+    "14661401120": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237153332
+    },
+    "15922112909": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237154943
+    },
+    "16402870722": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237156950
+    },
+    "15220003660": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237161094
+    },
+    "14819633061": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237163364
+    },
+    "12989605105": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237163635
+    },
+    "14667061328": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237164089
+    },
+    "16426054168": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237164205
+    },
+    "14135734542": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237164304
+    },
+    "15914951248": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237166232
+    },
+    "14530046629": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237168720
+    },
+    "17043187427": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237169059
+    },
+    "14655748973": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237491315
+    },
+    "14965482813": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237501419
+    },
+    "13244649148": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237520561
+    },
+    "12933160646": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795237542620
+    },
+    "13664061083": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795245774132
+    },
+    "13129054952": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795245774279
+    },
+    "17150918440": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795245774410
+    },
+    "17108010869": {
       "serial": "R3CN20H8F0W",
       "backupSerial": null,
       "group": "SAMSUNG_R3CN20H8F0W",
-      "updatedAt": 1795198582181
+      "updatedAt": 1795245774539
+    },
+    "14580795789": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795246503522
+    },
+    "13816495776": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795246503799
+    },
+    "13562964255": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795246503856
+    },
+    "13945532026": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795246503865
+    },
+    "16961641417": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795246504142
+    },
+    "13591076064": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795246504273
+    },
+    "14707726924": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795246504282
+    },
+    "15792720529": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795246504943
+    },
+    "16921304442": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795321259334
+    },
+    "15854080438": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504436
+    },
+    "14082138814": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487755030
+    },
+    "13299523975": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504434
+    },
+    "13086412826": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795321260046
+    },
+    "16965429907": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795321260281
+    },
+    "13248514810": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504433
+    },
+    "15733517974": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795487509913
+    },
+    "15468474129": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504438
+    },
+    "13807183602": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504438
+    },
+    "13353553069": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504439
+    },
+    "15319876680": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504437
+    },
+    "16171324447": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795321262567
+    },
+    "13649957359": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795321262569
+    },
+    "15851055677": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795321263191
+    },
+    "15045494275": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795487515817
+    },
+    "15827250451": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487758559
+    },
+    "14478532793": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487523269
+    },
+    "16252470114": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504435
+    },
+    "16991068213": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795321263810
+    },
+    "15344750178": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795321263996
+    },
+    "14724150770": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795487513191
+    },
+    "17069587352": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504435
+    },
+    "13409942600": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504433
+    },
+    "13301611587": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487566208
+    },
+    "13880785941": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487533555
+    },
+    "14576150447": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795321266704
+    },
+    "15337965733": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504431
+    },
+    "16978242075": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795321267785
+    },
+    "14562226344": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504438
+    },
+    "16944989336": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795321268929
+    },
+    "13048767973": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504438
+    },
+    "14476238973": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795321273704
+    },
+    "15326281655": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795321274061
+    },
+    "16640418013": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795321275980
+    },
+    "17130241041": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795487526718
+    },
+    "16787603247": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795487504437
+    },
+    "13099052683": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487504432
+    },
+    "13094278686": {
+      "serial": "TIGER10VN0001115",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795487771778
+    },
+    "15140180880": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795363445498
+    },
+    "15889388301": {
+      "serial": "TIGER10VN0000277",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795363448840
+    },
+    "15003602140": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795363453941
+    },
+    "17090855975": {
+      "serial": "R5CRC3DKRFD",
+      "backupSerial": null,
+      "group": "SAMSUNG_R5CRC3DKRFD",
+      "updatedAt": 1795363453992
+    },
+    "16317643021": {
+      "serial": "TIGER10VN0000332",
+      "backupSerial": "TIGER10VN0000859",
+      "group": "TIGER",
+      "updatedAt": 1795363461272
+    },
+    "16609731527": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000277",
+      "group": "TIGER",
+      "updatedAt": 1795363462594
+    },
+    "10661434258": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795410764022
+    },
+    "14066583430": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795458178346
+    },
+    "16487504286": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0000332",
+      "group": "TIGER",
+      "updatedAt": 1795458178538
+    },
+    "14655403007": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499290050
+    },
+    "16417064696": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499290462
+    },
+    "15156473257": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499295110
+    },
+    "13302403379": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499295576
+    },
+    "13839196557": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499326331
+    },
+    "13426658236": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795499330331
+    },
+    "14261346204": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499339593
+    },
+    "16778226400": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499346106
+    },
+    "14090551883": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795499349235
+    },
+    "13867963191": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627659569
+    },
+    "14540812593": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627662340
+    },
+    "14413624492": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627662346
+    },
+    "14842451363": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627663586
+    },
+    "12922107064": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627668566
+    },
+    "16910616919": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627669413
+    },
+    "16332835256": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627678066
+    },
+    "14917581767": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627680476
+    },
+    "13926513698": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627706431
+    },
+    "16608950781": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627721219
+    },
+    "13690971161": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627738986
+    },
+    "15553318720": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627747542
+    },
+    "14498624121": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627750061
+    },
+    "16948898961": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627753436
+    },
+    "14205909684": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627779764
+    },
+    "15625332990": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627782327
+    },
+    "13626426705": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627783977
+    },
+    "15587052136": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627792009
+    },
+    "16965049188": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627806550
+    },
+    "16385186231": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627808471
+    },
+    "13114895992": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627810351
+    },
+    "14480269458": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627814090
+    },
+    "16741028634": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627816556
+    },
+    "15355795408": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627819753
+    },
+    "16873490790": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627858480
+    },
+    "13750327764": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627867890
+    },
+    "15268518294": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627869247
+    },
+    "14321842010": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627871357
+    },
+    "16419052858": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627876602
+    },
+    "16437229976": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627882353
+    },
+    "14645946094": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627900772
+    },
+    "16656165216": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627903839
+    },
+    "17130878483": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627905220
+    },
+    "13236993736": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627918311
+    },
+    "15112401098": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627919527
+    },
+    "14750164778": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627920180
+    },
+    "13242565765": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627927980
+    },
+    "13155846019": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627941060
+    },
+    "14451562383": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795627945580
+    },
+    "14337550185": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627947308
+    },
+    "16913090637": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795627953695
+    },
+    "14540903940": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795628242996
+    },
+    "16900729314": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795628272363
+    },
+    "13076151888": {
+      "serial": "R3CN20H8F0W",
+      "backupSerial": null,
+      "group": "SAMSUNG_R3CN20H8F0W",
+      "updatedAt": 1795628298091
+    },
+    "15988318023": {
+      "serial": "TIGER10VN0000859",
+      "backupSerial": "TIGER10VN0001115",
+      "group": "TIGER",
+      "updatedAt": 1795628305311
     }
   }
 }

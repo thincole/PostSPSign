@@ -12,7 +12,7 @@
       "videoFolder": "F:/Video AI/PH/MuseAI/1411",
       "driveLink": "https://docs.google.com/spreadsheets/d/18OE86tzWPeKp3xlSYscmJFEQC87ZBuBwgTF8HOz8e1w/edit?gid=623566425#gid=623566425",
       "sheetName": "PH",
-      "maxVideosPerAccount": "55",
+      "maxVideosPerAccount": "58",
       "isAigc": true
     },
     "id": {
@@ -26,12 +26,12 @@
       "videoFolder": "F:\\Video AI\\PH\\Veo3go",
       "driveLink": "https://docs.google.com/spreadsheets/d/18OE86tzWPeKp3xlSYscmJFEQC87ZBuBwgTF8HOz8e1w/edit?gid=623566425#gid=623566425",
       "sheetName": "PHmoi",
-      "maxVideosPerAccount": "30",
+      "maxVideosPerAccount": "50",
       "isAigc": true
     }
   },
   "general": {
-    "delayMin": "168",
+    "delayMin": "156",
     "delayMax": "196",
     "autoStart": true,
     "deleteOnSuccess": true

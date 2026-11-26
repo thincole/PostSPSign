@@ -128,9 +128,10 @@ db["run"](createTableQuery, [], function (_0x28c509) {
     ));
   db.run("ALTER TABLE config ADD COLUMN is_aigc INTEGER DEFAULT 1", (err) => { });
   db.run("ALTER TABLE config ADD COLUMN use_proxy_queue_lock INTEGER DEFAULT 1", (err) => { });
-  db.run("ALTER TABLE config ADD COLUMN sign_mode TEXT DEFAULT 'credit'", (err) => { });
+  db.run("ALTER TABLE config ADD COLUMN sign_mode TEXT DEFAULT 'phone'", (err) => { });
   db.run("ALTER TABLE config ADD COLUMN phone_sign_url TEXT DEFAULT 'http://100.79.170.67:8080'", (err) => { });
   db.run("ALTER TABLE config ADD COLUMN phone_sign_key TEXT DEFAULT 'ThinAPTM'", (err) => { });
+  db.run("UPDATE config SET sign_mode = 'phone' WHERE sign_mode IS NULL OR sign_mode = ''", (err) => { });
   db.run("UPDATE config SET phone_sign_url = 'http://100.79.170.67:8080' WHERE phone_sign_url IS NULL OR phone_sign_url = '' OR phone_sign_url = 'http://127.0.0.1:8080'", (err) => { });
 });
 class Config {
@@ -229,7 +230,7 @@ class Config {
         [],
         (err, row) => {
           if (err) return reject(err);
-          const sign_mode = row?.sign_mode || "credit";
+          const sign_mode = row?.sign_mode || "phone";
           const defaultCreditUrl = "https://creditmls2026video.toolshopee.vn/api/sign";
           const defaultCreditKey = "Gte3Ka4W2Y2RTJ7MdcqFYua6nnMOImWx7BU2e2ZcseG5gBvU";
           const phone_sign_url = row?.phone_sign_url || "http://100.79.170.67:8080";
@@ -253,10 +254,10 @@ class Config {
       );
     });
   }
-  static async ["updateCreditSettings"](credit_url, credit_key, sign_mode = 'credit', phone_sign_url = 'http://100.79.170.67:8080', phone_sign_key = 'ThinAPTM') {
+  static async ["updateCreditSettings"](credit_url, credit_key, sign_mode = 'phone', phone_sign_url = 'http://100.79.170.67:8080', phone_sign_key = 'ThinAPTM') {
     return new Promise((resolve, reject) => {
       db.serialize(() => {
-        db.run("ALTER TABLE config ADD COLUMN sign_mode TEXT DEFAULT 'credit'", (err) => { });
+        db.run("ALTER TABLE config ADD COLUMN sign_mode TEXT DEFAULT 'phone'", (err) => { });
         db.run("ALTER TABLE config ADD COLUMN phone_sign_url TEXT DEFAULT 'http://100.79.170.67:8080'", (err) => { });
         db.run("ALTER TABLE config ADD COLUMN phone_sign_key TEXT DEFAULT 'ThinAPTM'", (err) => { });
         db.run(
