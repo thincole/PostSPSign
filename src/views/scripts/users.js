@@ -997,4 +997,322 @@ async function checkUsersMcn(btn) {
   }
 }
 
+// === Check giỏ / chức năng video gắn link cho tài khoản không Active ===
+let _inactiveCartPollTimer = null;
+let _inactiveCartResults = [];
+let _inactiveCartFilter = 'all';
+
+function openCheckInactiveCartModal() {
+  const pageCountry = document.getElementById('userCountryFilter')?.value || 'all';
+  const modalCountryEl = document.getElementById('inactiveCartCountrySelect');
+  if (modalCountryEl) {
+    const valid = Array.from(modalCountryEl.options).some((o) => o.value === pageCountry);
+    modalCountryEl.value = valid ? pageCountry : 'all';
+  }
+  const modalEl = document.getElementById('checkInactiveCartModal');
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  modal.show();
+  startCheckInactiveCart();
+}
+
+function setInactiveCartFilter(filter, btnEl) {
+  _inactiveCartFilter = filter || 'all';
+  document.querySelectorAll('#inactiveCartFilterBtns button').forEach((b) => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderInactiveCartTable();
+}
+
+function escapeHtmlCart(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderInactiveCartTable() {
+  const tbody = document.getElementById('inactiveCartTableBody');
+  const btnCopy = document.getElementById('btnCopyUnlockedUsers');
+  const btnActAll = document.getElementById('btnActivateAllUnlocked');
+  if (!tbody) return;
+
+  const unlockedPending = _inactiveCartResults.filter((r) => r.category === 'OK' && !r.activated);
+  const allUnlocked = _inactiveCartResults.filter((r) => r.category === 'OK');
+
+  if (btnCopy) btnCopy.disabled = allUnlocked.length === 0;
+  if (btnActAll) {
+    btnActAll.disabled = unlockedPending.length === 0;
+    btnActAll.innerHTML = `<i class="bi bi-check2-circle me-1"></i>Kích hoạt tất cả TK đã mở (${unlockedPending.length})`;
+  }
+
+  let list = _inactiveCartResults.slice();
+  if (_inactiveCartFilter === 'unlocked') {
+    list = list.filter((r) => r.category === 'OK');
+  } else if (_inactiveCartFilter === 'locked') {
+    list = list.filter(
+      (r) =>
+        r.category !== 'OK' &&
+        r.category !== 'DEAD_COOKIE' &&
+        r.category !== 'NO_COOKIE' &&
+        r.category !== 'NET_ERR'
+    );
+  } else if (_inactiveCartFilter === 'issue') {
+    list = list.filter(
+      (r) => r.category === 'DEAD_COOKIE' || r.category === 'NO_COOKIE' || r.category === 'NET_ERR'
+    );
+  }
+
+  // Đẩy các TK đã mở lại (OK) lên đầu bảng
+  const rank = (cat) => {
+    if (cat === 'OK') return 0;
+    if (cat === 'NO_AFFILIATE' || cat === 'AFF_FROZEN') return 1;
+    if (cat === 'DEAD_COOKIE' || cat === 'NO_COOKIE') return 3;
+    if (cat === 'NET_ERR') return 4;
+    return 2;
+  };
+  list.sort((a, b) => rank(a.category) - rank(b.category) || String(a.username).localeCompare(String(b.username)));
+
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Không có tài khoản nào trong mục này.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list
+    .map((r, i) => {
+      let badgeCls = 'bg-danger';
+      if (r.category === 'OK') badgeCls = 'bg-success';
+      else if (r.category === 'DEAD_COOKIE' || r.category === 'NO_COOKIE') badgeCls = 'bg-secondary';
+      else if (r.category === 'NET_ERR') badgeCls = 'bg-warning text-dark';
+
+      const rowCls = r.category === 'OK' ? 'table-success' : '';
+      let actionHtml = '<span class="text-muted small">-</span>';
+      if (r.category === 'OK') {
+        actionHtml = r.activated
+          ? '<span class="badge bg-success-subtle text-success border border-success">Đã kích hoạt</span>'
+          : `<button type="button" class="btn btn-success btn-sm py-0 px-2" onclick="activateSingleUnlockedCartUser(${r.id}, this)">Kích hoạt</button>`;
+      }
+
+      const proxyNote = r.ownProxyFailed ? ' <span class="badge bg-warning text-dark" title="Proxy riêng của TK lỗi, đã dùng proxy dự phòng để check">Proxy lỗi</span>' : '';
+      return `
+        <tr class="${rowCls}">
+          <td class="text-muted">${i + 1}</td>
+          <td><strong>${escapeHtmlCart(r.username)}</strong>${proxyNote}</td>
+          <td><span class="badge bg-light text-dark border text-uppercase">${escapeHtmlCart(r.country || 'vn')}</span></td>
+          <td><span class="badge ${badgeCls}">${escapeHtmlCart(r.label || r.category)}</span></td>
+          <td class="text-muted font-monospace" style="font-size:0.74rem;">${escapeHtmlCart(r.detail || '')}</td>
+          <td class="text-center">${actionHtml}</td>
+        </tr>
+      `;
+    })
+    .join('');
+}
+
+function updateInactiveCartProgressUI(st) {
+  const bar = document.getElementById('inactiveCartProgressBar');
+  const label = document.getElementById('inactiveCartProgressLabel');
+  const pctEl = document.getElementById('inactiveCartProgressPct');
+  const bUnl = document.getElementById('cartBadgeUnlocked');
+  const bLock = document.getElementById('cartBadgeLocked');
+  const bDead = document.getElementById('cartBadgeDeadCookie');
+  const bErr = document.getElementById('cartBadgeNetErr');
+  const topBtn = document.getElementById('btnCheckInactiveCart');
+  const scanBtn = document.getElementById('btnStartInactiveCartScan');
+
+  const total = st.total || 0;
+  const done = st.done || 0;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 100;
+
+  if (bUnl) bUnl.textContent = `Đã mở lại: ${st.unlocked || 0}`;
+  if (bLock) bLock.textContent = `Vẫn khóa: ${st.locked || 0}`;
+  if (bDead) bDead.textContent = `Cookie chết: ${st.deadCookie || 0}`;
+  if (bErr) bErr.textContent = `Lỗi mạng: ${st.errors || 0}`;
+  if (pctEl) pctEl.textContent = `${pct}%`;
+
+  if (bar) {
+    bar.style.width = `${pct}%`;
+    if (st.running) {
+      bar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+    } else {
+      bar.className = (st.unlocked || 0) > 0 ? 'progress-bar bg-success' : 'progress-bar bg-secondary';
+    }
+  }
+
+  if (label) {
+    if (total === 0) {
+      label.textContent = 'Không có tài khoản nào đang tắt kích hoạt (không Active) trong phạm vi đã chọn.';
+    } else if (st.running) {
+      label.textContent = `Đang kiểm tra giỏ hàng: ${done} / ${total} tài khoản không Active...`;
+    } else {
+      label.textContent = `Hoàn tất kiểm tra ${done} / ${total} tài khoản — Phát hiện ${st.unlocked || 0} tài khoản đã được Shopee mở lại giỏ!`;
+    }
+  }
+
+  if (scanBtn) scanBtn.disabled = Boolean(st.running);
+  if (topBtn) {
+    if (st.running) {
+      topBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>Check giỏ (${done}/${total})`;
+    } else {
+      topBtn.innerHTML = '<i class="bi bi-bag-check me-1"></i>Check giỏ TK không Active';
+    }
+  }
+}
+
+async function startCheckInactiveCart() {
+  const country = document.getElementById('inactiveCartCountrySelect')?.value || 'all';
+  const scanBtn = document.getElementById('btnStartInactiveCartScan');
+  if (scanBtn) scanBtn.disabled = true;
+
+  if (_inactiveCartPollTimer) {
+    clearInterval(_inactiveCartPollTimer);
+    _inactiveCartPollTimer = null;
+  }
+
+  try {
+    const startRes = await fetch('/api/users/check-inactive-cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ country })
+    });
+    const startJson = await startRes.json();
+    if (!startJson.success) {
+      showToast(startJson.error || 'Không khởi chạy được kiểm tra giỏ hàng', 'error');
+      if (scanBtn) scanBtn.disabled = false;
+      return;
+    }
+
+    _inactiveCartResults = Array.isArray(startJson.updates) ? startJson.updates.slice() : [];
+    let since = startJson.nextIndex || _inactiveCartResults.length;
+    updateInactiveCartProgressUI(startJson);
+    renderInactiveCartTable();
+
+    if (!startJson.running) {
+      if (startJson.total === 0) {
+        showToast('Không có tài khoản nào đang không Active để kiểm tra', 'info');
+      }
+      return;
+    }
+
+    if (startJson.alreadyRunning) {
+      showToast(`Đang chạy kiểm tra giỏ (${startJson.done}/${startJson.total})...`, 'info');
+    }
+
+    const pollOnce = async () => {
+      try {
+        const res = await fetch(`/api/users/video-cart-status?since=${since}`);
+        const st = await res.json();
+        if (!st.success) return;
+
+        if (Array.isArray(st.updates) && st.updates.length > 0) {
+          _inactiveCartResults.push(...st.updates);
+          since = st.nextIndex || (since + st.updates.length);
+        }
+        updateInactiveCartProgressUI(st);
+        renderInactiveCartTable();
+
+        if (!st.running) {
+          clearInterval(_inactiveCartPollTimer);
+          _inactiveCartPollTimer = null;
+          showToast(
+            `Xong kiểm tra ${st.done}/${st.total} TK không Active: ${st.unlocked} đã mở lại, ${st.locked} vẫn khóa, ${st.deadCookie} cookie chết`,
+            st.unlocked > 0 ? 'success' : 'info'
+          );
+        }
+      } catch (_) {}
+    };
+
+    _inactiveCartPollTimer = setInterval(pollOnce, 800);
+  } catch (err) {
+    showToast('Lỗi kết nối khi kiểm tra giỏ TK không Active', 'error');
+    if (scanBtn) scanBtn.disabled = false;
+  }
+}
+
+async function activateUnlockedCartUserIds(userIds, triggerBtn) {
+  if (!Array.isArray(userIds) || userIds.length === 0) return;
+  const origHtml = triggerBtn ? triggerBtn.innerHTML : '';
+  if (triggerBtn) {
+    triggerBtn.disabled = true;
+    triggerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang bật...';
+  }
+  try {
+    const res = await fetch('/api/users/activate-batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userIds })
+    });
+    const json = await res.json();
+    if (!json.success) {
+      showToast(json.error || 'Lỗi kích hoạt tài khoản', 'error');
+      if (triggerBtn) {
+        triggerBtn.disabled = false;
+        triggerBtn.innerHTML = origHtml;
+      }
+      return;
+    }
+
+    const idSet = new Set(userIds.map(Number));
+    _inactiveCartResults.forEach((r) => {
+      if (idSet.has(Number(r.id))) {
+        r.is_active = 1;
+        r.activated = true;
+      }
+    });
+    // Đồng bộ ngay switch ngoài bảng Quản Lý Người Dùng
+    idSet.forEach((uid) => {
+      const sw = document.getElementById('userActiveSwitch_' + uid);
+      if (sw) sw.checked = true;
+    });
+
+    renderInactiveCartTable();
+    showToast(`Đã kích hoạt lại ${json.updated} tài khoản đã mở giỏ!`, 'success');
+  } catch (err) {
+    showToast('Lỗi kết nối khi kích hoạt tài khoản', 'error');
+    if (triggerBtn) {
+      triggerBtn.disabled = false;
+      triggerBtn.innerHTML = origHtml;
+    }
+  }
+}
+
+function activateSingleUnlockedCartUser(userId, btn) {
+  activateUnlockedCartUserIds([Number(userId)], btn);
+}
+
+function activateAllUnlockedCartUsers(btn) {
+  const ids = _inactiveCartResults
+    .filter((r) => r.category === 'OK' && !r.activated)
+    .map((r) => Number(r.id));
+  if (ids.length === 0) {
+    showToast('Không có tài khoản mới nào cần kích hoạt', 'info');
+    return;
+  }
+  activateUnlockedCartUserIds(ids, btn);
+}
+
+function copyUnlockedCartUsernames() {
+  const names = _inactiveCartResults.filter((r) => r.category === 'OK').map((r) => r.username);
+  if (names.length === 0) {
+    showToast('Chưa có tài khoản nào được mở lại giỏ', 'warning');
+    return;
+  }
+  const text = names.join('\n');
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast(`Đã copy ${names.length} username đã mở lại giỏ`, 'success');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => showToast(`Đã copy ${names.length} username đã mở lại giỏ`, 'success'))
+      .catch(fallback);
+  } else {
+    fallback();
+  }
+}
+
 

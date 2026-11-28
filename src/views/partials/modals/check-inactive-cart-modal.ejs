@@ -1,0 +1,91 @@
+<div class="modal fade" id="checkInactiveCartModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-bag-check me-2 text-warning"></i>Check Giỏ / Video Gắn Link — Tài Khoản Không Active
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <select class="form-select form-select-sm" id="inactiveCartCountrySelect" style="width:auto; min-width:175px;">
+                            <option value="all">🌍 Tất cả quốc gia</option>
+                            <option value="ph">🇵🇭 Philippines (ph)</option>
+                            <option value="vn">🇻🇳 Việt Nam (vn)</option>
+                            <option value="id">🇮🇩 Indonesia (id)</option>
+                            <option value="my">🇲🇾 Malaysia (my)</option>
+                            <option value="th">🇹🇭 Thái Lan (th)</option>
+                            <option value="sg">🇸🇬 Singapore (sg)</option>
+                            <option value="br">🇧🇷 Brazil (br)</option>
+                            <option value="ar">🇦🇷 Argentina (ar)</option>
+                            <option value="mx">🇲🇽 México (mx)</option>
+                            <option value="tw">🇹🇼 Đài Loan (tw)</option>
+                        </select>
+                        <button type="button" class="btn btn-primary btn-sm" id="btnStartInactiveCartScan" onclick="startCheckInactiveCart()">
+                            <i class="bi bi-arrow-repeat me-1"></i>Quét lại
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap" id="inactiveCartSummaryBadges">
+                        <span class="badge bg-success" id="cartBadgeUnlocked">Đã mở lại: 0</span>
+                        <span class="badge bg-danger" id="cartBadgeLocked">Vẫn khóa: 0</span>
+                        <span class="badge bg-secondary" id="cartBadgeDeadCookie">Cookie chết: 0</span>
+                        <span class="badge bg-warning text-dark" id="cartBadgeNetErr">Lỗi mạng: 0</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span id="inactiveCartProgressLabel">Đang chuẩn bị...</span>
+                        <span id="inactiveCartProgressPct">0%</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" id="inactiveCartProgressBar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="btn-group btn-group-sm mb-2" role="group" id="inactiveCartFilterBtns">
+                    <button type="button" class="btn btn-outline-dark active" data-filter="all" onclick="setInactiveCartFilter('all', this)">Tất cả</button>
+                    <button type="button" class="btn btn-outline-success" data-filter="unlocked" onclick="setInactiveCartFilter('unlocked', this)">✅ Đã mở lại (OK)</button>
+                    <button type="button" class="btn btn-outline-danger" data-filter="locked" onclick="setInactiveCartFilter('locked', this)">🔒 Vẫn khóa</button>
+                    <button type="button" class="btn btn-outline-secondary" data-filter="issue" onclick="setInactiveCartFilter('issue', this)">🔑 Cookie chết / Lỗi</button>
+                </div>
+
+                <div class="table-responsive border rounded" style="max-height: 430px;">
+                    <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.82rem;">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th style="width:45px">#</th>
+                                <th style="width:140px">Username</th>
+                                <th style="width:75px">QG</th>
+                                <th style="width:280px">Trạng thái giỏ / Video gắn link</th>
+                                <th>Chi tiết API</th>
+                                <th style="width:120px" class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inactiveCartTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">Chưa có dữ liệu...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <div class="small text-muted" id="inactiveCartFooterHint">
+                    Chỉ quét các tài khoản đang tắt <strong>Kích hoạt</strong> (không tốn điện thoại ký).
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="btnCopyUnlockedUsers" onclick="copyUnlockedCartUsernames()" disabled>
+                        <i class="bi bi-clipboard me-1"></i>Copy TK đã mở
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm fw-semibold" id="btnActivateAllUnlocked" onclick="activateAllUnlockedCartUsers(this)" disabled>
+                        <i class="bi bi-check2-circle me-1"></i>Kích hoạt tất cả TK đã mở (0)
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

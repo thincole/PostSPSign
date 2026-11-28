@@ -481,6 +481,44 @@ router.post('/:id/check-mcn', async (req, res) => {
   }
 });
 
+// GET /video-cart-status (Tiến độ kiểm tra giỏ hàng / video gắn link các TK không Active)
+router.get('/video-cart-status', (req, res) => {
+  try {
+    const cartService = require('../services/video-cart-check.service');
+    const since = parseInt(req.query.since || '0', 10) || 0;
+    res.json({ success: true, ...cartService.getBatchStatus(since) });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /check-inactive-cart (Kiểm tra trạng thái chức năng video gắn link cho các TK đang không kích hoạt)
+router.post('/check-inactive-cart', async (req, res) => {
+  try {
+    const cartService = require('../services/video-cart-check.service');
+    const country = req.body?.country || 'all';
+    const userIds = Array.isArray(req.body?.userIds) ? req.body.userIds : [];
+    const status = await cartService.startInactiveCartCheck({ country, userIds });
+    res.json({ success: true, ...status });
+  } catch (err) {
+    console.error('Check inactive cart error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /activate-batch (Kích hoạt lại hàng loạt các tài khoản đã được Shopee mở lại giỏ)
+router.post('/activate-batch', async (req, res) => {
+  try {
+    const cartService = require('../services/video-cart-check.service');
+    const userIds = Array.isArray(req.body?.userIds) ? req.body.userIds : [];
+    const result = await cartService.activateUsersBatch(userIds);
+    res.json({ success: true, ...result });
+  } catch (err) {
+    console.error('Activate batch users error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // POST /:id/recover-cookie (Lớp 1 + Lớp 3 / Interactive cho từng tài khoản trong Quản Lý Người Dùng)
 router.post('/:id/recover-cookie', async (req, res) => {
   try {
