@@ -1,0 +1,58 @@
+<div class="modal fade" id="exportUsernamesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-file-earmark-text me-2"></i>Xuất Danh Sách UserName</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="exportUsernameCountry">Phạm vi quốc gia</label>
+                    <select class="form-select form-select-sm" id="exportUsernameCountry" onchange="updateExportUsernamesPreview()">
+                        <option value="all">🌍 Xuất tất cả quốc gia</option>
+                        <option value="vn">🇻🇳 Việt Nam (vn)</option>
+                        <option value="ph">🇵🇭 Philippines (ph)</option>
+                        <option value="id">🇮🇩 Indonesia (id)</option>
+                        <option value="my">🇲🇾 Malaysia (my)</option>
+                        <option value="th">🇹🇭 Thái Lan (th)</option>
+                        <option value="sg">🇸🇬 Singapore (sg)</option>
+                        <option value="br">🇧🇷 Brazil (br)</option>
+                        <option value="ar">🇦🇷 Argentina (ar)</option>
+                        <option value="mx">🇲🇽 México (mx)</option>
+                        <option value="tw">🇹🇼 Đài Loan (tw)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold d-block">Trạng thái kích hoạt</label>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="exportUsernameActive" id="exportActiveOnly" value="active" checked onchange="updateExportUsernamesPreview()">
+                            <label class="form-check-label" for="exportActiveOnly">Chỉ tài khoản đang kích hoạt</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="exportUsernameActive" id="exportActiveAll" value="all" onchange="updateExportUsernamesPreview()">
+                            <label class="form-check-label" for="exportActiveAll">Xuất hết (tất cả trạng thái)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-1 d-flex justify-content-between align-items-center">
+                    <label class="form-label fw-semibold mb-0" for="exportUsernamePreview">Xem trước (mỗi username 1 dòng)</label>
+                    <span class="badge bg-primary" id="exportUsernameCountBadge">0 tài khoản</span>
+                </div>
+                <textarea class="form-control form-control-sm font-monospace" id="exportUsernamePreview" rows="9" readonly
+                    placeholder="Không có tài khoản nào khớp bộ lọc..." style="font-size:0.8rem; background:#f8f9fa; resize:vertical;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="btnCopyExportUsernames" onclick="copyExportedUsernames()">
+                    <i class="bi bi-clipboard me-1"></i>Copy Danh Sách
+                </button>
+                <button type="button" class="btn btn-success btn-sm" id="btnDownloadExportUsernames" onclick="downloadExportedUsernames()">
+                    <i class="bi bi-download me-1"></i>Tải file .TXT
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

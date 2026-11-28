@@ -130,6 +130,151 @@ function exportUsersJson() {
   showToast('Đang tải file JSON...', 'success');
 }
 
+const EXPORT_USERNAME_COUNTRY_LABELS = {
+  all: '🌍 Xuất tất cả quốc gia',
+  vn: '🇻🇳 Việt Nam (vn)',
+  ph: '🇵🇭 Philippines (ph)',
+  id: '🇮🇩 Indonesia (id)',
+  my: '🇲🇾 Malaysia (my)',
+  th: '🇹🇭 Thái Lan (th)',
+  sg: '🇸🇬 Singapore (sg)',
+  br: '🇧🇷 Brazil (br)',
+  ar: '🇦🇷 Argentina (ar)',
+  mx: '🇲🇽 México (mx)',
+  tw: '🇹🇼 Đài Loan (tw)',
+};
+
+function getExportUsernamesList(countryFilter = 'all', activeFilter = 'all') {
+  const rows = document.querySelectorAll('#userTableBody tr.user-row');
+  const usernames = [];
+  rows.forEach((row) => {
+    const country = (row.dataset.country || 'vn').toLowerCase();
+    const activeSwitch = row.querySelector('.user-active-switch');
+    const isActive = activeSwitch ? activeSwitch.checked : true;
+    if (countryFilter !== 'all' && country !== countryFilter) return;
+    if (activeFilter === 'active' && !isActive) return;
+
+    const rawName = (
+      row.dataset.usernameRaw ||
+      row.querySelector('td:nth-child(3) strong')?.textContent ||
+      ''
+    ).trim();
+    if (rawName) usernames.push(rawName);
+  });
+  return usernames;
+}
+
+function showExportUsernamesModal() {
+  const countrySelect = document.getElementById('exportUsernameCountry');
+  if (countrySelect) {
+    const counts = { all: 0 };
+    document.querySelectorAll('#userTableBody tr.user-row').forEach((row) => {
+      const c = (row.dataset.country || 'vn').toLowerCase();
+      counts.all++;
+      counts[c] = (counts[c] || 0) + 1;
+    });
+
+    const pageCountryFilter = document.getElementById('userCountryFilter');
+    const prevValue = pageCountryFilter ? pageCountryFilter.value : 'all';
+
+    // Giữ đầy đủ danh sách quốc gia + bổ sung nếu DB có mã quốc gia khác
+    const knownCodes = Object.keys(EXPORT_USERNAME_COUNTRY_LABELS);
+    const extraCodes = Object.keys(counts).filter((c) => !knownCodes.includes(c));
+    const orderedCodes = [...knownCodes, ...extraCodes];
+
+    countrySelect.innerHTML = '';
+    orderedCodes.forEach((code) => {
+      const cnt = counts[code] || 0;
+      if (code !== 'all' && cnt === 0 && !knownCodes.includes(code)) return;
+      const opt = document.createElement('option');
+      opt.value = code;
+      const baseLabel = EXPORT_USERNAME_COUNTRY_LABELS[code] || code.toUpperCase();
+      opt.textContent = `${baseLabel} (${cnt})`;
+      countrySelect.appendChild(opt);
+    });
+
+    countrySelect.value = orderedCodes.includes(prevValue) ? prevValue : 'all';
+  }
+
+  updateExportUsernamesPreview();
+  const modalEl = document.getElementById('exportUsernamesModal');
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  modal.show();
+}
+
+function updateExportUsernamesPreview() {
+  const countryEl = document.getElementById('exportUsernameCountry');
+  const activeRadio = document.querySelector('input[name="exportUsernameActive"]:checked');
+  const previewEl = document.getElementById('exportUsernamePreview');
+  const badgeEl = document.getElementById('exportUsernameCountBadge');
+  const copyBtn = document.getElementById('btnCopyExportUsernames');
+  const dlBtn = document.getElementById('btnDownloadExportUsernames');
+
+  const country = countryEl ? countryEl.value : 'all';
+  const activeScope = activeRadio ? activeRadio.value : 'active';
+  const list = getExportUsernamesList(country, activeScope);
+
+  if (badgeEl) {
+    badgeEl.textContent = `${list.length} tài khoản`;
+    badgeEl.className = list.length > 0 ? 'badge bg-primary' : 'badge bg-secondary';
+  }
+  if (previewEl) {
+    previewEl.value = list.join('\n');
+  }
+  if (copyBtn) copyBtn.disabled = list.length === 0;
+  if (dlBtn) dlBtn.disabled = list.length === 0;
+}
+
+function copyExportedUsernames() {
+  const previewEl = document.getElementById('exportUsernamePreview');
+  const text = previewEl ? previewEl.value : '';
+  if (!text) {
+    showToast('Không có username nào để copy', 'warning');
+    return;
+  }
+  const count = text.split('\n').length;
+  const fallbackCopy = () => {
+    previewEl.focus();
+    previewEl.select();
+    document.execCommand('copy');
+    showToast(`Đã copy ${count} username vào clipboard`, 'success');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => showToast(`Đã copy ${count} username vào clipboard`, 'success'))
+      .catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+}
+
+function downloadExportedUsernames() {
+  const countryEl = document.getElementById('exportUsernameCountry');
+  const activeRadio = document.querySelector('input[name="exportUsernameActive"]:checked');
+  const country = countryEl ? countryEl.value : 'all';
+  const activeScope = activeRadio ? activeRadio.value : 'active';
+  const list = getExportUsernamesList(country, activeScope);
+
+  if (list.length === 0) {
+    showToast('Không có username nào để xuất', 'warning');
+    return;
+  }
+
+  const content = list.join('\r\n') + '\r\n';
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const suffixActive = activeScope === 'active' ? 'kich_hoat' : 'tat_ca';
+  a.href = url;
+  a.download = `usernames_${country}_${suffixActive}_${list.length}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast(`Đã xuất ${list.length} username ra file .txt`, 'success');
+}
+
 function showImportJsonModal() {
   const modal = new bootstrap.Modal(document.getElementById('importJsonModal'));
   modal.show();

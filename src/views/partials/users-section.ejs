@@ -20,6 +20,9 @@
         <button class="btn btn-outline-danger btn-sm fw-semibold" id="btnCheckMcn" onclick="checkUsersMcn(this)"
             title="Kiểm tra ngày hết hạn MCN cho các tài khoản đang chọn (hoặc tất cả đang hiển thị)"><i
                 class="bi bi-calendar-check me-1"></i>Kiểm Tra MCN</button>
+        <button class="btn btn-outline-primary btn-sm fw-semibold" id="btnExportUsernames" onclick="showExportUsernamesModal()"
+            title="Xuất danh sách Username (mỗi dòng 1 username) theo quốc gia và trạng thái kích hoạt"><i
+                class="bi bi-file-earmark-text me-1"></i>Xuất UserName</button>
     </div>
     <div class="col-auto ms-auto d-flex gap-2 flex-wrap">
         <button class="btn btn-outline-danger btn-sm" onclick="deleteSelectedUsers()"><i
@@ -92,7 +95,7 @@
                 }
                 const mcnTip = user.mcn_name ? ('MCN: ' + user.mcn_name) : (user.mcn_status === 'none' ? 'Không gắn MCN' : 'Bấm biểu tượng xoay để kiểm tra hạn MCN');
             %>
-                <tr class="user-row<%= mcnExpiring ? ' mcn-expiring-row' : '' %>" data-user-id="<%= user.id %>" data-country="<%= user.country || 'vn' %>" data-mcn-state="<%= mcnState %>" data-username="<%= (user.username || '').toLowerCase() %>" data-proxy="<%= (user.proxy || '').toLowerCase() %>">
+                <tr class="user-row<%= mcnExpiring ? ' mcn-expiring-row' : '' %>" data-user-id="<%= user.id %>" data-country="<%= user.country || 'vn' %>" data-mcn-state="<%= mcnState %>" data-username="<%= (user.username || '').toLowerCase() %>" data-username-raw="<%= user.username || '' %>" data-proxy="<%= (user.proxy || '').toLowerCase() %>">
                     <td>
                         <div class="form-check form-switch mb-0">
                             <input type="checkbox" class="form-check-input user-checkbox" data-user-id="<%= user.id %>"
